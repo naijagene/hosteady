@@ -1,2 +1,1 @@
-/** Shared UI components — populated by the HEOS Design System. */
-export {}
+export * from './hds'
