@@ -5,6 +5,7 @@ namespace Tests\Feature\Enums;
 use App\Enums\AuditAction;
 use App\Enums\AuditCategory;
 use App\Enums\AuditRetentionClass;
+use App\Enums\AuditSeverity;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -32,8 +33,24 @@ class AuditActionTest extends TestCase
             AuditAction::SecurityAuthUnauthenticated->category(),
         );
         $this->assertSame(
+            AuditCategory::Security,
+            AuditAction::SecurityPermissionDenied->category(),
+        );
+        $this->assertSame(
+            AuditCategory::Security,
+            AuditAction::SecurityInvalidToken->category(),
+        );
+        $this->assertSame(
             AuditRetentionClass::Ephemeral,
             AuditAction::SecurityAccessDenied->defaultRetention(),
+        );
+        $this->assertSame(
+            AuditRetentionClass::Standard,
+            AuditAction::SecurityRoleEscalationAttempt->defaultRetention(),
+        );
+        $this->assertSame(
+            AuditSeverity::Critical,
+            AuditAction::SecurityRoleEscalationAttempt->defaultSeverity(),
         );
     }
 }

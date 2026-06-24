@@ -4,6 +4,7 @@ namespace Tests\Feature\Api\V1\Tenant;
 
 use App\Enums\JoinMethod;
 use App\Enums\MembershipStatus;
+use App\Models\AuditLog;
 use App\Models\Role;
 use App\Http\Middleware\AssignRequestId;
 use App\Http\Middleware\ResolveTenantContext;
@@ -25,6 +26,9 @@ class AuditSummaryTest extends TestCase
 
         $user = $this->createActiveUser();
         $result = $this->provisionTestOrganization($user, ['slug' => 'audit-summary-org']);
+        AuditLog::query()
+            ->where('organization_id', $this->findProvisionedOrganization($result)->id)
+            ->delete();
         $token = $this->issueToken($user);
 
         $response = $this->withBearerToken($token)

@@ -11,7 +11,7 @@ use App\Exceptions\Tenant\TenantContextException;
 use App\Models\Organization;
 use App\Models\OrganizationMembership;
 use App\Models\Workspace;
-use App\Services\Audit\AuditEventRecorder;
+use App\Services\Audit\DomainAuditRecorder;
 use App\Services\Audit\Data\AuditEventData;
 use App\Support\Tenant\TenantContext;
 use Closure;
@@ -110,7 +110,7 @@ class ResolveTenantContext
         app()->instance(TenantContext::class, $context);
         $request->attributes->set('tenantContext', $context);
 
-        app(AuditEventRecorder::class)->record(new AuditEventData(
+        app(DomainAuditRecorder::class)->safeRecord(new AuditEventData(
             action: AuditAction::TenantContextSelected,
             summary: sprintf('Tenant context selected for %s', $organization->name),
             entityType: AuditEntityType::Organization,

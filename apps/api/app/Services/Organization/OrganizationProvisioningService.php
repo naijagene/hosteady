@@ -33,6 +33,7 @@ class OrganizationProvisioningService
     public function __construct(
         private readonly SystemRoleProvisioner $systemRoleProvisioner,
         private readonly CodeGenerator $codeGenerator,
+        private readonly \App\Services\Audit\DomainAuditRecorder $domainAuditRecorder,
     ) {
     }
 
@@ -99,6 +100,16 @@ class OrganizationProvisioningService
                 'status' => OrganizationStatus::Active,
             ]);
             $organization->applyAuditActor($data->creatorUserId)->save();
+
+            $this->domainAuditRecorder->recordOrganizationStatusChanged(
+                $organization,
+                OrganizationStatus::Provisioning,
+                OrganizationStatus::Active,
+                $data->creatorUserId,
+            );
+            $this->domainAuditRecorder->recordOrganizationCreated($organization);
+            $this->domainAuditRecorder->recordWorkspaceCreated($workspace, $data->creatorUserId);
+            $this->domainAuditRecorder->recordMembershipCreated($membership, $data->creatorUserId);
 
             return new ProvisionedOrganizationResult(
                 organizationPublicId: $organization->public_id,

@@ -18,6 +18,7 @@ class ApplicationInstallationService
 {
     public function __construct(
         private readonly ApplicationRegistryService $applicationRegistryService,
+        private readonly \App\Services\Audit\DomainAuditRecorder $domainAuditRecorder,
     ) {
     }
 
@@ -73,7 +74,11 @@ class ApplicationInstallationService
             ]);
             $installation->applyAuditActor($context->user->id)->save();
 
-            return $installation->fresh(['application', 'installedByMembership']);
+            $installation = $installation->fresh(['application', 'installedByMembership']);
+
+            $this->domainAuditRecorder->recordApplicationInstalled($installation, $application, $context);
+
+            return $installation;
         });
     }
 
@@ -88,14 +93,18 @@ class ApplicationInstallationService
         $installation->status = OrganizationApplicationStatus::Active;
         $installation->applyAuditActor($context->user->id)->save();
 
-        return $installation->fresh(['application', 'installedByMembership']);
+        $installation = $installation->fresh(['application', 'installedByMembership']);
+
+        $this->domainAuditRecorder->recordApplicationEnabled($installation, $context);
+
+        return $installation;
     }
 
     public function disable(TenantContext $context, string $installationPublicId): OrganizationApplication
     {
         $installation = $this->findInstallationForOrganization($context, $installationPublicId);
 
-        $this->assertNotCoreApplication($installation);
+        $this->assertNotCoreApplication($installation, $context, 'disable');
 
         if ($installation->status !== OrganizationApplicationStatus::Active) {
             throw new InvalidApplicationTransitionException('Only active applications can be disabled.');
@@ -104,18 +113,24 @@ class ApplicationInstallationService
         $installation->status = OrganizationApplicationStatus::Disabled;
         $installation->applyAuditActor($context->user->id)->save();
 
-        return $installation->fresh(['application', 'installedByMembership']);
+        $installation = $installation->fresh(['application', 'installedByMembership']);
+
+        $this->domainAuditRecorder->recordApplicationDisabled($installation, $context);
+
+        return $installation;
     }
 
     public function uninstall(TenantContext $context, string $installationPublicId): void
     {
         $installation = $this->findInstallationForOrganization($context, $installationPublicId);
 
-        $this->assertNotCoreApplication($installation);
+        $this->assertNotCoreApplication($installation, $context, 'uninstall');
 
         if (! in_array($installation->status, [OrganizationApplicationStatus::Active, OrganizationApplicationStatus::Disabled], true)) {
             throw new InvalidApplicationTransitionException('Only active or disabled applications can be uninstalled.');
         }
+
+        $this->domainAuditRecorder->recordApplicationUninstalled($installation, $context);
 
         $installation->status = OrganizationApplicationStatus::Uninstalled;
         $installation->applyAuditActor($context->user->id)->save();
@@ -149,9 +164,14 @@ class ApplicationInstallationService
         return $installation;
     }
 
-    private function assertNotCoreApplication(OrganizationApplication $installation): void
-    {
+    private function assertNotCoreApplication(
+        OrganizationApplication $installation,
+        TenantContext $context,
+        string $attemptedAction,
+    ): void {
         if ($installation->application->is_core) {
+            $this->domainAuditRecorder->recordCoreActionBlocked($installation, $context, $attemptedAction);
+
             throw new CoreApplicationProtectedException;
         }
     }

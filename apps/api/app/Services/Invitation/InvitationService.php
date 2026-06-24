@@ -31,6 +31,7 @@ class InvitationService
     public function __construct(
         private readonly CodeGenerator $codeGenerator,
         private readonly InvitationToken $invitationToken,
+        private readonly \App\Services\Audit\DomainAuditRecorder $domainAuditRecorder,
     ) {
     }
 
@@ -79,6 +80,8 @@ class InvitationService
                 ]);
             }
 
+            $this->domainAuditRecorder->recordInvitationCreated($invitation);
+
             return new InvitationCreatedResult(
                 invitationPublicId: $invitation->public_id,
                 invitationCode: $invitation->invitation_code,
@@ -111,6 +114,8 @@ class InvitationService
         if ($invitation->expires_at->isPast()) {
             $invitation->status = InvitationStatus::Expired;
             $invitation->applyAuditActor($data->acceptingUserId)->save();
+
+            $this->domainAuditRecorder->recordInvitationExpired($invitation);
 
             throw new InvitationExpiredException('Invitation has expired.');
         }
@@ -178,6 +183,8 @@ class InvitationService
 
             $organization = Organization::query()->findOrFail($invitation->organization_id);
 
+            $this->domainAuditRecorder->recordInvitationAccepted($invitation, $membership);
+
             return new InvitationAcceptedResult(
                 membershipPublicId: $membership->public_id,
                 organizationPublicId: $organization->public_id,
@@ -199,6 +206,8 @@ class InvitationService
 
         $invitation->status = InvitationStatus::Revoked;
         $invitation->applyAuditActor($revokedByUserId)->save();
+
+        $this->domainAuditRecorder->recordInvitationRevoked($invitation, $revokedByUserId);
     }
 
     /**
@@ -234,6 +243,8 @@ class InvitationService
             }
 
             if ($role->key === 'owner') {
+                $this->domainAuditRecorder->recordRoleEscalationAttempt($organization, $role->key);
+
                 throw new InvitationException('The owner role cannot be assigned through invitations.');
             }
         }

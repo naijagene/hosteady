@@ -39,6 +39,9 @@ enum AuditAction: string
     case ApplicationDisabled = 'application.disabled';
     case ApplicationUninstalled = 'application.uninstalled';
 
+    case SecurityPermissionDenied = 'security.permission_denied';
+    case SecurityInvalidToken = 'security.invalid_token';
+    case SecurityRoleEscalationAttempt = 'security.role_escalation_attempt';
     case SecurityAccessDenied = 'security.access.denied';
     case SecurityTenantRejected = 'security.tenant.rejected';
     case SecurityTenantInvalidHeader = 'security.tenant.invalid_header';
@@ -86,6 +89,9 @@ enum AuditAction: string
             self::ApplicationUninstalled => AuditCategory::Application,
 
             self::SecurityAccessDenied,
+            self::SecurityPermissionDenied,
+            self::SecurityInvalidToken,
+            self::SecurityRoleEscalationAttempt,
             self::SecurityTenantRejected,
             self::SecurityTenantInvalidHeader,
             self::SecurityCoreActionBlocked,
@@ -106,10 +112,14 @@ enum AuditAction: string
             self::ApplicationDisabled,
             self::ApplicationUninstalled,
             self::SecurityAccessDenied,
+            self::SecurityPermissionDenied,
+            self::SecurityInvalidToken,
             self::SecurityTenantRejected,
             self::SecurityTenantInvalidHeader,
             self::SecurityCoreActionBlocked,
             self::SecurityAuthUnauthenticated => AuditSeverity::Warning,
+
+            self::SecurityRoleEscalationAttempt => AuditSeverity::Critical,
 
             default => AuditSeverity::Info,
         };
@@ -146,10 +156,13 @@ enum AuditAction: string
             self::AuthLogoutSucceeded,
             self::AuthTokenRevoked,
             self::InvitationExpired,
-            self::SecurityCoreActionBlocked => AuditRetentionClass::Standard,
+            self::SecurityCoreActionBlocked,
+            self::SecurityRoleEscalationAttempt => AuditRetentionClass::Standard,
 
             self::AuthLoginFailed,
             self::SecurityAccessDenied,
+            self::SecurityPermissionDenied,
+            self::SecurityInvalidToken,
             self::SecurityTenantRejected,
             self::SecurityTenantInvalidHeader,
             self::SecurityAuthUnauthenticated,
@@ -160,6 +173,12 @@ enum AuditAction: string
     public function defaultScope(): AuditScope
     {
         return match ($this) {
+            self::AuthLoginSucceeded,
+            self::AuthLoginFailed,
+            self::AuthLogoutSucceeded,
+            self::AuthTokenRevoked,
+            self::SecurityInvalidToken => AuditScope::Platform,
+
             default => AuditScope::Organization,
         };
     }

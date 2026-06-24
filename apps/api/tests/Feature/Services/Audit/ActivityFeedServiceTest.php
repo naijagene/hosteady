@@ -6,6 +6,7 @@ use App\Enums\AuditAction;
 use App\Enums\AuditCategory;
 use App\Enums\JoinMethod;
 use App\Enums\MembershipStatus;
+use App\Models\AuditLog;
 use App\Models\Role;
 use App\Services\Audit\ActivityFeedService;
 use App\Services\Audit\AuditCursorCodec;
@@ -42,6 +43,7 @@ class ActivityFeedServiceTest extends TestCase
         $user = $this->createActiveUser();
         $result = $this->provisionTestOrganization($user, ['slug' => 'activity-feed-org']);
         $context = $this->buildTenantContext($user, $result);
+        $this->clearOrganizationAuditLogs($result->organizationPublicId);
 
         app()->instance(TenantContext::class, $context);
 
@@ -133,6 +135,7 @@ class ActivityFeedServiceTest extends TestCase
         $user = $this->createActiveUser();
         $result = $this->provisionTestOrganization($user, ['slug' => 'activity-cursor-org']);
         $context = $this->buildTenantContext($user, $result);
+        $this->clearOrganizationAuditLogs($result->organizationPublicId);
 
         app()->instance(TenantContext::class, $context);
 
@@ -167,6 +170,7 @@ class ActivityFeedServiceTest extends TestCase
         $user = $this->createActiveUser();
         $result = $this->provisionTestOrganization($user, ['slug' => 'activity-offset-org']);
         $context = $this->buildTenantContext($user, $result);
+        $this->clearOrganizationAuditLogs($result->organizationPublicId);
 
         app()->instance(TenantContext::class, $context);
 
@@ -189,6 +193,7 @@ class ActivityFeedServiceTest extends TestCase
         $user = $this->createActiveUser();
         $result = $this->provisionTestOrganization($user, ['slug' => 'activity-summary-org']);
         $context = $this->buildTenantContext($user, $result);
+        $this->clearOrganizationAuditLogs($result->organizationPublicId);
 
         app()->instance(TenantContext::class, $context);
 
@@ -255,6 +260,7 @@ class ActivityFeedServiceTest extends TestCase
         $owner = $this->createActiveUser();
         $result = $this->provisionTestOrganization($owner, ['slug' => 'activity-security-org']);
         $organization = $this->findProvisionedOrganization($result);
+        $this->clearOrganizationAuditLogs($result->organizationPublicId);
         $workspace = $organization->workspaces()->where('public_id', $result->workspacePublicId)->firstOrFail();
 
         $manager = $this->createActiveUser();
@@ -324,5 +330,16 @@ class ActivityFeedServiceTest extends TestCase
         $workspace = $organization->workspaces()->where('public_id', $result->workspacePublicId)->firstOrFail();
 
         return TenantContext::fromModels($user, $organization, $membership, $workspace);
+    }
+
+    private function clearOrganizationAuditLogs(string $organizationPublicId): void
+    {
+        $organization = \App\Models\Organization::query()
+            ->where('public_id', $organizationPublicId)
+            ->firstOrFail();
+
+        AuditLog::query()
+            ->where('organization_id', $organization->id)
+            ->delete();
     }
 }
