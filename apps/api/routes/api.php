@@ -31,6 +31,8 @@ Route::prefix('v1')->group(function () {
             Route::delete('tenant/applications/{installationPublicId}', [OrganizationApplicationController::class, 'destroy']);
             Route::get('tenant/audit/events', [AuditEventController::class, 'index'])
                 ->name('tenant.audit.events.index');
+            Route::get('tenant/audit/summary', [AuditEventController::class, 'summary'])
+                ->name('tenant.audit.summary');
             Route::get('tenant/audit/events/{eventPublicId}', [AuditEventController::class, 'show'])
                 ->name('tenant.audit.events.show');
         });

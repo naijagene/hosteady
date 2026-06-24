@@ -7,8 +7,8 @@ use App\Enums\JoinMethod;
 use App\Enums\MembershipStatus;
 use App\Models\AuditLog;
 use App\Models\Role;
-use App\Services\Audit\AuditEventRecorder;
-use App\Services\Audit\Data\AuditEventData;
+use App\Http\Middleware\AssignRequestId;
+use App\Http\Middleware\ResolveTenantContext;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Tests\Support\InteractsWithHeosApi;
@@ -21,7 +21,7 @@ class AuditEventTest extends TestCase
     use InteractsWithHeosPlatform;
     use RefreshDatabase;
 
-    public function test_lists_audit_events_for_owner(): void
+    public function test_lists_audit_events_for_owner_with_cursor_meta(): void
     {
         $this->seedHeosPermissions();
 
@@ -50,13 +50,37 @@ class AuditEventTest extends TestCase
                         'context',
                     ],
                 ],
-                'meta',
-                'links',
+                'meta' => [
+                    'path',
+                    'per_page',
+                    'next_cursor',
+                    'has_more',
+                ],
             ]);
 
         $this->assertGreaterThanOrEqual(1, count($response->json('data')));
         $this->assertSame('tenant.context.selected', $response->json('data.0.action'));
         $this->assertResponseUsesPublicIdsOnly($response->json());
+    }
+
+    public function test_supports_legacy_page_pagination(): void
+    {
+        $this->seedHeosPermissions();
+
+        $user = $this->createActiveUser();
+        $result = $this->provisionTestOrganization($user, ['slug' => 'audit-page-org']);
+        $token = $this->issueToken($user);
+
+        $response = $this->withBearerToken($token)
+            ->withTenantHeaders($result->organizationPublicId)
+            ->getJson('/api/v1/tenant/audit/events?page=1&per_page=10');
+
+        $response->assertOk()
+            ->assertJsonStructure([
+                'data',
+                'meta' => ['current_page', 'per_page', 'total', 'last_page'],
+                'links',
+            ]);
     }
 
     public function test_returns_request_id_header(): void
@@ -75,6 +99,30 @@ class AuditEventTest extends TestCase
 
         $response->assertOk()
             ->assertHeader('X-Request-Id', $requestId);
+    }
+
+    public function test_filters_by_request_id(): void
+    {
+        $this->seedHeosPermissions();
+
+        $user = $this->createActiveUser();
+        $result = $this->provisionTestOrganization($user, ['slug' => 'audit-filter-request-org']);
+        $token = $this->issueToken($user);
+        $requestId = (string) Str::uuid7();
+
+        $this->withBearerToken($token)
+            ->withHeader('X-Request-Id', $requestId)
+            ->withTenantHeaders($result->organizationPublicId)
+            ->getJson('/api/v1/tenant/context')
+            ->assertOk();
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer '.$token,
+            ResolveTenantContext::ORGANIZATION_HEADER => $result->organizationPublicId,
+            AssignRequestId::HEADER => (string) Str::uuid7(),
+        ])->getJson('/api/v1/tenant/audit/events?request_id='.$requestId)
+            ->assertOk()
+            ->assertJsonCount(1, 'data');
     }
 
     public function test_shows_single_audit_event(): void
@@ -158,7 +206,7 @@ class AuditEventTest extends TestCase
             ->assertJsonPath('message', 'Audit event not found.');
     }
 
-    public function test_filters_by_action(): void
+    public function test_filters_by_action_with_legacy_page_mode(): void
     {
         $this->seedHeosPermissions();
 
@@ -168,8 +216,23 @@ class AuditEventTest extends TestCase
 
         $this->withBearerToken($token)
             ->withTenantHeaders($result->organizationPublicId)
-            ->getJson('/api/v1/tenant/audit/events?action=tenant.context.selected')
+            ->getJson('/api/v1/tenant/audit/events?page=1&action=tenant.context.selected')
             ->assertOk()
             ->assertJsonCount(1, 'data');
+    }
+
+    public function test_rejects_invalid_cursor(): void
+    {
+        $this->seedHeosPermissions();
+
+        $user = $this->createActiveUser();
+        $result = $this->provisionTestOrganization($user, ['slug' => 'audit-invalid-cursor-org']);
+        $token = $this->issueToken($user);
+
+        $this->withBearerToken($token)
+            ->withTenantHeaders($result->organizationPublicId)
+            ->getJson('/api/v1/tenant/audit/events?cursor=not-a-valid-cursor')
+            ->assertStatus(422)
+            ->assertJsonPath('message', 'The cursor is invalid or expired.');
     }
 }
