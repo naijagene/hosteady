@@ -1,7 +1,9 @@
 <?php
 
 use App\Exceptions\Application\ApplicationException;
+use App\Exceptions\Audit\AuditException;
 use App\Exceptions\Tenant\TenantContextException;
+use App\Http\Middleware\AssignRequestId;
 use App\Http\Middleware\ResolveTenantContext;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -19,6 +21,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'tenant.context' => ResolveTenantContext::class,
         ]);
+
+        $middleware->api(prepend: [
+            AssignRequestId::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (TenantContextException $exception, Request $request) {
@@ -32,6 +38,16 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         $exceptions->render(function (ApplicationException $exception, Request $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'message' => $exception->getMessage(),
+                ], $exception->statusCode);
+            }
+
+            return null;
+        });
+
+        $exceptions->render(function (AuditException $exception, Request $request) {
             if ($request->is('api/*')) {
                 return response()->json([
                     'message' => $exception->getMessage(),

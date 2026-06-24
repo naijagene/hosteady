@@ -5,10 +5,14 @@ namespace App\Http\Middleware;
 use App\Enums\MembershipStatus;
 use App\Enums\OrganizationStatus;
 use App\Enums\WorkspaceStatus;
+use App\Enums\AuditAction;
+use App\Enums\AuditEntityType;
 use App\Exceptions\Tenant\TenantContextException;
 use App\Models\Organization;
 use App\Models\OrganizationMembership;
 use App\Models\Workspace;
+use App\Services\Audit\AuditEventRecorder;
+use App\Services\Audit\Data\AuditEventData;
 use App\Support\Tenant\TenantContext;
 use Closure;
 use Illuminate\Http\Request;
@@ -105,6 +109,19 @@ class ResolveTenantContext
 
         app()->instance(TenantContext::class, $context);
         $request->attributes->set('tenantContext', $context);
+
+        app(AuditEventRecorder::class)->record(new AuditEventData(
+            action: AuditAction::TenantContextSelected,
+            summary: sprintf('Tenant context selected for %s', $organization->name),
+            entityType: AuditEntityType::Organization,
+            entityPublicId: $organization->public_id,
+            entityLabel: $organization->name,
+            metadata: [
+                'organization_public_id' => $organization->public_id,
+                'workspace_public_id' => $workspace->public_id,
+                'membership_public_id' => $membership->public_id,
+            ],
+        ));
 
         return $next($request);
     }

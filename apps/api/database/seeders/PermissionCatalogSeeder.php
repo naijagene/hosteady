@@ -29,6 +29,7 @@ class PermissionCatalogSeeder extends Seeder
         ['key' => 'applications.install', 'name' => 'Install Applications', 'description' => null, 'domain' => 'application'],
         ['key' => 'applications.configure', 'name' => 'Configure Applications', 'description' => null, 'domain' => 'application'],
         ['key' => 'applications.uninstall', 'name' => 'Uninstall Applications', 'description' => null, 'domain' => 'application'],
+        ['key' => 'audit.read', 'name' => 'Read Audit Events', 'description' => null, 'domain' => 'audit'],
     ];
 
     public function run(): void

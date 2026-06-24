@@ -35,6 +35,7 @@ trait InteractsWithHeosPlatform
             'applications.install',
             'applications.configure',
             'applications.uninstall',
+            'audit.read',
         ];
     }
 
@@ -56,7 +57,7 @@ trait InteractsWithHeosPlatform
 
     protected function assertPermissionCatalogComplete(): void
     {
-        $this->assertSame(17, Permission::query()->count());
+        $this->assertSame(18, Permission::query()->count());
     }
 
     /**
