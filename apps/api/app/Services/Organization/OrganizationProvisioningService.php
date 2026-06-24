@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\DB;
 
 class OrganizationProvisioningService
 {
-    private const EXPECTED_PERMISSION_COUNT = 18;
+    private const EXPECTED_PERMISSION_COUNT = 22;
 
     /**
      * @var list<string>
@@ -34,6 +34,7 @@ class OrganizationProvisioningService
         private readonly SystemRoleProvisioner $systemRoleProvisioner,
         private readonly CodeGenerator $codeGenerator,
         private readonly \App\Services\Audit\DomainAuditRecorder $domainAuditRecorder,
+        private readonly \App\Services\WorkspaceApplication\WorkspaceApplicationBootstrapService $workspaceApplicationBootstrapService,
     ) {
     }
 
@@ -110,6 +111,16 @@ class OrganizationProvisioningService
             $this->domainAuditRecorder->recordOrganizationCreated($organization);
             $this->domainAuditRecorder->recordWorkspaceCreated($workspace, $data->creatorUserId);
             $this->domainAuditRecorder->recordMembershipCreated($membership, $data->creatorUserId);
+
+            $creator = User::query()->findOrFail($data->creatorUserId);
+
+            $this->workspaceApplicationBootstrapService->bootstrapDefaultWorkspace(
+                $organization,
+                $workspace,
+                $membership,
+                $creator,
+                $data->creatorUserId,
+            );
 
             return new ProvisionedOrganizationResult(
                 organizationPublicId: $organization->public_id,

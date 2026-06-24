@@ -19,6 +19,7 @@ class ApplicationInstallationService
     public function __construct(
         private readonly ApplicationRegistryService $applicationRegistryService,
         private readonly \App\Services\Audit\DomainAuditRecorder $domainAuditRecorder,
+        private readonly \App\Services\WorkspaceApplication\WorkspaceApplicationService $workspaceApplicationService,
     ) {
     }
 
@@ -131,6 +132,8 @@ class ApplicationInstallationService
         }
 
         $this->domainAuditRecorder->recordApplicationUninstalled($installation, $context);
+
+        $this->workspaceApplicationService->cascadeOrganizationUninstall($installation, $context->user->id);
 
         $installation->status = OrganizationApplicationStatus::Uninstalled;
         $installation->applyAuditActor($context->user->id)->save();

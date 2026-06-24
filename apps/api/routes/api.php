@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\Tenant\AuditEventController;
 use App\Http\Controllers\Api\V1\Tenant\ApplicationCatalogController as TenantApplicationCatalogController;
 use App\Http\Controllers\Api\V1\Tenant\OrganizationApplicationController;
 use App\Http\Controllers\Api\V1\Tenant\TenantContextController;
+use App\Http\Controllers\Api\V1\Tenant\WorkspaceApplicationController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -29,6 +30,13 @@ Route::prefix('v1')->group(function () {
             Route::patch('tenant/applications/{installationPublicId}/enable', [OrganizationApplicationController::class, 'enable']);
             Route::patch('tenant/applications/{installationPublicId}/disable', [OrganizationApplicationController::class, 'disable']);
             Route::delete('tenant/applications/{installationPublicId}', [OrganizationApplicationController::class, 'destroy']);
+            Route::get('tenant/workspace/applications', [WorkspaceApplicationController::class, 'index']);
+            Route::get('tenant/workspace/applications/available', [WorkspaceApplicationController::class, 'available']);
+            Route::post('tenant/workspace/applications', [WorkspaceApplicationController::class, 'store']);
+            Route::patch('tenant/workspace/applications/{workspaceApplicationPublicId}/enable', [WorkspaceApplicationController::class, 'enable']);
+            Route::patch('tenant/workspace/applications/{workspaceApplicationPublicId}/disable', [WorkspaceApplicationController::class, 'disable']);
+            Route::patch('tenant/workspace/applications/{workspaceApplicationPublicId}/archive', [WorkspaceApplicationController::class, 'archive']);
+            Route::delete('tenant/workspace/applications/{workspaceApplicationPublicId}', [WorkspaceApplicationController::class, 'destroy']);
             Route::get('tenant/audit/events', [AuditEventController::class, 'index'])
                 ->name('tenant.audit.events.index');
             Route::get('tenant/audit/summary', [AuditEventController::class, 'summary'])

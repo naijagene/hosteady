@@ -31,6 +31,10 @@ trait InteractsWithHeosPlatform
             'workspace.create',
             'workspace.update',
             'workspace.archive',
+            'workspace.applications.read',
+            'workspace.applications.enable',
+            'workspace.applications.configure',
+            'workspace.applications.manage',
             'applications.read',
             'applications.install',
             'applications.configure',
@@ -57,7 +61,7 @@ trait InteractsWithHeosPlatform
 
     protected function assertPermissionCatalogComplete(): void
     {
-        $this->assertSame(18, Permission::query()->count());
+        $this->assertSame(22, Permission::query()->count());
     }
 
     /**

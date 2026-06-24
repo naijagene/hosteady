@@ -11,5 +11,6 @@ enum AuditEntityType: string
     case Invitation = 'invitation';
     case Application = 'application';
     case OrganizationApplication = 'organization_application';
+    case WorkspaceApplication = 'workspace_application';
     case User = 'user';
 }

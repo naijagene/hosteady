@@ -39,6 +39,8 @@ enum AuditAction: string
     case ApplicationDisabled = 'application.disabled';
     case ApplicationUninstalled = 'application.uninstalled';
 
+    case WorkspaceApplicationArchived = 'workspace.application.archived';
+
     case SecurityPermissionDenied = 'security.permission_denied';
     case SecurityInvalidToken = 'security.invalid_token';
     case SecurityRoleEscalationAttempt = 'security.role_escalation_attempt';
@@ -86,7 +88,8 @@ enum AuditAction: string
             self::ApplicationInstalled,
             self::ApplicationEnabled,
             self::ApplicationDisabled,
-            self::ApplicationUninstalled => AuditCategory::Application,
+            self::ApplicationUninstalled,
+            self::WorkspaceApplicationArchived => AuditCategory::Application,
 
             self::SecurityAccessDenied,
             self::SecurityPermissionDenied,
@@ -111,6 +114,7 @@ enum AuditAction: string
             self::WorkspaceArchived,
             self::ApplicationDisabled,
             self::ApplicationUninstalled,
+            self::WorkspaceApplicationArchived,
             self::SecurityAccessDenied,
             self::SecurityPermissionDenied,
             self::SecurityInvalidToken,
@@ -150,7 +154,8 @@ enum AuditAction: string
             self::ApplicationInstalled,
             self::ApplicationEnabled,
             self::ApplicationDisabled,
-            self::ApplicationUninstalled => AuditRetentionClass::Permanent,
+            self::ApplicationUninstalled,
+            self::WorkspaceApplicationArchived => AuditRetentionClass::Permanent,
 
             self::AuthLoginSucceeded,
             self::AuthLogoutSucceeded,

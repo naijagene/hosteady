@@ -135,7 +135,7 @@ class OrganizationProvisioningServiceTest extends TestCase
         );
     }
 
-    public function test_owner_role_has_all_seventeen_permissions(): void
+    public function test_owner_role_has_all_twenty_two_permissions(): void
     {
         $this->seedHeosPermissions();
 
@@ -154,7 +154,7 @@ class OrganizationProvisioningServiceTest extends TestCase
             ->where('key', 'owner')
             ->firstOrFail();
 
-        $this->assertSame(18, DB::table('role_permissions')
+        $this->assertSame(22, DB::table('role_permissions')
             ->where('role_id', $ownerRole->id)
             ->count());
     }

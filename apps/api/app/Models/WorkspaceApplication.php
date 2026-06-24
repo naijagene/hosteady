@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\OrganizationApplicationStatus;
+use App\Enums\WorkspaceApplicationStatus;
 use App\Models\Concerns\HasHeosAudit;
 use App\Models\Concerns\HasHeosPublicId;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class OrganizationApplication extends Model
+class WorkspaceApplication extends Model
 {
     use HasHeosAudit, HasHeosPublicId, HasUuids, SoftDeletes;
 
@@ -24,13 +24,15 @@ class OrganizationApplication extends Model
     protected $fillable = [
         'public_id',
         'organization_id',
+        'workspace_id',
+        'organization_application_id',
         'application_id',
         'status',
-        'installed_version',
-        'config',
-        'installed_at',
-        'installed_by_user_id',
-        'installed_by_membership_id',
+        'enabled_version',
+        'is_bootstrap',
+        'enabled_at',
+        'enabled_by_user_id',
+        'enabled_by_membership_id',
         'created_by_user_id',
         'updated_by_user_id',
         'deleted_by_user_id',
@@ -42,9 +44,9 @@ class OrganizationApplication extends Model
     protected function casts(): array
     {
         return [
-            'status' => OrganizationApplicationStatus::class,
-            'config' => 'array',
-            'installed_at' => 'datetime',
+            'status' => WorkspaceApplicationStatus::class,
+            'is_bootstrap' => 'boolean',
+            'enabled_at' => 'datetime',
             'deleted_at' => 'datetime',
         ];
     }
@@ -54,26 +56,28 @@ class OrganizationApplication extends Model
         return $this->belongsTo(Organization::class);
     }
 
+    public function workspace(): BelongsTo
+    {
+        return $this->belongsTo(Workspace::class);
+    }
+
+    public function organizationApplication(): BelongsTo
+    {
+        return $this->belongsTo(OrganizationApplication::class);
+    }
+
     public function application(): BelongsTo
     {
         return $this->belongsTo(Application::class);
     }
 
-    public function installedBy(): BelongsTo
+    public function enabledBy(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'installed_by_user_id');
+        return $this->belongsTo(User::class, 'enabled_by_user_id');
     }
 
-    public function installedByMembership(): BelongsTo
+    public function enabledByMembership(): BelongsTo
     {
-        return $this->belongsTo(OrganizationMembership::class, 'installed_by_membership_id');
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<WorkspaceApplication, $this>
-     */
-    public function workspaceApplications(): \Illuminate\Database\Eloquent\Relations\HasMany
-    {
-        return $this->hasMany(WorkspaceApplication::class);
+        return $this->belongsTo(OrganizationMembership::class, 'enabled_by_membership_id');
     }
 }

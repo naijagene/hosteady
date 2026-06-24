@@ -5,6 +5,7 @@ namespace Tests\Feature\Api\V1\Tenant;
 use App\Enums\JoinMethod;
 use App\Enums\MembershipStatus;
 use App\Models\Application;
+use App\Models\OrganizationApplication;
 use App\Models\Role;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Support\InteractsWithHeosApi;
@@ -64,8 +65,10 @@ class OrganizationApplicationTest extends TestCase
             ->getJson('/api/v1/tenant/applications');
 
         $response->assertOk()
-            ->assertJsonCount(1, 'data')
-            ->assertJsonPath('data.0.public_id', $installationPublicId);
+            ->assertJsonCount(3, 'data');
+
+        $publicIds = collect($response->json('data'))->pluck('public_id')->all();
+        $this->assertContains($installationPublicId, $publicIds);
 
         $this->assertResponseUsesPublicIdsOnly($response->json());
     }
@@ -124,7 +127,7 @@ class OrganizationApplicationTest extends TestCase
             ->withTenantHeaders($result->organizationPublicId)
             ->getJson('/api/v1/tenant/applications')
             ->assertOk()
-            ->assertJsonCount(0, 'data');
+            ->assertJsonCount(2, 'data');
     }
 
     public function test_blocks_disable_for_core_application(): void
@@ -133,15 +136,12 @@ class OrganizationApplicationTest extends TestCase
 
         $user = $this->createActiveUser();
         $result = $this->provisionTestOrganization($user, ['slug' => 'api-core-disable-org']);
-        $core = Application::query()->where('key', 'core')->firstOrFail();
+        $organization = $this->findProvisionedOrganization($result);
+        $installationPublicId = OrganizationApplication::query()
+            ->where('organization_id', $organization->id)
+            ->whereHas('application', fn ($query) => $query->where('key', 'core'))
+            ->value('public_id');
         $token = $this->issueToken($user);
-
-        $installationPublicId = $this->withBearerToken($token)
-            ->withTenantHeaders($result->organizationPublicId)
-            ->postJson('/api/v1/tenant/applications', [
-                'application_public_id' => $core->public_id,
-            ])
-            ->json('data.public_id');
 
         $this->withBearerToken($token)
             ->withTenantHeaders($result->organizationPublicId)
@@ -156,15 +156,12 @@ class OrganizationApplicationTest extends TestCase
 
         $user = $this->createActiveUser();
         $result = $this->provisionTestOrganization($user, ['slug' => 'api-core-uninstall-org']);
-        $core = Application::query()->where('key', 'core')->firstOrFail();
+        $organization = $this->findProvisionedOrganization($result);
+        $installationPublicId = OrganizationApplication::query()
+            ->where('organization_id', $organization->id)
+            ->whereHas('application', fn ($query) => $query->where('key', 'core'))
+            ->value('public_id');
         $token = $this->issueToken($user);
-
-        $installationPublicId = $this->withBearerToken($token)
-            ->withTenantHeaders($result->organizationPublicId)
-            ->postJson('/api/v1/tenant/applications', [
-                'application_public_id' => $core->public_id,
-            ])
-            ->json('data.public_id');
 
         $this->withBearerToken($token)
             ->withTenantHeaders($result->organizationPublicId)

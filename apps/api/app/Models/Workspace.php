@@ -49,4 +49,12 @@ class Workspace extends Model
     {
         return $this->belongsTo(Organization::class);
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<WorkspaceApplication, $this>
+     */
+    public function workspaceApplications(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(WorkspaceApplication::class);
+    }
 }

@@ -11,6 +11,7 @@ use App\Enums\MembershipStatus;
 use App\Models\Application;
 use App\Models\AuditLog;
 use App\Models\Invitation;
+use App\Models\OrganizationApplication;
 use App\Models\Role;
 use App\Models\User;
 use App\Services\Application\ApplicationInstallationService;
@@ -275,12 +276,14 @@ class DomainAuditInstrumentationTest extends TestCase
         $user = $this->createActiveUser();
         $result = $this->provisionTestOrganization($user, ['slug' => 'core-block-audit-org']);
         $context = $this->buildTenantContext($user, $result);
-        $core = Application::query()->where('key', 'core')->firstOrFail();
+        $organization = $this->findProvisionedOrganization($result);
+        $installation = OrganizationApplication::query()
+            ->where('organization_id', $organization->id)
+            ->whereHas('application', fn ($query) => $query->where('key', 'core'))
+            ->firstOrFail();
         $service = app(ApplicationInstallationService::class);
 
         app()->instance(TenantContext::class, $context);
-
-        $installation = $service->install($context, $core->public_id);
 
         try {
             $service->disable($context, $installation->public_id);

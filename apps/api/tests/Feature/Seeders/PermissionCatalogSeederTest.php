@@ -13,7 +13,7 @@ class PermissionCatalogSeederTest extends TestCase
     use InteractsWithHeosPlatform;
     use RefreshDatabase;
 
-    public function test_seeds_exactly_seventeen_permissions(): void
+    public function test_seeds_exactly_twenty_two_permissions(): void
     {
         $this->seedHeosPermissions();
 

@@ -61,7 +61,7 @@ class ApplicationInstallationServiceTest extends TestCase
 
         $installed = $this->service->listInstalled($context);
 
-        $this->assertCount(0, $installed);
+        $this->assertCount(2, $installed);
     }
 
     public function test_prevents_duplicate_install(): void
@@ -129,9 +129,11 @@ class ApplicationInstallationServiceTest extends TestCase
         $user = $this->createActiveUser();
         $result = $this->provisionTestOrganization($user, ['slug' => 'core-disable-org']);
         $context = $this->buildTenantContext($user, $result);
-        $core = Application::query()->where('key', 'core')->firstOrFail();
-
-        $installation = $this->service->install($context, $core->public_id);
+        $organization = $this->findProvisionedOrganization($result);
+        $installation = OrganizationApplication::query()
+            ->where('organization_id', $organization->id)
+            ->whereHas('application', fn ($query) => $query->where('key', 'core'))
+            ->firstOrFail();
 
         $this->expectException(CoreApplicationProtectedException::class);
 
@@ -145,9 +147,11 @@ class ApplicationInstallationServiceTest extends TestCase
         $user = $this->createActiveUser();
         $result = $this->provisionTestOrganization($user, ['slug' => 'core-uninstall-org']);
         $context = $this->buildTenantContext($user, $result);
-        $core = Application::query()->where('key', 'core')->firstOrFail();
-
-        $installation = $this->service->install($context, $core->public_id);
+        $organization = $this->findProvisionedOrganization($result);
+        $installation = OrganizationApplication::query()
+            ->where('organization_id', $organization->id)
+            ->whereHas('application', fn ($query) => $query->where('key', 'core'))
+            ->firstOrFail();
 
         $this->expectException(CoreApplicationProtectedException::class);
 
