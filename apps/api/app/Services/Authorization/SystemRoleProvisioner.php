@@ -1,0 +1,123 @@
+<?php
+
+namespace App\Services\Authorization;
+
+use App\Enums\RoleStatus;
+use App\Exceptions\Organization\OrganizationProvisioningException;
+use App\Models\Organization;
+use App\Models\Permission;
+use App\Models\Role;
+use Illuminate\Support\Facades\DB;
+
+class SystemRoleProvisioner
+{
+    private const EXPECTED_PERMISSION_COUNT = 17;
+
+    /**
+     * @var array<string, string>
+     */
+    private const SYSTEM_ROLE_NAMES = [
+        'owner' => 'Owner',
+        'administrator' => 'Administrator',
+        'manager' => 'Manager',
+        'member' => 'Member',
+        'viewer' => 'Viewer',
+    ];
+
+    /**
+     * @var list<string>
+     */
+    private const MEMBER_PERMISSIONS = [
+        'organization.read',
+        'workspace.read',
+        'applications.read',
+    ];
+
+    /**
+     * @var list<string>
+     */
+    private const VIEWER_PERMISSIONS = [
+        'organization.read',
+        'workspace.read',
+        'applications.read',
+        'members.read',
+        'roles.read',
+    ];
+
+    /**
+     * @var list<string>
+     */
+    private const MANAGER_EXCLUDED = [
+        'organization.archive',
+        'roles.manage',
+        'members.remove',
+    ];
+
+    /**
+     * @var list<string>
+     */
+    private const ADMINISTRATOR_EXCLUDED = [
+        'organization.archive',
+    ];
+
+    public function provisionForOrganization(Organization $organization, int $actorUserId): void
+    {
+        if (Role::query()
+            ->where('organization_id', $organization->id)
+            ->where('is_system', true)
+            ->whereNull('deleted_at')
+            ->exists()) {
+            throw new OrganizationProvisioningException('System roles already exist for this organization.');
+        }
+
+        $permissions = Permission::query()
+            ->orderBy('key')
+            ->get()
+            ->keyBy('key');
+
+        if ($permissions->count() !== self::EXPECTED_PERMISSION_COUNT) {
+            throw new OrganizationProvisioningException('Permission catalog is incomplete.');
+        }
+
+        $allPermissionKeys = $permissions->keys()->all();
+
+        foreach (self::SYSTEM_ROLE_NAMES as $key => $name) {
+            $role = new Role([
+                'organization_id' => $organization->id,
+                'key' => $key,
+                'name' => $name,
+                'is_system' => true,
+                'status' => RoleStatus::Active,
+            ]);
+            $role->applyAuditActor($actorUserId)->save();
+
+            $permissionKeys = match ($key) {
+                'owner' => $allPermissionKeys,
+                'administrator' => array_values(array_diff($allPermissionKeys, self::ADMINISTRATOR_EXCLUDED)),
+                'manager' => array_values(array_diff($allPermissionKeys, self::MANAGER_EXCLUDED)),
+                'member' => self::MEMBER_PERMISSIONS,
+                'viewer' => self::VIEWER_PERMISSIONS,
+                default => throw new OrganizationProvisioningException("Unknown system role key [{$key}]."),
+            };
+
+            $rows = [];
+
+            foreach ($permissionKeys as $permissionKey) {
+                $permission = $permissions->get($permissionKey);
+
+                if ($permission === null) {
+                    throw new OrganizationProvisioningException("Permission [{$permissionKey}] is missing from the catalog.");
+                }
+
+                $rows[] = [
+                    'role_id' => $role->id,
+                    'permission_id' => $permission->id,
+                    'created_at' => now(),
+                    'created_by_user_id' => $actorUserId,
+                ];
+            }
+
+            DB::table('role_permissions')->insert($rows);
+        }
+    }
+}
