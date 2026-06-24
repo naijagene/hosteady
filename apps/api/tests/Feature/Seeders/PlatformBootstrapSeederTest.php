@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Seeders;
 
+use App\Models\Application;
 use App\Models\Organization;
 use App\Models\Permission;
 use App\Models\User;
@@ -20,6 +21,13 @@ class PlatformBootstrapSeederTest extends TestCase
         $this->seed(PlatformBootstrapSeeder::class);
 
         $this->assertSame(17, Permission::query()->count());
+    }
+
+    public function test_seeds_application_catalog(): void
+    {
+        $this->seed(PlatformBootstrapSeeder::class);
+
+        $this->assertSame(3, Application::query()->count());
     }
 
     public function test_does_not_create_organizations(): void

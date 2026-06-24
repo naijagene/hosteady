@@ -1,5 +1,6 @@
 <?php
 
+use App\Exceptions\Application\ApplicationException;
 use App\Exceptions\Tenant\TenantContextException;
 use App\Http\Middleware\ResolveTenantContext;
 use Illuminate\Foundation\Application;
@@ -21,6 +22,16 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (TenantContextException $exception, Request $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'message' => $exception->getMessage(),
+                ], $exception->statusCode);
+            }
+
+            return null;
+        });
+
+        $exceptions->render(function (ApplicationException $exception, Request $request) {
             if ($request->is('api/*')) {
                 return response()->json([
                     'message' => $exception->getMessage(),

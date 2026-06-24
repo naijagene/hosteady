@@ -43,6 +43,17 @@ trait InteractsWithHeosPlatform
         $this->seed(PermissionCatalogSeeder::class);
     }
 
+    protected function seedApplicationCatalog(): void
+    {
+        $this->seed(\Database\Seeders\ApplicationCatalogSeeder::class);
+    }
+
+    protected function seedHeosPlatform(): void
+    {
+        $this->seedHeosPermissions();
+        $this->seedApplicationCatalog();
+    }
+
     protected function assertPermissionCatalogComplete(): void
     {
         $this->assertSame(17, Permission::query()->count());

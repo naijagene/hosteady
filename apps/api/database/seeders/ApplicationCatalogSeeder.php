@@ -1,0 +1,80 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Enums\ApplicationStatus;
+use App\Models\Application;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
+
+class ApplicationCatalogSeeder extends Seeder
+{
+    /**
+     * @var list<array{key: string, name: string, description: string|null, version: string, is_core: bool, icon: string|null, category: string|null}>
+     */
+    private const APPLICATIONS = [
+        [
+            'key' => 'core',
+            'name' => 'HEOS Core',
+            'description' => null,
+            'version' => '1.0.0',
+            'is_core' => true,
+            'icon' => null,
+            'category' => 'platform',
+        ],
+        [
+            'key' => 'workspace',
+            'name' => 'Workspace Module',
+            'description' => null,
+            'version' => '1.0.0',
+            'is_core' => true,
+            'icon' => null,
+            'category' => 'platform',
+        ],
+        [
+            'key' => 'demo',
+            'name' => 'Demo Application',
+            'description' => null,
+            'version' => '1.0.0',
+            'is_core' => false,
+            'icon' => null,
+            'category' => 'platform',
+        ],
+    ];
+
+    public function run(): void
+    {
+        foreach (self::APPLICATIONS as $application) {
+            $existingApplication = Application::query()
+                ->where('key', $application['key'])
+                ->first();
+
+            if ($existingApplication) {
+                $existingApplication->update([
+                    'name' => $application['name'],
+                    'description' => $application['description'],
+                    'version' => $application['version'],
+                    'status' => ApplicationStatus::Active,
+                    'is_core' => $application['is_core'],
+                    'icon' => $application['icon'],
+                    'category' => $application['category'],
+                ]);
+
+                continue;
+            }
+
+            Application::query()->create([
+                'id' => (string) Str::uuid7(),
+                'public_id' => (string) Str::uuid7(),
+                'key' => $application['key'],
+                'name' => $application['name'],
+                'description' => $application['description'],
+                'version' => $application['version'],
+                'status' => ApplicationStatus::Active,
+                'is_core' => $application['is_core'],
+                'icon' => $application['icon'],
+                'category' => $application['category'],
+            ]);
+        }
+    }
+}
