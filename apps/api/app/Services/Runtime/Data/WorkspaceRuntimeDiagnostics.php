@@ -11,6 +11,7 @@ readonly class WorkspaceRuntimeDiagnostics
      * @param  list<string>  $configurationErrors
      * @param  list<string>  $warnings
      * @param  list<string>  $recommendations
+     * @param  array<string, mixed>|null  $moduleContributions
      */
     public function __construct(
         public RuntimeHealthStatus $healthStatus,
@@ -25,6 +26,7 @@ readonly class WorkspaceRuntimeDiagnostics
         public array $recommendations,
         public RuntimePerformanceMetrics $performance,
         public RuntimeCacheDiagnostics $cache,
+        public ?array $moduleContributions = null,
     ) {
     }
 
@@ -46,6 +48,7 @@ readonly class WorkspaceRuntimeDiagnostics
             'recommendations' => $this->recommendations,
             'performance' => $this->performance->toArray(),
             'cache' => $this->cache->toArray(),
+            'module_contributions' => $this->moduleContributions,
         ];
     }
 }

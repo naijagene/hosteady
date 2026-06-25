@@ -62,6 +62,7 @@ enum AuditAction: string
     case ModuleSettingsUpdated = 'module.settings.updated';
     case ModuleRuntimeBefore = 'module.runtime.before';
     case ModuleRuntimeAfter = 'module.runtime.after';
+    case ModuleRuntimeContribution = 'module.runtime.contribution';
 
     public function category(): AuditCategory
     {
@@ -105,7 +106,8 @@ enum AuditAction: string
             self::ModuleWorkspaceDisabled,
             self::ModuleSettingsUpdated,
             self::ModuleRuntimeBefore,
-            self::ModuleRuntimeAfter => AuditCategory::Application,
+            self::ModuleRuntimeAfter,
+            self::ModuleRuntimeContribution => AuditCategory::Application,
 
             self::ApplicationInstalled,
             self::ApplicationEnabled,
@@ -207,7 +209,8 @@ enum AuditAction: string
             self::ModuleWorkspaceDisabled,
             self::ModuleSettingsUpdated,
             self::ModuleRuntimeBefore,
-            self::ModuleRuntimeAfter => AuditRetentionClass::Ephemeral,
+            self::ModuleRuntimeAfter,
+            self::ModuleRuntimeContribution => AuditRetentionClass::Ephemeral,
         };
     }
 

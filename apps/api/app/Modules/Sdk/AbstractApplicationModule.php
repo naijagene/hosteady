@@ -4,6 +4,7 @@ namespace App\Modules\Sdk;
 
 use App\Modules\Sdk\Contracts\ApplicationModule;
 use App\Modules\Sdk\Contracts\ModuleHealthContext;
+use App\Modules\Sdk\Contracts\ModuleRuntimeContext;
 use App\Modules\Sdk\Data\ModuleHealthReport;
 use App\Modules\Sdk\Data\ModuleLifecycleContext;
 use App\Modules\Sdk\Data\ModuleManifest;
@@ -11,6 +12,7 @@ use App\Modules\Sdk\Data\ModuleNavigationItem;
 use App\Modules\Sdk\Data\ModulePermission;
 use App\Modules\Sdk\Data\ModuleRouteCollection;
 use App\Modules\Sdk\Data\ModuleSettingDefinition;
+use App\Modules\Sdk\Runtime\RuntimeContribution;
 
 abstract class AbstractApplicationModule implements ApplicationModule
 {
@@ -91,6 +93,11 @@ abstract class AbstractApplicationModule implements ApplicationModule
 
     public function afterRuntimeResolved(ModuleLifecycleContext $context): void
     {
+    }
+
+    public function contributeRuntime(ModuleRuntimeContext $context): RuntimeContribution
+    {
+        return RuntimeContribution::empty($this->key());
     }
 
     protected function buildManifest(

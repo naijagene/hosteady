@@ -4,6 +4,9 @@ namespace App\Services\WorkspaceApplication;
 
 use App\Exceptions\WorkspaceApplication\WorkspaceApplicationNotFoundException;
 use App\Models\WorkspaceApplicationSetting;
+use App\Modules\Sdk\Runtime\RuntimePipelineReport;
+use App\Services\Module\RuntimeExtensionService;
+use App\Services\Module\ModuleLifecycleManager;
 use App\Services\WorkspaceApplication\Data\ResolvedWorkspaceApplication;
 use App\Services\WorkspaceApplication\Data\RuntimeMembershipSnapshot;
 use App\Services\WorkspaceApplication\Data\RuntimeOrganizationSnapshot;
@@ -38,7 +41,9 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
         private readonly WorkspaceSettingsService $workspaceSettingsService,
         private readonly WorkspaceRuntimeManifestBuilder $manifestBuilder,
         private readonly WorkspaceRuntimeVersionCalculator $versionCalculator,
-        private readonly \App\Services\Module\ModuleLifecycleManager $moduleLifecycleManager,
+        private readonly ModuleLifecycleManager $moduleLifecycleManager,
+        private readonly RuntimeExtensionService $runtimeExtensionService,
+        private readonly \App\Modules\Sdk\Runtime\RuntimeExtensionManager $runtimeExtensionManager,
     ) {
     }
 
@@ -55,7 +60,12 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
         ?string $activeWorkspaceApplicationPublicId,
     ): WorkspaceRuntimeContext {
         $manifest = $this->buildManifest($context);
-        $runtimeVersion = $this->versionCalculator->calculate($manifest);
+        $extensionReport = $this->resolveExtensions($context, $manifest);
+        $mergedExtensions = $extensionReport->contributions->merge();
+        $runtimeVersion = $this->versionCalculator->calculate(
+            $manifest,
+            $extensionReport->contributions->fingerprint(),
+        );
         $settingsVersion = $this->workspaceSettingsService->resolveSettingsVersion($context);
         $activeApplication = $this->resolveActiveApplication(
             $manifest->applicationsByPublicId,
@@ -70,18 +80,29 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
             activeApplication: $activeApplication,
             runtimeVersion: $runtimeVersion,
             settingsVersion: $settingsVersion,
-            runtimeMetadata: $this->runtimeMetadata(),
-            capabilities: self::CAPABILITIES,
+            runtimeMetadata: $this->mergeRuntimeMetadata($this->runtimeMetadata(), $mergedExtensions['runtime_metadata']),
+            capabilities: $this->runtimeExtensionManager->mergeCapabilities(
+                self::CAPABILITIES,
+                $extensionReport->contributions,
+            ),
+            navigation: $mergedExtensions['navigation'],
+            featureFlags: $mergedExtensions['feature_flags'],
+            moduleDiagnostics: $mergedExtensions['diagnostics'],
+            settingsMetadata: $mergedExtensions['settings_metadata'],
         );
     }
 
     public function resolveSummary(TenantContext $context): WorkspaceRuntimeSummary
     {
         $manifest = $this->buildManifest($context);
+        $extensionReport = $this->resolveExtensions($context, $manifest);
 
         return new WorkspaceRuntimeSummary(
             activeApplicationCount: count($manifest->applications),
-            runtimeVersion: $this->versionCalculator->calculate($manifest),
+            runtimeVersion: $this->versionCalculator->calculate(
+                $manifest,
+                $extensionReport->contributions->fingerprint(),
+            ),
             settingsVersion: $this->workspaceSettingsService->resolveSettingsVersion($context),
         );
     }
@@ -188,6 +209,34 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
         }
 
         return $activeApplication;
+    }
+
+    private function resolveExtensions(TenantContext $context, RuntimeManifest $manifest): RuntimePipelineReport
+    {
+        $activeModuleKeys = array_map(
+            fn (ResolvedWorkspaceApplication $application) => $application->key,
+            $manifest->applications,
+        );
+
+        return $this->runtimeExtensionService->resolveForTenant($context, $activeModuleKeys);
+    }
+
+    /**
+     * @param  array<string, mixed>  $platformMetadata
+     * @param  array<string, mixed>  $contributionMetadata
+     * @return array<string, mixed>
+     */
+    private function mergeRuntimeMetadata(array $platformMetadata, array $contributionMetadata): array
+    {
+        foreach ($contributionMetadata as $key => $value) {
+            if (is_array($value) && isset($platformMetadata[$key]) && is_array($platformMetadata[$key]) && ! array_is_list($value)) {
+                $platformMetadata[$key] = $this->mergeRuntimeMetadata($platformMetadata[$key], $value);
+            } else {
+                $platformMetadata[$key] = $value;
+            }
+        }
+
+        return $platformMetadata;
     }
 
     private function organizationSnapshot(TenantContext $context): RuntimeOrganizationSnapshot

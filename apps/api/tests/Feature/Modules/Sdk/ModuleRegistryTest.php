@@ -248,4 +248,9 @@ class InvalidKeyModule implements ApplicationModule
     public function afterRuntimeResolved(\App\Modules\Sdk\Data\ModuleLifecycleContext $context): void
     {
     }
+
+    public function contributeRuntime(\App\Modules\Sdk\Contracts\ModuleRuntimeContext $context): \App\Modules\Sdk\Runtime\RuntimeContribution
+    {
+        return \App\Modules\Sdk\Runtime\RuntimeContribution::empty($this->key());
+    }
 }

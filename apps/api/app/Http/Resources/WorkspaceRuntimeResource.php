@@ -31,6 +31,10 @@ class WorkspaceRuntimeResource extends JsonResource
             'settings_version' => $runtime->settingsVersion,
             'runtime_metadata' => $runtime->runtimeMetadata,
             'capabilities' => $runtime->capabilities,
+            'navigation' => $runtime->navigation,
+            'feature_flags' => $runtime->featureFlags,
+            'module_diagnostics' => $runtime->moduleDiagnostics,
+            'settings_metadata' => $runtime->settingsMetadata,
         ];
     }
 }

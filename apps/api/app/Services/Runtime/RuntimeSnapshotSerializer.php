@@ -31,6 +31,10 @@ class RuntimeSnapshotSerializer
             'settings_version' => $context->settingsVersion,
             'runtime_metadata' => $context->runtimeMetadata,
             'capabilities' => $context->capabilities,
+            'navigation' => $context->navigation,
+            'feature_flags' => $context->featureFlags,
+            'module_diagnostics' => $context->moduleDiagnostics,
+            'settings_metadata' => $context->settingsMetadata,
         ];
     }
 
@@ -76,6 +80,10 @@ class RuntimeSnapshotSerializer
             settingsVersion: (int) $payload['settings_version'],
             runtimeMetadata: $payload['runtime_metadata'],
             capabilities: $payload['capabilities'],
+            navigation: $payload['navigation'] ?? [],
+            featureFlags: $payload['feature_flags'] ?? [],
+            moduleDiagnostics: $payload['module_diagnostics'] ?? [],
+            settingsMetadata: $payload['settings_metadata'] ?? [],
         );
     }
 

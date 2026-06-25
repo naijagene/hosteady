@@ -10,6 +10,7 @@ use App\Modules\Sdk\Data\ModuleNavigationItem;
 use App\Modules\Sdk\Data\ModulePermission;
 use App\Modules\Sdk\Data\ModuleRouteCollection;
 use App\Modules\Sdk\Data\ModuleSettingDefinition;
+use App\Modules\Sdk\Runtime\RuntimeContribution;
 
 interface ApplicationModule
 {
@@ -65,4 +66,6 @@ interface ApplicationModule
     public function beforeRuntimeResolved(ModuleLifecycleContext $context): void;
 
     public function afterRuntimeResolved(ModuleLifecycleContext $context): void;
+
+    public function contributeRuntime(ModuleRuntimeContext $context): RuntimeContribution;
 }

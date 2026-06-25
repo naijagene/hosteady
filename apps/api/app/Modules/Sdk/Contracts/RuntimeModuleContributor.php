@@ -2,15 +2,18 @@
 
 namespace App\Modules\Sdk\Contracts;
 
-/**
- * Reserved runtime extension contract (Slice 5).
- */
+use App\Modules\Sdk\Runtime\RuntimeContribution;
+
 interface RuntimeModuleContributor
 {
     public function moduleKey(): string;
 
+    public function priority(): int;
+
     /**
-     * @return array<string, mixed>
+     * @return list<string>
      */
-    public function contribute(ModuleRuntimeContext $context): array;
+    public function dependencyKeys(): array;
+
+    public function contribute(ModuleRuntimeContext $context): RuntimeContribution;
 }

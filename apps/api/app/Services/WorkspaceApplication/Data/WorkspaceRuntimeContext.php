@@ -7,7 +7,11 @@ readonly class WorkspaceRuntimeContext
     /**
      * @param  list<ResolvedWorkspaceApplication>  $activeApplications
      * @param  array{generated_at: string, generated_by: string, schema_version: int}  $runtimeMetadata
-     * @param  array{audit: bool, settings: bool, workspace: bool, notifications: bool, automation: bool}  $capabilities
+     * @param  array<string, bool>  $capabilities
+     * @param  list<array<string, mixed>>  $navigation
+     * @param  array<string, mixed>  $featureFlags
+     * @param  list<array<string, mixed>>  $moduleDiagnostics
+     * @param  array<string, mixed>  $settingsMetadata
      */
     public function __construct(
         public RuntimeOrganizationSnapshot $organization,
@@ -19,6 +23,10 @@ readonly class WorkspaceRuntimeContext
         public int $settingsVersion,
         public array $runtimeMetadata,
         public array $capabilities,
+        public array $navigation = [],
+        public array $featureFlags = [],
+        public array $moduleDiagnostics = [],
+        public array $settingsMetadata = [],
     ) {
     }
 }

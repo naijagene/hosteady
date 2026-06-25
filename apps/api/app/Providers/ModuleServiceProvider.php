@@ -21,6 +21,10 @@ class ModuleServiceProvider extends ServiceProvider
         $this->app->singleton(\App\Modules\Sdk\Lifecycle\ModuleLifecycleDispatcher::class);
         $this->app->singleton(\App\Services\Audit\ModuleLifecycleAuditRecorder::class);
         $this->app->singleton(\App\Services\Module\ModuleLifecycleManager::class);
+        $this->app->singleton(\App\Modules\Sdk\Runtime\RuntimeContributorPipeline::class);
+        $this->app->singleton(\App\Modules\Sdk\Runtime\RuntimeExtensionManager::class);
+        $this->app->singleton(\App\Services\Module\RuntimeContributionAuditRecorder::class);
+        $this->app->singleton(\App\Services\Module\RuntimeExtensionService::class);
         $this->app->singleton(ModuleRegistry::class, function ($app) {
             return new ModuleRegistry(
                 $app->make(ModuleManifestValidator::class),

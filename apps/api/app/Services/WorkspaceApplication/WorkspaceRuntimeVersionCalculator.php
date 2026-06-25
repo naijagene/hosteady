@@ -6,9 +6,13 @@ use App\Services\Runtime\Data\RuntimeManifest;
 
 class WorkspaceRuntimeVersionCalculator
 {
-    public function calculate(RuntimeManifest $manifest): string
+    public function calculate(RuntimeManifest $manifest, ?array $moduleExtensionsFingerprint = null): string
     {
         $normalized = $this->normalizeFingerprint($manifest->fingerprint());
+
+        if ($moduleExtensionsFingerprint !== null) {
+            $normalized['module_extensions'] = $moduleExtensionsFingerprint;
+        }
 
         return hash('sha256', json_encode($normalized, JSON_THROW_ON_ERROR));
     }

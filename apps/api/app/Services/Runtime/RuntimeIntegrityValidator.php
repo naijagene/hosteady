@@ -11,6 +11,8 @@ use App\Models\WorkspaceApplication;
 use App\Models\WorkspaceApplicationSetting;
 use App\Services\Application\ApplicationSettingsRegistry;
 use App\Services\Runtime\Data\RuntimeIntegrityReport;
+use App\Services\Module\RuntimeExtensionService;
+use App\Services\WorkspaceApplication\Data\ResolvedWorkspaceApplication;
 use App\Services\WorkspaceApplication\WorkspaceRuntimeResolver;
 use App\Services\WorkspaceApplication\WorkspaceRuntimeVersionCalculator;
 use App\Support\Tenant\TenantContext;
@@ -21,6 +23,7 @@ class RuntimeIntegrityValidator
         private readonly WorkspaceRuntimeResolver $runtimeResolver,
         private readonly WorkspaceRuntimeVersionCalculator $versionCalculator,
         private readonly ApplicationSettingsRegistry $settingsRegistry,
+        private readonly RuntimeExtensionService $runtimeExtensionService,
     ) {
     }
 
@@ -30,7 +33,15 @@ class RuntimeIntegrityValidator
         $warnings = [];
 
         $manifest = $this->runtimeResolver->buildManifest($context);
-        $calculatedVersion = $this->versionCalculator->calculate($manifest);
+        $activeModuleKeys = array_map(
+            fn (ResolvedWorkspaceApplication $application) => $application->key,
+            $manifest->applications,
+        );
+        $extensionReport = $this->runtimeExtensionService->resolveForTenant($context, $activeModuleKeys);
+        $calculatedVersion = $this->versionCalculator->calculate(
+            $manifest,
+            $extensionReport->contributions->fingerprint(),
+        );
         $summary = $this->runtimeResolver->resolveSummary($context);
         $fingerprintValid = hash_equals($calculatedVersion, $summary->runtimeVersion);
 

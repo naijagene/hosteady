@@ -3,9 +3,11 @@
 namespace App\Modules\Demo;
 
 use App\Modules\Sdk\AbstractApplicationModule;
+use App\Modules\Sdk\Contracts\ModuleRuntimeContext;
 use App\Modules\Sdk\Data\ModuleDependency;
 use App\Modules\Sdk\Data\ModuleManifest;
 use App\Modules\Sdk\Data\ModuleSettingDefinition;
+use App\Modules\Sdk\Runtime\RuntimeContribution;
 
 class DemoModule extends AbstractApplicationModule
 {
@@ -95,6 +97,27 @@ class DemoModule extends AbstractApplicationModule
             isCore: false,
             bootstrap: false,
             category: 'platform',
+        );
+    }
+
+    public function contributeRuntime(ModuleRuntimeContext $context): RuntimeContribution
+    {
+        return new RuntimeContribution(
+            moduleKey: $this->key(),
+            priority: 10,
+            capabilities: ['demo.runtime'],
+            navigation: [[
+                'module_key' => $this->key(),
+                'label' => 'Demo',
+                'route_name' => 'heos.demo.home',
+            ]],
+            featureFlags: ['demo.preview' => true],
+            runtimeMetadata: ['demo' => ['enabled' => true]],
+            diagnostics: [[
+                'module_key' => $this->key(),
+                'status' => 'healthy',
+            ]],
+            settingsMetadata: ['feature.enabled' => ['source' => 'module']],
         );
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Services\Runtime;
 
 use App\Enums\RuntimeHealthStatus;
+use App\Modules\Sdk\Runtime\RuntimeExtensionManager;
 use App\Services\Runtime\Data\RuntimeDependencyReport;
 use App\Services\Runtime\Data\RuntimeIntegrityReport;
 use App\Services\Runtime\Data\WorkspaceRuntimeDiagnostics;
@@ -16,6 +17,7 @@ class RuntimeDiagnosticsService
         private readonly RuntimeDependencyValidator $dependencyValidator,
         private readonly RuntimeIntegrityValidator $integrityValidator,
         private readonly RuntimeCacheDiagnosticsService $cacheDiagnosticsService,
+        private readonly RuntimeExtensionManager $runtimeExtensionManager,
     ) {
     }
 
@@ -24,13 +26,18 @@ class RuntimeDiagnosticsService
         ?string $activeWorkspaceApplicationPublicId = null,
     ): WorkspaceRuntimeDiagnostics {
         $summary = $this->runtimeProvider->resolveSummary($context);
+        $moduleContributions = $this->runtimeExtensionManager->lastPipelineReport()?->toDiagnosticsSummary();
         $cache = $this->cacheDiagnosticsService->diagnose($context, $summary, $activeWorkspaceApplicationPublicId);
         $integrity = $this->integrityValidator->validate($context);
         $dependency = $this->dependencyValidator->validate($context);
 
         $configurationErrors = $integrity->errors;
         $dependencyErrors = $dependency->errors;
-        $warnings = array_values(array_unique(array_merge($integrity->warnings, $dependency->warnings)));
+        $warnings = array_values(array_unique(array_merge(
+            $integrity->warnings,
+            $dependency->warnings,
+            $moduleContributions['warnings'] ?? [],
+        )));
         $recommendations = $this->buildRecommendations($cache, $integrity, $dependency);
 
         $healthStatus = RuntimeHealthStatus::worst(
@@ -65,6 +72,7 @@ class RuntimeDiagnosticsService
             recommendations: $recommendations,
             performance: $performance,
             cache: $cache,
+            moduleContributions: $moduleContributions,
         );
     }
 
