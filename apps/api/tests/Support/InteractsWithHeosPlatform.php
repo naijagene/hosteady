@@ -96,4 +96,13 @@ trait InteractsWithHeosPlatform
             ->where('public_id', $result->organizationPublicId)
             ->firstOrFail();
     }
+
+    protected function buildTenantContext(User $user, ProvisionedOrganizationResult $result): \App\Support\Tenant\TenantContext
+    {
+        $organization = $this->findProvisionedOrganization($result);
+        $membership = $organization->memberships()->where('user_id', $user->id)->firstOrFail();
+        $workspace = $organization->workspaces()->where('public_id', $result->workspacePublicId)->firstOrFail();
+
+        return \App\Support\Tenant\TenantContext::fromModels($user, $organization, $membership, $workspace);
+    }
 }

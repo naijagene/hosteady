@@ -220,4 +220,32 @@ class InvalidKeyModule implements ApplicationModule
     {
         return \App\Modules\Sdk\Data\ModuleHealthReport::healthy();
     }
+
+    public function onInstall(\App\Modules\Sdk\Data\ModuleLifecycleContext $context): void
+    {
+    }
+
+    public function onUninstall(\App\Modules\Sdk\Data\ModuleLifecycleContext $context): void
+    {
+    }
+
+    public function onWorkspaceEnable(\App\Modules\Sdk\Data\ModuleLifecycleContext $context): void
+    {
+    }
+
+    public function onWorkspaceDisable(\App\Modules\Sdk\Data\ModuleLifecycleContext $context): void
+    {
+    }
+
+    public function onSettingsUpdated(\App\Modules\Sdk\Data\ModuleLifecycleContext $context): void
+    {
+    }
+
+    public function beforeRuntimeResolved(\App\Modules\Sdk\Data\ModuleLifecycleContext $context): void
+    {
+    }
+
+    public function afterRuntimeResolved(\App\Modules\Sdk\Data\ModuleLifecycleContext $context): void
+    {
+    }
 }

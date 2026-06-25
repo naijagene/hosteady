@@ -18,6 +18,9 @@ class ModuleServiceProvider extends ServiceProvider
         $this->app->singleton(ModuleManifestValidator::class);
         $this->app->singleton(ModuleSyncService::class);
         $this->app->singleton(ModuleSyncPort::class, ModuleSyncService::class);
+        $this->app->singleton(\App\Modules\Sdk\Lifecycle\ModuleLifecycleDispatcher::class);
+        $this->app->singleton(\App\Services\Audit\ModuleLifecycleAuditRecorder::class);
+        $this->app->singleton(\App\Services\Module\ModuleLifecycleManager::class);
         $this->app->singleton(ModuleRegistry::class, function ($app) {
             return new ModuleRegistry(
                 $app->make(ModuleManifestValidator::class),

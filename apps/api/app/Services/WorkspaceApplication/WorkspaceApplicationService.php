@@ -21,6 +21,7 @@ class WorkspaceApplicationService
 {
     public function __construct(
         private readonly RuntimeCacheInvalidator $runtimeCacheInvalidator,
+        private readonly \App\Services\Module\ModuleLifecycleManager $moduleLifecycleManager,
     ) {
     }
 
@@ -154,10 +155,17 @@ class WorkspaceApplicationService
             ]);
             $workspaceApplication->applyAuditActor($context->user->id)->save();
 
-            return $workspaceApplication->fresh(['application', 'organizationApplication', 'enabledByMembership']);
+            $workspaceApplication = $workspaceApplication->fresh(['application', 'organizationApplication', 'enabledByMembership']);
+
+            $this->moduleLifecycleManager->runEnableWorkspaceHooks(
+                $context,
+                $organizationApplication->application->key,
+            );
+
+            return $workspaceApplication;
         });
 
-        $this->runtimeCacheInvalidator->invalidateTenantContext($context);
+        $this->moduleLifecycleManager->completeEnableWorkspace($context, $organizationApplication->application->key);
 
         return $workspaceApplication;
     }
@@ -187,10 +195,16 @@ class WorkspaceApplicationService
             throw new InvalidWorkspaceApplicationTransitionException('Only active workspace applications can be disabled.');
         }
 
-        $workspaceApplication->status = WorkspaceApplicationStatus::Disabled;
-        $workspaceApplication->applyAuditActor($context->user->id)->save();
+        $applicationKey = $workspaceApplication->application->key;
 
-        $this->runtimeCacheInvalidator->invalidateTenantContext($context);
+        DB::transaction(function () use ($context, $workspaceApplication, $applicationKey) {
+            $workspaceApplication->status = WorkspaceApplicationStatus::Disabled;
+            $workspaceApplication->applyAuditActor($context->user->id)->save();
+
+            $this->moduleLifecycleManager->runDisableWorkspaceHooks($context, $applicationKey);
+        });
+
+        $this->moduleLifecycleManager->completeDisableWorkspace($context, $applicationKey);
 
         return $workspaceApplication->fresh(['application', 'organizationApplication', 'enabledByMembership']);
     }
@@ -259,10 +273,16 @@ class WorkspaceApplicationService
         WorkspaceApplication $workspaceApplication,
         TenantContext $context,
     ): WorkspaceApplication {
-        $workspaceApplication->status = WorkspaceApplicationStatus::Active;
-        $workspaceApplication->applyAuditActor($context->user->id)->save();
+        $applicationKey = $workspaceApplication->application->key;
 
-        $this->runtimeCacheInvalidator->invalidateTenantContext($context);
+        DB::transaction(function () use ($context, $workspaceApplication, $applicationKey) {
+            $workspaceApplication->status = WorkspaceApplicationStatus::Active;
+            $workspaceApplication->applyAuditActor($context->user->id)->save();
+
+            $this->moduleLifecycleManager->runEnableWorkspaceHooks($context, $applicationKey);
+        });
+
+        $this->moduleLifecycleManager->completeEnableWorkspace($context, $applicationKey);
 
         return $workspaceApplication->fresh(['application', 'organizationApplication', 'enabledByMembership']);
     }

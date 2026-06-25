@@ -55,6 +55,14 @@ enum AuditAction: string
     case WorkspaceRuntimeGenerated = 'workspace.runtime.generated';
     case WorkspaceRuntimeFailed = 'workspace.runtime.failed';
 
+    case ModuleInstallCompleted = 'module.install.completed';
+    case ModuleUninstallCompleted = 'module.uninstall.completed';
+    case ModuleWorkspaceEnabled = 'module.workspace.enabled';
+    case ModuleWorkspaceDisabled = 'module.workspace.disabled';
+    case ModuleSettingsUpdated = 'module.settings.updated';
+    case ModuleRuntimeBefore = 'module.runtime.before';
+    case ModuleRuntimeAfter = 'module.runtime.after';
+
     public function category(): AuditCategory
     {
         return match ($this) {
@@ -90,6 +98,14 @@ enum AuditAction: string
 
             self::WorkspaceRuntimeGenerated,
             self::WorkspaceRuntimeFailed => AuditCategory::Workspace,
+
+            self::ModuleInstallCompleted,
+            self::ModuleUninstallCompleted,
+            self::ModuleWorkspaceEnabled,
+            self::ModuleWorkspaceDisabled,
+            self::ModuleSettingsUpdated,
+            self::ModuleRuntimeBefore,
+            self::ModuleRuntimeAfter => AuditCategory::Application,
 
             self::ApplicationInstalled,
             self::ApplicationEnabled,
@@ -130,6 +146,9 @@ enum AuditAction: string
             self::SecurityAuthUnauthenticated => AuditSeverity::Warning,
 
             self::WorkspaceRuntimeFailed => AuditSeverity::Warning,
+
+            self::ModuleUninstallCompleted,
+            self::ModuleWorkspaceDisabled => AuditSeverity::Warning,
 
             self::SecurityRoleEscalationAttempt => AuditSeverity::Critical,
 
@@ -181,7 +200,14 @@ enum AuditAction: string
             self::SecurityAuthUnauthenticated,
             self::TenantContextSelected,
             self::WorkspaceRuntimeGenerated,
-            self::WorkspaceRuntimeFailed => AuditRetentionClass::Ephemeral,
+            self::WorkspaceRuntimeFailed,
+            self::ModuleInstallCompleted,
+            self::ModuleUninstallCompleted,
+            self::ModuleWorkspaceEnabled,
+            self::ModuleWorkspaceDisabled,
+            self::ModuleSettingsUpdated,
+            self::ModuleRuntimeBefore,
+            self::ModuleRuntimeAfter => AuditRetentionClass::Ephemeral,
         };
     }
 

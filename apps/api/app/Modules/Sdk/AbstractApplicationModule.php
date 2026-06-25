@@ -5,6 +5,7 @@ namespace App\Modules\Sdk;
 use App\Modules\Sdk\Contracts\ApplicationModule;
 use App\Modules\Sdk\Contracts\ModuleHealthContext;
 use App\Modules\Sdk\Data\ModuleHealthReport;
+use App\Modules\Sdk\Data\ModuleLifecycleContext;
 use App\Modules\Sdk\Data\ModuleManifest;
 use App\Modules\Sdk\Data\ModuleNavigationItem;
 use App\Modules\Sdk\Data\ModulePermission;
@@ -62,6 +63,34 @@ abstract class AbstractApplicationModule implements ApplicationModule
     public function health(ModuleHealthContext $context): ModuleHealthReport
     {
         return ModuleHealthReport::healthy();
+    }
+
+    public function onInstall(ModuleLifecycleContext $context): void
+    {
+    }
+
+    public function onUninstall(ModuleLifecycleContext $context): void
+    {
+    }
+
+    public function onWorkspaceEnable(ModuleLifecycleContext $context): void
+    {
+    }
+
+    public function onWorkspaceDisable(ModuleLifecycleContext $context): void
+    {
+    }
+
+    public function onSettingsUpdated(ModuleLifecycleContext $context): void
+    {
+    }
+
+    public function beforeRuntimeResolved(ModuleLifecycleContext $context): void
+    {
+    }
+
+    public function afterRuntimeResolved(ModuleLifecycleContext $context): void
+    {
     }
 
     protected function buildManifest(

@@ -32,6 +32,7 @@ class WorkspaceSettingsService
         private readonly ApplicationSettingsRegistry $settingsRegistry,
         private readonly ApplicationSettingDefinitionValidator $definitionValidator,
         private readonly RuntimeCacheInvalidator $runtimeCacheInvalidator,
+        private readonly \App\Services\Module\ModuleLifecycleManager $moduleLifecycleManager,
     ) {
     }
 
@@ -131,14 +132,32 @@ class WorkspaceSettingsService
                 );
             }
 
-            return WorkspaceApplicationSetting::query()
+            $updatedSettings = WorkspaceApplicationSetting::query()
                 ->where('workspace_application_id', $workspaceApplication->id)
                 ->whereNull('deleted_at')
                 ->orderBy('setting_key')
                 ->get();
+
+            $this->moduleLifecycleManager->runSettingsUpdatedHooks(
+                $context,
+                $workspaceApplication->application->key,
+                [
+                    'setting_keys' => array_keys($settings),
+                    'application_public_id' => $workspaceApplication->application->public_id,
+                ],
+            );
+
+            return $updatedSettings;
         });
 
-        $this->runtimeCacheInvalidator->invalidateTenantContext($context);
+        $this->moduleLifecycleManager->completeSettingsUpdated(
+            $context,
+            $workspaceApplication->application->key,
+            [
+                'setting_keys' => array_keys($settings),
+                'application_public_id' => $workspaceApplication->application->public_id,
+            ],
+        );
 
         return $result;
     }
@@ -181,14 +200,32 @@ class WorkspaceSettingsService
                 $this->resetSetting($context, $setting, $workspaceApplication, $reason);
             }
 
-            return WorkspaceApplicationSetting::query()
+            $remainingSettings = WorkspaceApplicationSetting::query()
                 ->where('workspace_application_id', $workspaceApplication->id)
                 ->whereNull('deleted_at')
                 ->orderBy('setting_key')
                 ->get();
+
+            $this->moduleLifecycleManager->runSettingsUpdatedHooks(
+                $context,
+                $workspaceApplication->application->key,
+                [
+                    'setting_keys' => $keys,
+                    'application_public_id' => $workspaceApplication->application->public_id,
+                ],
+            );
+
+            return $remainingSettings;
         });
 
-        $this->runtimeCacheInvalidator->invalidateTenantContext($context);
+        $this->moduleLifecycleManager->completeSettingsUpdated(
+            $context,
+            $workspaceApplication->application->key,
+            [
+                'setting_keys' => $keys,
+                'application_public_id' => $workspaceApplication->application->public_id,
+            ],
+        );
 
         return $result;
     }

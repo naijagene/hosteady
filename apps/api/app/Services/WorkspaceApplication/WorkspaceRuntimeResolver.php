@@ -38,11 +38,22 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
         private readonly WorkspaceSettingsService $workspaceSettingsService,
         private readonly WorkspaceRuntimeManifestBuilder $manifestBuilder,
         private readonly WorkspaceRuntimeVersionCalculator $versionCalculator,
+        private readonly \App\Services\Module\ModuleLifecycleManager $moduleLifecycleManager,
     ) {
     }
 
     public function resolve(TenantContext $context, ?string $activeWorkspaceApplicationPublicId = null): WorkspaceRuntimeContext
     {
+        return $this->moduleLifecycleManager->runtimeResolved(
+            $context,
+            fn () => $this->buildRuntimeContext($context, $activeWorkspaceApplicationPublicId),
+        )['runtime'];
+    }
+
+    private function buildRuntimeContext(
+        TenantContext $context,
+        ?string $activeWorkspaceApplicationPublicId,
+    ): WorkspaceRuntimeContext {
         $manifest = $this->buildManifest($context);
         $runtimeVersion = $this->versionCalculator->calculate($manifest);
         $settingsVersion = $this->workspaceSettingsService->resolveSettingsVersion($context);

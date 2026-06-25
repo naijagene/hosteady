@@ -22,6 +22,7 @@ class ApplicationInstallationService
         private readonly \App\Services\Audit\DomainAuditRecorder $domainAuditRecorder,
         private readonly \App\Services\WorkspaceApplication\WorkspaceApplicationService $workspaceApplicationService,
         private readonly RuntimeCacheInvalidator $runtimeCacheInvalidator,
+        private readonly \App\Services\Module\ModuleLifecycleManager $moduleLifecycleManager,
     ) {
     }
 
@@ -58,7 +59,7 @@ class ApplicationInstallationService
             throw new ApplicationAlreadyInstalledException;
         }
 
-        return DB::transaction(function () use ($context, $application) {
+        $installation = DB::transaction(function () use ($context, $application) {
             $installation = new OrganizationApplication([
                 'organization_id' => $context->organization->id,
                 'application_id' => $application->id,
@@ -79,10 +80,15 @@ class ApplicationInstallationService
 
             $installation = $installation->fresh(['application', 'installedByMembership']);
 
+            $this->moduleLifecycleManager->runInstallHooks($context, $application->key);
             $this->domainAuditRecorder->recordApplicationInstalled($installation, $application, $context);
 
             return $installation;
         });
+
+        $this->moduleLifecycleManager->completeInstall($context, $application->key);
+
+        return $installation;
     }
 
     public function enable(TenantContext $context, string $installationPublicId): OrganizationApplication
@@ -135,16 +141,20 @@ class ApplicationInstallationService
             throw new InvalidApplicationTransitionException('Only active or disabled applications can be uninstalled.');
         }
 
-        $this->domainAuditRecorder->recordApplicationUninstalled($installation, $context);
+        $applicationKey = $installation->application->key;
 
-        $this->runtimeCacheInvalidator->invalidateForApplicationCatalogChange($installation->application_id);
+        DB::transaction(function () use ($context, $installation, $applicationKey) {
+            $this->moduleLifecycleManager->runUninstallHooks($context, $applicationKey);
+            $this->domainAuditRecorder->recordApplicationUninstalled($installation, $context);
+            $this->workspaceApplicationService->cascadeOrganizationUninstall($installation, $context->user->id);
 
-        $this->workspaceApplicationService->cascadeOrganizationUninstall($installation, $context->user->id);
+            $installation->status = OrganizationApplicationStatus::Uninstalled;
+            $installation->applyAuditActor($context->user->id)->save();
+            $installation->applyDeleteActor($context->user->id)->save();
+            $installation->delete();
+        });
 
-        $installation->status = OrganizationApplicationStatus::Uninstalled;
-        $installation->applyAuditActor($context->user->id)->save();
-        $installation->applyDeleteActor($context->user->id)->save();
-        $installation->delete();
+        $this->moduleLifecycleManager->completeUninstall($context, $applicationKey);
     }
 
     public function resolveInstallation(
