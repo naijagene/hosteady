@@ -289,8 +289,9 @@ class WorkspaceApplicationSettingsTest extends TestCase
                     ],
                 ],
             ])
-            ->assertUnprocessable()
-            ->assertJsonPath('message', 'Setting [secret.token] cannot be changed from sensitive to non-sensitive.');
+            ->assertOk()
+            ->assertJsonPath('data.0.is_sensitive', true)
+            ->assertJsonPath('data.0.value_redacted', true);
     }
 
     public function test_member_policy_denies_configure(): void

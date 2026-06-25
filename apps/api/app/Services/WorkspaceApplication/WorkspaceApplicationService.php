@@ -12,12 +12,18 @@ use App\Exceptions\WorkspaceApplication\OrganizationEntitlementRequiredException
 use App\Exceptions\WorkspaceApplication\WorkspaceApplicationNotFoundException;
 use App\Models\OrganizationApplication;
 use App\Models\WorkspaceApplication;
+use App\Services\Runtime\RuntimeCacheInvalidator;
 use App\Support\Tenant\TenantContext;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class WorkspaceApplicationService
 {
+    public function __construct(
+        private readonly RuntimeCacheInvalidator $runtimeCacheInvalidator,
+    ) {
+    }
+
     /**
      * @return Collection<int, WorkspaceApplication>
      */
@@ -127,7 +133,7 @@ class WorkspaceApplicationService
             }
         }
 
-        return DB::transaction(function () use ($context, $organizationApplication, $isBootstrap) {
+        $workspaceApplication = DB::transaction(function () use ($context, $organizationApplication, $isBootstrap) {
             $workspaceApplication = new WorkspaceApplication([
                 'organization_id' => $context->organization->id,
                 'workspace_id' => $context->workspace->id,
@@ -150,6 +156,10 @@ class WorkspaceApplicationService
 
             return $workspaceApplication->fresh(['application', 'organizationApplication', 'enabledByMembership']);
         });
+
+        $this->runtimeCacheInvalidator->invalidateTenantContext($context);
+
+        return $workspaceApplication;
     }
 
     public function reEnable(TenantContext $context, string $workspaceApplicationPublicId): WorkspaceApplication
@@ -180,6 +190,8 @@ class WorkspaceApplicationService
         $workspaceApplication->status = WorkspaceApplicationStatus::Disabled;
         $workspaceApplication->applyAuditActor($context->user->id)->save();
 
+        $this->runtimeCacheInvalidator->invalidateTenantContext($context);
+
         return $workspaceApplication->fresh(['application', 'organizationApplication', 'enabledByMembership']);
     }
 
@@ -198,6 +210,8 @@ class WorkspaceApplicationService
         $workspaceApplication->status = WorkspaceApplicationStatus::Archived;
         $workspaceApplication->applyAuditActor($context->user->id)->save();
 
+        $this->runtimeCacheInvalidator->invalidateTenantContext($context);
+
         return $workspaceApplication->fresh(['application', 'organizationApplication', 'enabledByMembership']);
     }
 
@@ -215,6 +229,8 @@ class WorkspaceApplicationService
         $workspaceApplication->applyAuditActor($context->user->id)->save();
         $workspaceApplication->applyDeleteActor($context->user->id)->save();
         $workspaceApplication->delete();
+
+        $this->runtimeCacheInvalidator->invalidateTenantContext($context);
     }
 
     public function resolveWorkspaceApplication(
@@ -245,6 +261,8 @@ class WorkspaceApplicationService
     ): WorkspaceApplication {
         $workspaceApplication->status = WorkspaceApplicationStatus::Active;
         $workspaceApplication->applyAuditActor($context->user->id)->save();
+
+        $this->runtimeCacheInvalidator->invalidateTenantContext($context);
 
         return $workspaceApplication->fresh(['application', 'organizationApplication', 'enabledByMembership']);
     }

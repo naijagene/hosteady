@@ -10,7 +10,7 @@ use App\Services\WorkspaceApplication\Data\RuntimeOrganizationSnapshot;
 use App\Services\WorkspaceApplication\Data\RuntimeWorkspaceSnapshot;
 use App\Services\WorkspaceApplication\Data\WorkspaceApplicationRuntimeInput;
 use App\Services\WorkspaceApplication\Data\WorkspaceRuntimeContext;
-use App\Services\WorkspaceApplication\Data\WorkspaceRuntimeManifestResult;
+use App\Services\Runtime\Data\RuntimeManifest;
 use App\Services\WorkspaceApplication\Data\WorkspaceRuntimeSummary;
 use App\Services\WorkspaceApplication\Data\WorkspaceSettingRuntimeInput;
 use App\Support\Tenant\TenantContext;
@@ -43,11 +43,11 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
 
     public function resolve(TenantContext $context, ?string $activeWorkspaceApplicationPublicId = null): WorkspaceRuntimeContext
     {
-        $manifestResult = $this->buildManifest($context);
-        $runtimeVersion = $this->versionCalculator->calculate($manifestResult->manifest);
+        $manifest = $this->buildManifest($context);
+        $runtimeVersion = $this->versionCalculator->calculate($manifest);
         $settingsVersion = $this->workspaceSettingsService->resolveSettingsVersion($context);
         $activeApplication = $this->resolveActiveApplication(
-            $manifestResult->applicationsByPublicId,
+            $manifest->applicationsByPublicId,
             $activeWorkspaceApplicationPublicId,
         );
 
@@ -55,7 +55,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
             organization: $this->organizationSnapshot($context),
             workspace: $this->workspaceSnapshot($context),
             membership: $this->membershipSnapshot($context),
-            activeApplications: $manifestResult->applications,
+            activeApplications: $manifest->applications,
             activeApplication: $activeApplication,
             runtimeVersion: $runtimeVersion,
             settingsVersion: $settingsVersion,
@@ -66,16 +66,16 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
 
     public function resolveSummary(TenantContext $context): WorkspaceRuntimeSummary
     {
-        $manifestResult = $this->buildManifest($context);
+        $manifest = $this->buildManifest($context);
 
         return new WorkspaceRuntimeSummary(
-            activeApplicationCount: count($manifestResult->applications),
-            runtimeVersion: $this->versionCalculator->calculate($manifestResult->manifest),
+            activeApplicationCount: count($manifest->applications),
+            runtimeVersion: $this->versionCalculator->calculate($manifest),
             settingsVersion: $this->workspaceSettingsService->resolveSettingsVersion($context),
         );
     }
 
-    private function buildManifest(TenantContext $context): WorkspaceRuntimeManifestResult
+    private function buildManifest(TenantContext $context): RuntimeManifest
     {
         $workspaceApplications = $this->workspaceApplicationService->listActiveForRuntime($context);
 
@@ -85,6 +85,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
         foreach ($workspaceApplications as $workspaceApplication) {
             $workspaceApplicationIds[] = $workspaceApplication->id;
             $applicationInputs[] = new WorkspaceApplicationRuntimeInput(
+                applicationId: $workspaceApplication->application_id,
                 workspaceApplicationPublicId: $workspaceApplication->public_id,
                 organizationApplicationPublicId: $workspaceApplication->organizationApplication->public_id,
                 applicationPublicId: $workspaceApplication->application->public_id,
@@ -96,6 +97,12 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
                 enabledVersion: $workspaceApplication->enabled_version,
                 catalogVersion: $workspaceApplication->application->version,
                 isBootstrap: $workspaceApplication->is_bootstrap,
+                capabilities: is_array($workspaceApplication->application->capabilities)
+                    ? array_values($workspaceApplication->application->capabilities)
+                    : [],
+                dependencies: is_array($workspaceApplication->application->dependencies)
+                    ? array_values($workspaceApplication->application->dependencies)
+                    : [],
             );
         }
 

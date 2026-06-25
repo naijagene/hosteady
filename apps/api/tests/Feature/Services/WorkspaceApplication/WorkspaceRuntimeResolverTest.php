@@ -9,6 +9,7 @@ use App\Models\Application;
 use App\Models\WorkspaceApplication;
 use App\Services\Application\ApplicationInstallationService;
 use App\Services\WorkspaceApplication\WorkspaceApplicationService;
+use App\Services\Runtime\Data\RuntimeManifest;
 use App\Services\WorkspaceApplication\WorkspaceRuntimeProvider;
 use App\Services\WorkspaceApplication\WorkspaceRuntimeVersionCalculator;
 use App\Services\WorkspaceApplication\WorkspaceSettingsService;
@@ -295,27 +296,30 @@ class WorkspaceRuntimeResolverTest extends TestCase
         $this->assertFalse($runtime->capabilities['automation']);
     }
 
-    public function test_includes_empty_dependencies_array(): void
+    public function test_includes_application_dependencies_from_catalog(): void
     {
         $this->seedHeosPlatform();
 
         $user = $this->createActiveUser();
         $result = $this->provisionTestOrganization($user, ['slug' => 'runtime-deps-org']);
         $context = $this->buildTenantContext($user, $result);
+        $this->enableDemoApplication($context);
 
         $runtime = $this->runtimeProvider->resolve($context);
 
-        foreach ($runtime->activeApplications as $application) {
-            $this->assertSame([], $application->dependencies);
-        }
+        $core = collect($runtime->activeApplications)->firstWhere('key', 'core');
+        $demo = collect($runtime->activeApplications)->firstWhere('key', 'demo');
+
+        $this->assertSame([], $core->dependencies);
+        $this->assertEqualsCanonicalizing(['core', 'workspace'], $demo->dependencies);
     }
 
     public function test_version_calculator_is_deterministic(): void
     {
         $calculator = app(WorkspaceRuntimeVersionCalculator::class);
 
-        $manifest = [
-            'applications' => [
+        $manifest = new RuntimeManifest(
+            fingerprintApplications: [
                 [
                     'key' => 'demo',
                     'workspace_application_status' => 'active',
@@ -323,12 +327,23 @@ class WorkspaceRuntimeResolverTest extends TestCase
                     'catalog_application_status' => 'active',
                     'enabled_version' => '1.0.0',
                     'catalog_version' => '1.0.0',
+                    'capabilities' => [],
+                    'dependencies' => [],
+                    'definitions' => [],
                     'settings' => [
-                        ['setting_key' => 'feature.enabled', 'version' => 1],
+                        [
+                            'setting_key' => 'feature.enabled',
+                            'value_hash' => 'abc123',
+                            'value_source' => 'workspace',
+                            'version' => 1,
+                            'setting_type' => 'boolean',
+                        ],
                     ],
                 ],
             ],
-        ];
+            applications: [],
+            applicationsByPublicId: [],
+        );
 
         $this->assertSame($calculator->calculate($manifest), $calculator->calculate($manifest));
     }

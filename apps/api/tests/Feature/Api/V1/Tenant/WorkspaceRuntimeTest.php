@@ -90,7 +90,7 @@ class WorkspaceRuntimeTest extends TestCase
 
         $this->assertArrayHasKey('feature.enabled', $demoRuntime['settings']);
         $this->assertTrue($demoRuntime['settings']['feature.enabled']['value']);
-        $this->assertSame([], $demoRuntime['dependencies']);
+        $this->assertEqualsCanonicalizing(['core', 'workspace'], $demoRuntime['dependencies']);
     }
 
     public function test_masks_sensitive_settings_in_api(): void

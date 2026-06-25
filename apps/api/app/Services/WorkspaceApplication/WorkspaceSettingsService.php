@@ -14,6 +14,9 @@ use App\Exceptions\WorkspaceApplication\WorkspaceApplicationNotFoundException;
 use App\Models\WorkspaceApplication;
 use App\Models\WorkspaceApplicationSetting;
 use App\Models\WorkspaceApplicationSettingHistory;
+use App\Services\Application\ApplicationSettingDefinitionValidator;
+use App\Services\Application\ApplicationSettingsRegistry;
+use App\Services\Runtime\RuntimeCacheInvalidator;
 use App\Support\Tenant\TenantContext;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
@@ -26,6 +29,9 @@ class WorkspaceSettingsService
         private readonly WorkspaceSettingValueValidator $valueValidator,
         private readonly WorkspaceSettingsNormalizer $normalizer,
         private readonly WorkspaceSettingMasker $masker,
+        private readonly ApplicationSettingsRegistry $settingsRegistry,
+        private readonly ApplicationSettingDefinitionValidator $definitionValidator,
+        private readonly RuntimeCacheInvalidator $runtimeCacheInvalidator,
     ) {
     }
 
@@ -61,13 +67,34 @@ class WorkspaceSettingsService
 
         $this->assertUniqueSettingKeys(array_keys($settings));
 
-        return DB::transaction(function () use ($context, $workspaceApplication, $settings, $reason) {
+        if ($this->settingsRegistry->hasWorkspaceDefinitions($workspaceApplication->application_id)) {
+            $this->assertKnownDefinitionKeys($workspaceApplication->application_id, array_keys($settings));
+        }
+
+        $result = DB::transaction(function () use ($context, $workspaceApplication, $settings, $reason) {
             foreach ($settings as $settingKey => $payload) {
                 $this->assertValidSettingKey($settingKey);
 
-                $type = WorkspaceSettingType::from($payload['type']);
-                $normalizedValue = $this->valueValidator->assertValid($payload['value'], $type);
-                $isSensitive = (bool) ($payload['is_sensitive'] ?? false);
+                if ($this->settingsRegistry->hasWorkspaceDefinitions($workspaceApplication->application_id)) {
+                    $definition = $this->settingsRegistry->findWorkspaceDefinition(
+                        $workspaceApplication->application_id,
+                        $settingKey,
+                    );
+
+                    if ($definition === null) {
+                        throw new UnknownWorkspaceSettingKeysException([$settingKey]);
+                    }
+
+                    $type = $definition->settingType;
+                    $normalizedValue = $this->definitionValidator->assertValidValue($definition, $payload['value']);
+                    $isSensitive = $definition->isSensitive;
+                    $isEncrypted = $definition->isEncrypted;
+                } else {
+                    $type = WorkspaceSettingType::from($payload['type']);
+                    $normalizedValue = $this->valueValidator->assertValid($payload['value'], $type);
+                    $isSensitive = (bool) ($payload['is_sensitive'] ?? false);
+                    $isEncrypted = false;
+                }
 
                 /** @var WorkspaceApplicationSetting|null $existing */
                 $existing = WorkspaceApplicationSetting::query()
@@ -85,6 +112,7 @@ class WorkspaceSettingsService
                         $type,
                         $normalizedValue,
                         $isSensitive,
+                        $isEncrypted,
                         $reason,
                     );
 
@@ -98,6 +126,7 @@ class WorkspaceSettingsService
                     $type,
                     $normalizedValue,
                     $isSensitive,
+                    $isEncrypted,
                     $reason,
                 );
             }
@@ -108,6 +137,10 @@ class WorkspaceSettingsService
                 ->orderBy('setting_key')
                 ->get();
         });
+
+        $this->runtimeCacheInvalidator->invalidateTenantContext($context);
+
+        return $result;
     }
 
     /**
@@ -122,7 +155,7 @@ class WorkspaceSettingsService
     ): Collection {
         $workspaceApplication = $this->resolveForWrite($context, $workspaceApplicationPublicId);
 
-        return DB::transaction(function () use ($context, $workspaceApplication, $keys, $reason) {
+        $result = DB::transaction(function () use ($context, $workspaceApplication, $keys, $reason) {
             $query = WorkspaceApplicationSetting::query()
                 ->where('workspace_application_id', $workspaceApplication->id)
                 ->whereNull('deleted_at');
@@ -154,6 +187,10 @@ class WorkspaceSettingsService
                 ->orderBy('setting_key')
                 ->get();
         });
+
+        $this->runtimeCacheInvalidator->invalidateTenantContext($context);
+
+        return $result;
     }
 
     /**
@@ -204,6 +241,7 @@ class WorkspaceSettingsService
         WorkspaceSettingType $type,
         mixed $normalizedValue,
         bool $isSensitive,
+        bool $isEncrypted,
         ?string $reason,
     ): WorkspaceApplicationSetting {
         $setting = new WorkspaceApplicationSetting([
@@ -213,7 +251,7 @@ class WorkspaceSettingsService
             'setting_type' => $type,
             'version' => 1,
             'is_sensitive' => $isSensitive,
-            'is_encrypted' => false,
+            'is_encrypted' => $isEncrypted,
         ]);
         $setting->applyAuditActor($context->user->id)->save();
 
@@ -240,6 +278,7 @@ class WorkspaceSettingsService
         WorkspaceSettingType $type,
         mixed $normalizedValue,
         bool $isSensitive,
+        bool $isEncrypted,
         ?string $reason,
     ): void {
         if ($setting->is_sensitive && ! $isSensitive) {
@@ -250,8 +289,9 @@ class WorkspaceSettingsService
         $valueChanged = ! $this->normalizer->equals($setting->setting_value, $normalizedValue, $setting->setting_type)
             || ($typeChanged && ! $this->normalizer->equals($setting->setting_value, $normalizedValue, $type));
         $sensitiveChanged = $setting->is_sensitive !== $isSensitive;
+        $encryptedChanged = $setting->is_encrypted !== $isEncrypted;
 
-        if (! $valueChanged && ! $typeChanged && ! $sensitiveChanged) {
+        if (! $valueChanged && ! $typeChanged && ! $sensitiveChanged && ! $encryptedChanged) {
             return;
         }
 
@@ -264,6 +304,7 @@ class WorkspaceSettingsService
             'setting_type' => $type,
             'version' => $nextVersion,
             'is_sensitive' => $isSensitive,
+            'is_encrypted' => $isEncrypted,
         ]);
         $setting->applyAuditActor($context->user->id)->save();
 
@@ -381,6 +422,24 @@ class WorkspaceSettingsService
     {
         if (! preg_match('/^[a-z0-9_.-]{1,128}$/', $settingKey)) {
             throw new InvalidWorkspaceSettingKeyException($settingKey);
+        }
+    }
+
+    /**
+     * @param  list<string>  $keys
+     */
+    private function assertKnownDefinitionKeys(string $applicationId, array $keys): void
+    {
+        $unknownKeys = [];
+
+        foreach ($keys as $key) {
+            if ($this->settingsRegistry->findWorkspaceDefinition($applicationId, $key) === null) {
+                $unknownKeys[] = $key;
+            }
+        }
+
+        if ($unknownKeys !== []) {
+            throw new UnknownWorkspaceSettingKeysException($unknownKeys);
         }
     }
 

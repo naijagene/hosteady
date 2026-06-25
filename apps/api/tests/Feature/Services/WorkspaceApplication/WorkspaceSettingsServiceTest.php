@@ -115,7 +115,7 @@ class WorkspaceSettingsServiceTest extends TestCase
         $user = $this->createActiveUser();
         $result = $this->provisionTestOrganization($user, ['slug' => 'ws-txn-org']);
         $context = $this->buildTenantContext($user, $result);
-        $workspaceApplication = $this->enableDemoApplication($context);
+        $workspaceApplication = $this->coreWorkspaceApplication($context);
 
         try {
             $this->service->bulkUpdate($context, $workspaceApplication->public_id, [
@@ -223,7 +223,7 @@ class WorkspaceSettingsServiceTest extends TestCase
         $user = $this->createActiveUser();
         $result = $this->provisionTestOrganization($user, ['slug' => 'ws-types-org']);
         $context = $this->buildTenantContext($user, $result);
-        $workspaceApplication = $this->enableDemoApplication($context);
+        $workspaceApplication = $this->coreWorkspaceApplication($context);
 
         $settings = $this->service->bulkUpdate($context, $workspaceApplication->public_id, [
             'string.key' => ['value' => 'hello', 'type' => 'string'],
@@ -250,13 +250,23 @@ class WorkspaceSettingsServiceTest extends TestCase
         $user = $this->createActiveUser();
         $result = $this->provisionTestOrganization($user, ['slug' => 'ws-invalid-type-org']);
         $context = $this->buildTenantContext($user, $result);
-        $workspaceApplication = $this->enableDemoApplication($context);
+        $workspaceApplication = $this->coreWorkspaceApplication($context);
 
         $this->expectException(InvalidWorkspaceSettingTypeException::class);
 
         $this->service->bulkUpdate($context, $workspaceApplication->public_id, [
             'integer.key' => ['value' => 'not-a-number', 'type' => 'integer'],
         ]);
+    }
+
+    private function coreWorkspaceApplication(TenantContext $context): WorkspaceApplication
+    {
+        $core = Application::query()->where('key', 'core')->firstOrFail();
+
+        return WorkspaceApplication::query()
+            ->where('workspace_id', $context->workspace->id)
+            ->where('application_id', $core->id)
+            ->firstOrFail();
     }
 
     public function test_masks_sensitive_history_values(): void
@@ -284,16 +294,20 @@ class WorkspaceSettingsServiceTest extends TestCase
         $user = $this->createActiveUser();
         $result = $this->provisionTestOrganization($user, ['slug' => 'ws-sensitive-downgrade-org']);
         $context = $this->buildTenantContext($user, $result);
-        $workspaceApplication = $this->enableDemoApplication($context);
+        $core = Application::query()->where('key', 'core')->firstOrFail();
+        $workspaceApplication = \App\Models\WorkspaceApplication::query()
+            ->where('workspace_id', $context->workspace->id)
+            ->where('application_id', $core->id)
+            ->firstOrFail();
 
         $this->service->bulkUpdate($context, $workspaceApplication->public_id, [
-            'secret.token' => ['value' => 'super-secret', 'type' => 'string', 'is_sensitive' => true],
+            'custom.secret' => ['value' => 'super-secret', 'type' => 'string', 'is_sensitive' => true],
         ]);
 
         $this->expectException(SensitiveSettingDowngradeException::class);
 
         $this->service->bulkUpdate($context, $workspaceApplication->public_id, [
-            'secret.token' => ['value' => 'super-secret', 'type' => 'string', 'is_sensitive' => false],
+            'custom.secret' => ['value' => 'super-secret', 'type' => 'string', 'is_sensitive' => false],
         ]);
     }
 

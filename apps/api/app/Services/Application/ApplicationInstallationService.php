@@ -10,6 +10,7 @@ use App\Exceptions\Application\CoreApplicationProtectedException;
 use App\Exceptions\Application\InvalidApplicationTransitionException;
 use App\Exceptions\Application\OrganizationApplicationNotFoundException;
 use App\Models\OrganizationApplication;
+use App\Services\Runtime\RuntimeCacheInvalidator;
 use App\Support\Tenant\TenantContext;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -20,6 +21,7 @@ class ApplicationInstallationService
         private readonly ApplicationRegistryService $applicationRegistryService,
         private readonly \App\Services\Audit\DomainAuditRecorder $domainAuditRecorder,
         private readonly \App\Services\WorkspaceApplication\WorkspaceApplicationService $workspaceApplicationService,
+        private readonly RuntimeCacheInvalidator $runtimeCacheInvalidator,
     ) {
     }
 
@@ -118,6 +120,8 @@ class ApplicationInstallationService
 
         $this->domainAuditRecorder->recordApplicationDisabled($installation, $context);
 
+        $this->runtimeCacheInvalidator->invalidateForApplicationCatalogChange($installation->application_id);
+
         return $installation;
     }
 
@@ -132,6 +136,8 @@ class ApplicationInstallationService
         }
 
         $this->domainAuditRecorder->recordApplicationUninstalled($installation, $context);
+
+        $this->runtimeCacheInvalidator->invalidateForApplicationCatalogChange($installation->application_id);
 
         $this->workspaceApplicationService->cascadeOrganizationUninstall($installation, $context->user->id);
 

@@ -6,6 +6,7 @@ readonly class ResolvedWorkspaceApplication
 {
     /**
      * @param  array<string, RuntimeSettingValue>  $settings
+     * @param  list<string>  $capabilities
      * @param  list<string>  $dependencies
      */
     public function __construct(
@@ -18,6 +19,7 @@ readonly class ResolvedWorkspaceApplication
         public string $enabledVersion,
         public bool $isBootstrap,
         public array $settings,
+        public array $capabilities = [],
         public array $dependencies = [],
     ) {
     }
@@ -42,6 +44,7 @@ readonly class ResolvedWorkspaceApplication
             'catalog_version' => $this->catalogVersion,
             'enabled_version' => $this->enabledVersion,
             'is_bootstrap' => $this->isBootstrap,
+            'capabilities' => $this->capabilities,
             'settings' => $settings,
             'dependencies' => $this->dependencies,
         ];

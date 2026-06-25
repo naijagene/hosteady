@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\Auth\LoginController;
 use App\Http\Controllers\Api\V1\Auth\LogoutController;
 use App\Http\Controllers\Api\V1\Auth\MeController;
 use App\Http\Controllers\Api\V1\Auth\OrganizationsController;
+use App\Http\Controllers\Api\V1\Tenant\ApplicationSettingDefinitionController;
 use App\Http\Controllers\Api\V1\Tenant\AuditEventController;
 use App\Http\Controllers\Api\V1\Tenant\ApplicationCatalogController as TenantApplicationCatalogController;
 use App\Http\Controllers\Api\V1\Tenant\OrganizationApplicationController;
@@ -32,6 +33,7 @@ Route::prefix('v1')->group(function () {
             Route::patch('tenant/applications/{installationPublicId}/enable', [OrganizationApplicationController::class, 'enable']);
             Route::patch('tenant/applications/{installationPublicId}/disable', [OrganizationApplicationController::class, 'disable']);
             Route::delete('tenant/applications/{installationPublicId}', [OrganizationApplicationController::class, 'destroy']);
+            Route::get('tenant/applications/{applicationPublicId}/settings/definitions', ApplicationSettingDefinitionController::class);
             Route::get('tenant/workspace/applications', [WorkspaceApplicationController::class, 'index']);
             Route::get('tenant/workspace/applications/available', [WorkspaceApplicationController::class, 'available']);
             Route::post('tenant/workspace/applications', [WorkspaceApplicationController::class, 'store']);

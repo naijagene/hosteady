@@ -30,6 +30,8 @@ class Application extends Model
         'is_core',
         'icon',
         'category',
+        'capabilities',
+        'dependencies',
         'created_by_user_id',
         'updated_by_user_id',
     ];
@@ -42,7 +44,14 @@ class Application extends Model
         return [
             'status' => ApplicationStatus::class,
             'is_core' => 'boolean',
+            'capabilities' => 'array',
+            'dependencies' => 'array',
         ];
+    }
+
+    public function settingDefinitions(): HasMany
+    {
+        return $this->hasMany(ApplicationSettingDefinition::class);
     }
 
     public function organizationApplications(): HasMany
