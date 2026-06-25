@@ -14,8 +14,8 @@ return [
     'commands' => [
         'doctor' => [
             'name' => 'heos:doctor',
-            'reserved' => true,
-            'description' => 'Module and platform diagnostics (reserved for a future slice).',
+            'reserved' => false,
+            'description' => 'Run HEOS platform and module diagnostics.',
         ],
     ],
 

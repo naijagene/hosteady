@@ -65,11 +65,11 @@ class PlatformModulesTest extends TestCase
         $this->assertSame('afterRuntimeResolved', ModuleRegistryEvent::AFTER_RUNTIME_RESOLVED);
     }
 
-    public function test_heos_doctor_command_is_reserved_in_config(): void
+    public function test_heos_doctor_command_is_configured(): void
     {
         $doctor = config('heos.commands.doctor');
 
-        $this->assertTrue($doctor['reserved']);
+        $this->assertFalse($doctor['reserved']);
         $this->assertSame('heos:doctor', $doctor['name']);
     }
 }

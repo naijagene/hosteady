@@ -25,6 +25,13 @@ class ModuleServiceProvider extends ServiceProvider
         $this->app->singleton(\App\Modules\Sdk\Runtime\RuntimeExtensionManager::class);
         $this->app->singleton(\App\Services\Module\RuntimeContributionAuditRecorder::class);
         $this->app->singleton(\App\Services\Module\RuntimeExtensionService::class);
+        $this->app->singleton(\App\Services\Module\ModuleValidationService::class);
+        $this->app->singleton(\App\Services\Module\ModuleDependencyGraphService::class);
+        $this->app->singleton(\App\Services\Module\ModuleHealthAggregator::class);
+        $this->app->singleton(\App\Services\Module\ModuleInspectionService::class);
+        $this->app->singleton(\App\Services\Module\ModuleDocumentationService::class);
+        $this->app->singleton(\App\Services\Module\ModuleDoctorService::class);
+        $this->app->singleton(\App\Services\Module\ModuleDeveloperAuditRecorder::class);
         $this->app->singleton(ModuleRegistry::class, function ($app) {
             return new ModuleRegistry(
                 $app->make(ModuleManifestValidator::class),
