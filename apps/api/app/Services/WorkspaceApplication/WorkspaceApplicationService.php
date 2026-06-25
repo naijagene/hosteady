@@ -63,9 +63,10 @@ class WorkspaceApplicationService
             ]);
     }
 
-    public function countActiveApplications(TenantContext $context): int
+    public function listActiveForRuntime(TenantContext $context): Collection
     {
         return WorkspaceApplication::query()
+            ->with(['application', 'organizationApplication'])
             ->where('workspace_id', $context->workspace->id)
             ->where('organization_id', $context->organization->id)
             ->where('status', WorkspaceApplicationStatus::Active)
@@ -74,7 +75,13 @@ class WorkspaceApplicationService
                 ->where('status', OrganizationApplicationStatus::Active)
                 ->whereNull('deleted_at'))
             ->whereHas('application', fn ($query) => $query->where('status', ApplicationStatus::Active))
-            ->count();
+            ->orderBy('enabled_at')
+            ->get();
+    }
+
+    public function countActiveApplications(TenantContext $context): int
+    {
+        return $this->listActiveForRuntime($context)->count();
     }
 
     public function enable(

@@ -53,4 +53,13 @@ class AuditActionTest extends TestCase
             AuditAction::SecurityRoleEscalationAttempt->defaultSeverity(),
         );
     }
+
+    public function test_includes_reserved_workspace_runtime_events(): void
+    {
+        $this->assertSame('workspace.runtime.generated', AuditAction::WorkspaceRuntimeGenerated->value);
+        $this->assertSame('workspace.runtime.failed', AuditAction::WorkspaceRuntimeFailed->value);
+        $this->assertSame(AuditCategory::Workspace, AuditAction::WorkspaceRuntimeGenerated->category());
+        $this->assertSame(AuditRetentionClass::Ephemeral, AuditAction::WorkspaceRuntimeGenerated->defaultRetention());
+        $this->assertSame(AuditSeverity::Warning, AuditAction::WorkspaceRuntimeFailed->defaultSeverity());
+    }
 }

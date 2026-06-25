@@ -24,6 +24,8 @@ class ResolveTenantContext
 
     public const WORKSPACE_HEADER = 'X-HEOS-Workspace-Id';
 
+    public const APPLICATION_HEADER = 'X-HEOS-Application-Id';
+
     public function handle(Request $request, Closure $next): Response
     {
         $user = $request->user();

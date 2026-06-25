@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\V1\Tenant\OrganizationApplicationController;
 use App\Http\Controllers\Api\V1\Tenant\TenantContextController;
 use App\Http\Controllers\Api\V1\Tenant\WorkspaceApplicationController;
 use App\Http\Controllers\Api\V1\Tenant\WorkspaceApplicationSettingsController;
+use App\Http\Controllers\Api\V1\Tenant\WorkspaceRuntimeController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -42,6 +43,7 @@ Route::prefix('v1')->group(function () {
             Route::put('tenant/workspace/settings', [WorkspaceApplicationSettingsController::class, 'update']);
             Route::post('tenant/workspace/settings/reset', [WorkspaceApplicationSettingsController::class, 'reset']);
             Route::get('tenant/workspace/settings/history', [WorkspaceApplicationSettingsController::class, 'history']);
+            Route::get('tenant/workspace/runtime', WorkspaceRuntimeController::class);
             Route::get('tenant/audit/events', [AuditEventController::class, 'index'])
                 ->name('tenant.audit.events.index');
             Route::get('tenant/audit/summary', [AuditEventController::class, 'summary'])

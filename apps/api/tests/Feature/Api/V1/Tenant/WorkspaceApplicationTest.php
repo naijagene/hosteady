@@ -210,13 +210,18 @@ class WorkspaceApplicationTest extends TestCase
         $result = $this->provisionTestOrganization($user, ['slug' => 'wa-api-context-org']);
         $token = $this->issueToken($user);
 
-        $this->withBearerToken($token)
+        $response = $this->withBearerToken($token)
             ->withTenantHeaders($result->organizationPublicId)
-            ->getJson('/api/v1/tenant/context')
-            ->assertOk()
+            ->getJson('/api/v1/tenant/context');
+
+        $response->assertOk()
             ->assertJsonPath('data.runtime_summary.active_application_count', 2)
-            ->assertJsonPath('data.runtime_summary.runtime_version', null)
             ->assertJsonPath('data.runtime_summary.settings_version', 0);
+
+        $this->assertMatchesRegularExpression(
+            '/^[a-f0-9]{64}$/',
+            $response->json('data.runtime_summary.runtime_version'),
+        );
     }
 
     private function buildTenantContext(

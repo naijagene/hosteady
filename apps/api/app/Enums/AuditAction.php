@@ -52,6 +52,9 @@ enum AuditAction: string
 
     case TenantContextSelected = 'tenant.context.selected';
 
+    case WorkspaceRuntimeGenerated = 'workspace.runtime.generated';
+    case WorkspaceRuntimeFailed = 'workspace.runtime.failed';
+
     public function category(): AuditCategory
     {
         return match ($this) {
@@ -84,6 +87,9 @@ enum AuditAction: string
             self::WorkspaceCreated,
             self::WorkspaceUpdated,
             self::WorkspaceArchived => AuditCategory::Workspace,
+
+            self::WorkspaceRuntimeGenerated,
+            self::WorkspaceRuntimeFailed => AuditCategory::Workspace,
 
             self::ApplicationInstalled,
             self::ApplicationEnabled,
@@ -122,6 +128,8 @@ enum AuditAction: string
             self::SecurityTenantInvalidHeader,
             self::SecurityCoreActionBlocked,
             self::SecurityAuthUnauthenticated => AuditSeverity::Warning,
+
+            self::WorkspaceRuntimeFailed => AuditSeverity::Warning,
 
             self::SecurityRoleEscalationAttempt => AuditSeverity::Critical,
 
@@ -171,7 +179,9 @@ enum AuditAction: string
             self::SecurityTenantRejected,
             self::SecurityTenantInvalidHeader,
             self::SecurityAuthUnauthenticated,
-            self::TenantContextSelected => AuditRetentionClass::Ephemeral,
+            self::TenantContextSelected,
+            self::WorkspaceRuntimeGenerated,
+            self::WorkspaceRuntimeFailed => AuditRetentionClass::Ephemeral,
         };
     }
 
