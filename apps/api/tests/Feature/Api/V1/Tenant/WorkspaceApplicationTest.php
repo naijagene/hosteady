@@ -216,7 +216,7 @@ class WorkspaceApplicationTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.runtime_summary.active_application_count', 2)
             ->assertJsonPath('data.runtime_summary.runtime_version', null)
-            ->assertJsonPath('data.runtime_summary.settings_version', null);
+            ->assertJsonPath('data.runtime_summary.settings_version', 0);
     }
 
     private function buildTenantContext(

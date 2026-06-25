@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\V1\Tenant\ApplicationCatalogController as TenantApp
 use App\Http\Controllers\Api\V1\Tenant\OrganizationApplicationController;
 use App\Http\Controllers\Api\V1\Tenant\TenantContextController;
 use App\Http\Controllers\Api\V1\Tenant\WorkspaceApplicationController;
+use App\Http\Controllers\Api\V1\Tenant\WorkspaceApplicationSettingsController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -37,6 +38,10 @@ Route::prefix('v1')->group(function () {
             Route::patch('tenant/workspace/applications/{workspaceApplicationPublicId}/disable', [WorkspaceApplicationController::class, 'disable']);
             Route::patch('tenant/workspace/applications/{workspaceApplicationPublicId}/archive', [WorkspaceApplicationController::class, 'archive']);
             Route::delete('tenant/workspace/applications/{workspaceApplicationPublicId}', [WorkspaceApplicationController::class, 'destroy']);
+            Route::get('tenant/workspace/settings', [WorkspaceApplicationSettingsController::class, 'index']);
+            Route::put('tenant/workspace/settings', [WorkspaceApplicationSettingsController::class, 'update']);
+            Route::post('tenant/workspace/settings/reset', [WorkspaceApplicationSettingsController::class, 'reset']);
+            Route::get('tenant/workspace/settings/history', [WorkspaceApplicationSettingsController::class, 'history']);
             Route::get('tenant/audit/events', [AuditEventController::class, 'index'])
                 ->name('tenant.audit.events.index');
             Route::get('tenant/audit/summary', [AuditEventController::class, 'summary'])

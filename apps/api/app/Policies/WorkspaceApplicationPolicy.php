@@ -44,6 +44,12 @@ class WorkspaceApplicationPolicy
             && $this->matchesTenantWorkspace($workspaceApplication);
     }
 
+    public function configure(User $user, WorkspaceApplication $workspaceApplication): bool
+    {
+        return $this->allowsPermission($user, 'workspace.applications.configure')
+            && $this->matchesTenantWorkspace($workspaceApplication);
+    }
+
     private function allowsPermission(User $user, string $permissionKey): bool
     {
         if (! app()->bound(TenantContext::class)) {

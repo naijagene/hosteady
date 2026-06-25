@@ -80,4 +80,20 @@ class WorkspaceApplication extends Model
     {
         return $this->belongsTo(OrganizationMembership::class, 'enabled_by_membership_id');
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<WorkspaceApplicationSetting, $this>
+     */
+    public function settings(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(WorkspaceApplicationSetting::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<WorkspaceApplicationSettingHistory, $this>
+     */
+    public function settingHistory(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(WorkspaceApplicationSettingHistory::class);
+    }
 }
