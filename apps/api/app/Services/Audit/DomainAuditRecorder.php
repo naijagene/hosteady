@@ -21,6 +21,7 @@ use App\Models\OrganizationMembership;
 use App\Models\User;
 use App\Models\Workspace;
 use App\Services\Audit\Data\AuditEventData;
+use App\Services\WorkspaceApplication\Data\WorkspaceRuntimeContext;
 use App\Support\Tenant\TenantContext;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
@@ -466,6 +467,49 @@ class DomainAuditRecorder
             actorUserId: $context->user->id,
             actorMembershipId: $context->membership->id,
             retentionClass: AuditRetentionClass::Standard,
+            severity: AuditSeverity::Warning,
+        ));
+    }
+
+    public function recordWorkspaceRuntimeGenerated(TenantContext $context, WorkspaceRuntimeContext $runtime): void
+    {
+        $this->safeRecord(new AuditEventData(
+            action: AuditAction::WorkspaceRuntimeGenerated,
+            summary: 'Workspace runtime generated',
+            scope: AuditScope::Organization,
+            organizationId: $context->organization->id,
+            workspaceId: $context->workspace->id,
+            entityType: AuditEntityType::Workspace,
+            entityPublicId: $context->workspacePublicId,
+            entityLabel: $context->workspace->name,
+            metadata: [
+                'runtime_version' => $runtime->runtimeVersion,
+                'settings_version' => $runtime->settingsVersion,
+                'active_application_count' => count($runtime->activeApplications),
+            ],
+            actorType: AuditActorType::User,
+            actorUserId: $context->user->id,
+            actorMembershipId: $context->membership->id,
+            retentionClass: AuditRetentionClass::Ephemeral,
+            severity: AuditSeverity::Info,
+        ));
+    }
+
+    public function recordWorkspaceRuntimeFailed(TenantContext $context): void
+    {
+        $this->safeRecord(new AuditEventData(
+            action: AuditAction::WorkspaceRuntimeFailed,
+            summary: 'Workspace runtime generation failed',
+            scope: AuditScope::Organization,
+            organizationId: $context->organization->id,
+            workspaceId: $context->workspace->id,
+            entityType: AuditEntityType::Workspace,
+            entityPublicId: $context->workspacePublicId,
+            entityLabel: $context->workspace->name,
+            actorType: AuditActorType::User,
+            actorUserId: $context->user->id,
+            actorMembershipId: $context->membership->id,
+            retentionClass: AuditRetentionClass::Ephemeral,
             severity: AuditSeverity::Warning,
         ));
     }

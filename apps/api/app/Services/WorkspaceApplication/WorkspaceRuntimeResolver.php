@@ -75,7 +75,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
         );
     }
 
-    private function buildManifest(TenantContext $context): RuntimeManifest
+    public function buildManifest(TenantContext $context): RuntimeManifest
     {
         $workspaceApplications = $this->workspaceApplicationService->listActiveForRuntime($context);
 

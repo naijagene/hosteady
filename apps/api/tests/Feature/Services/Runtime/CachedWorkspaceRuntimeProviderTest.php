@@ -5,6 +5,7 @@ namespace Tests\Feature\Services\Runtime;
 use App\Services\Runtime\CachedWorkspaceRuntimeProvider;
 use App\Services\Runtime\LaravelRuntimeCacheStore;
 use App\Services\Runtime\RuntimeCacheKeyBuilder;
+use App\Services\Runtime\RuntimeMetricsCollector;
 use App\Services\Runtime\RuntimeSnapshotSerializer;
 use App\Services\WorkspaceApplication\Data\RuntimeMembershipSnapshot;
 use App\Services\WorkspaceApplication\Data\RuntimeOrganizationSnapshot;
@@ -86,6 +87,7 @@ class CachedWorkspaceRuntimeProviderTest extends TestCase
             $store,
             $keyBuilder,
             app(RuntimeSnapshotSerializer::class),
+            app(RuntimeMetricsCollector::class),
         );
 
         $provider->resolve($context);
@@ -148,6 +150,7 @@ class CachedWorkspaceRuntimeProviderTest extends TestCase
             $store,
             new RuntimeCacheKeyBuilder($store),
             app(RuntimeSnapshotSerializer::class),
+            app(RuntimeMetricsCollector::class),
         );
     }
 
