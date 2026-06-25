@@ -22,6 +22,8 @@ class Application extends Model
      */
     protected $fillable = [
         'public_id',
+        'module_uuid',
+        'manifest_version',
         'key',
         'name',
         'description',

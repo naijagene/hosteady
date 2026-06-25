@@ -63,6 +63,10 @@ class ApplicationSettingDefinitionSeeder extends Seeder
 
     public function run(): void
     {
+        if (config('heos.sync.on_seed', true)) {
+            return;
+        }
+
         $demoApplication = Application::query()->where('key', 'demo')->first();
 
         if ($demoApplication === null) {

@@ -4,12 +4,16 @@ namespace App\Modules\Sdk;
 
 use App\Modules\Sdk\Contracts\ApplicationModule;
 use App\Modules\Sdk\Contracts\ModuleRegistryEventDispatcher;
+use App\Modules\Sdk\Contracts\ModuleRegistryReader;
+use App\Modules\Sdk\Contracts\ModuleSyncPort;
+use App\Modules\Sdk\Data\ModuleSyncOptions;
+use App\Modules\Sdk\Data\ModuleSyncResult;
 use App\Modules\Sdk\Data\ModuleValidationReport;
 use App\Modules\Sdk\Events\ModuleRegistryEvent;
 use App\Modules\Sdk\Exceptions\DuplicateModuleKeyException;
-use App\Modules\Sdk\Exceptions\ModuleSyncNotAvailableException;
+use App\Modules\Sdk\Exceptions\InvalidModuleManifestException;
 
-class ModuleRegistry
+class ModuleRegistry implements ModuleRegistryReader
 {
     /**
      * @var array<string, ApplicationModule>
@@ -19,6 +23,7 @@ class ModuleRegistry
     public function __construct(
         private readonly ModuleManifestValidator $validator,
         private readonly ModuleRegistryEventDispatcher $events,
+        private readonly ?ModuleSyncPort $syncPort = null,
     ) {
     }
 
@@ -40,7 +45,7 @@ class ModuleRegistry
         if (! $report->isValid()) {
             $firstIssue = $report->issues[0];
 
-            throw new \App\Modules\Sdk\Exceptions\InvalidModuleManifestException($firstIssue->message);
+            throw new InvalidModuleManifestException($firstIssue->message);
         }
 
         $this->modules[$key] = $module;
@@ -80,12 +85,27 @@ class ModuleRegistry
         return $report;
     }
 
-    public function syncToDatabase(): never
+    public function syncToDatabase(?ModuleSyncOptions $options = null): ModuleSyncResult
     {
+        if ($this->syncPort === null) {
+            throw new \App\Modules\Sdk\Exceptions\ModuleSyncNotAvailableException;
+        }
+
+        $options ??= new ModuleSyncOptions;
+
         $this->events->dispatch(ModuleRegistryEvent::BEFORE_SYNC, [
             'modules' => $this->all(),
+            'options' => $options,
         ]);
 
-        throw new ModuleSyncNotAvailableException;
+        $result = $this->syncPort->sync($this, $options);
+
+        $this->events->dispatch(ModuleRegistryEvent::AFTER_SYNC, [
+            'modules' => $this->all(),
+            'options' => $options,
+            'result' => $result,
+        ]);
+
+        return $result;
     }
 }

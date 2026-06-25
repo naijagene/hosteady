@@ -1,6 +1,24 @@
 <?php
 
 return [
+    'module_providers' => [
+        App\Modules\Core\CoreModuleServiceProvider::class,
+        App\Modules\Workspace\WorkspaceModuleServiceProvider::class,
+        App\Modules\Demo\DemoModuleServiceProvider::class,
+    ],
+
+    'sync' => [
+        'on_seed' => env('HEOS_MODULE_SYNC_ON_SEED', true),
+    ],
+
+    'commands' => [
+        'doctor' => [
+            'name' => 'heos:doctor',
+            'reserved' => true,
+            'description' => 'Module and platform diagnostics (reserved for a future slice).',
+        ],
+    ],
+
     'runtime_cache' => [
         'enabled' => env('HEOS_RUNTIME_CACHE_ENABLED', true),
         'ttl' => (int) env('HEOS_RUNTIME_CACHE_TTL', 300),

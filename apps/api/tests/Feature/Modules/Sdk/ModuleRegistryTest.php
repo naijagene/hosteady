@@ -10,15 +10,16 @@ use App\Modules\Sdk\Data\ModuleRouteCollection;
 use App\Modules\Sdk\Events\ModuleRegistryEvent;
 use App\Modules\Sdk\Exceptions\DuplicateModuleKeyException;
 use App\Modules\Sdk\Exceptions\InvalidModuleManifestException;
-use App\Modules\Sdk\Exceptions\ModuleSyncNotAvailableException;
 use App\Modules\Sdk\ModuleManifestValidator;
 use App\Modules\Sdk\ModuleRegistry;
 use App\Modules\Sdk\SimpleModuleRegistryEventDispatcher;
 use App\Modules\Workspace\WorkspaceModule;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class ModuleRegistryTest extends TestCase
 {
+    use RefreshDatabase;
     private ModuleRegistry $registry;
 
     protected function setUp(): void
@@ -66,13 +67,44 @@ class ModuleRegistryTest extends TestCase
         $this->assertTrue($report->isValid());
     }
 
-    public function test_sync_to_database_is_reserved_for_slice_two(): void
+    public function test_sync_to_database_returns_module_sync_result(): void
     {
-        $this->registry->register(new WorkspaceModule);
+        $events = new SimpleModuleRegistryEventDispatcher;
+        $sync = app(\App\Services\Module\ModuleSyncService::class);
+        $registry = new ModuleRegistry(new ModuleManifestValidator, $events, $sync);
+        $registry->register(new \App\Modules\Core\CoreModule);
+        $registry->register(new WorkspaceModule);
 
-        $this->expectException(ModuleSyncNotAvailableException::class);
+        $result = $registry->syncToDatabase(new \App\Modules\Sdk\Data\ModuleSyncOptions);
 
-        $this->registry->syncToDatabase();
+        $this->assertTrue($result->success);
+        $this->assertSame(2, $result->modulesScanned);
+    }
+
+    public function test_sync_to_database_dispatches_before_and_after_sync_events(): void
+    {
+        $events = [];
+
+        $dispatcher = new SimpleModuleRegistryEventDispatcher;
+        $dispatcher->addListener(new class($events) implements ModuleRegistryEventListener {
+            public function __construct(private array &$events)
+            {
+            }
+
+            public function handle(string $event, array $payload = []): void
+            {
+                $this->events[] = $event;
+            }
+        });
+
+        $sync = app(\App\Services\Module\ModuleSyncService::class);
+        $registry = new ModuleRegistry(new ModuleManifestValidator, $dispatcher, $sync);
+        $registry->register(new WorkspaceModule);
+
+        $registry->syncToDatabase(new \App\Modules\Sdk\Data\ModuleSyncOptions);
+
+        $this->assertContains(ModuleRegistryEvent::BEFORE_SYNC, $events);
+        $this->assertContains(ModuleRegistryEvent::AFTER_SYNC, $events);
     }
 
     public function test_dispatches_before_and_after_register_events(): void

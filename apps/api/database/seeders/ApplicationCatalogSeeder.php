@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use App\Enums\ApplicationStatus;
 use App\Models\Application;
 use App\Models\ApplicationSettingDefinition;
+use App\Modules\Sdk\Data\ModuleSyncOptions;
+use App\Modules\Sdk\ModuleRegistry;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
@@ -51,6 +53,14 @@ class ApplicationCatalogSeeder extends Seeder
 
     public function run(): void
     {
+        if (config('heos.sync.on_seed', true)) {
+            Application::withoutEvents(function () {
+                app(ModuleRegistry::class)->syncToDatabase(new ModuleSyncOptions);
+            });
+
+            return;
+        }
+
         Application::withoutEvents(function () {
             foreach (self::APPLICATIONS as $application) {
                 $existingApplication = Application::query()
