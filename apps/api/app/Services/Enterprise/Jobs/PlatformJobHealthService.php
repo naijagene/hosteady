@@ -4,10 +4,16 @@ namespace App\Services\Enterprise\Jobs;
 
 use App\Enums\PlatformJobStatus;
 use App\Models\PlatformJob;
+use App\Services\Enterprise\Support\EnterpriseTableHealthGuard;
 use App\Support\Tenant\TenantContext;
 
 class PlatformJobHealthService
 {
+    public function __construct(
+        private readonly EnterpriseTableHealthGuard $tableGuard,
+    ) {
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -15,6 +21,19 @@ class PlatformJobHealthService
     {
         $enabled = (bool) config('heos.enterprise.jobs.enabled', true);
         $queueDriver = (string) config('queue.default', 'sync');
+
+        return $this->tableGuard->assessWhenTablesPresent(
+            ['platform_jobs'],
+            fn (): array => $this->assessWithTables($context, $enabled, $queueDriver),
+            $this->fallbackAssessment($enabled, $queueDriver),
+        );
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function assessWithTables(?TenantContext $context, bool $enabled, string $queueDriver): array
+    {
         $warnings = [];
 
         if (! $enabled) {
@@ -44,6 +63,23 @@ class PlatformJobHealthService
             'failed_count' => $failedCount,
             'warnings' => $warnings,
             'status' => $warnings === [] ? 'healthy' : 'warning',
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function fallbackAssessment(bool $enabled, string $queueDriver): array
+    {
+        return [
+            'enabled' => $enabled,
+            'queue_driver' => $queueDriver,
+            'default_queue' => (string) config('heos.enterprise.jobs.default_queue', 'default'),
+            'pending_count' => 0,
+            'running_count' => 0,
+            'failed_count' => 0,
+            'warnings' => [],
+            'status' => 'healthy',
         ];
     }
 

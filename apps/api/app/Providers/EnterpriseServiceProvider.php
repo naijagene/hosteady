@@ -54,6 +54,7 @@ use App\Services\Enterprise\Search\SearchIndexService;
 use App\Services\Enterprise\Search\SearchModuleRegistry;
 use App\Services\Enterprise\Search\SearchService;
 use App\Services\Enterprise\Search\SearchVisibilityResolver;
+use App\Services\Enterprise\Support\EnterpriseTableHealthGuard;
 use App\Services\Enterprise\Workflow\LaravelWorkflowAdapter;
 use App\Services\Enterprise\Workflow\WorkflowAuditRecorder;
 use App\Services\Enterprise\Workflow\WorkflowCategoryService;
@@ -63,6 +64,18 @@ use App\Services\Enterprise\Workflow\WorkflowSearchIndexer;
 use App\Services\Enterprise\Workflow\WorkflowStatisticsService;
 use App\Services\Enterprise\Workflow\WorkflowValidationService;
 use App\Services\Enterprise\Workflow\WorkflowVersionService;
+use App\Services\Enterprise\Workflow\Runtime\DefaultWorkflowExecutionHandler;
+use App\Services\Enterprise\Workflow\Runtime\LaravelWorkflowRuntimeAdapter;
+use App\Services\Enterprise\Workflow\Runtime\WorkflowExecutionAuditRecorder;
+use App\Services\Enterprise\Workflow\Runtime\WorkflowExecutionContextBuilder;
+use App\Services\Enterprise\Workflow\Runtime\WorkflowExecutionEngine;
+use App\Services\Enterprise\Workflow\Runtime\WorkflowExecutionLogger;
+use App\Services\Enterprise\Workflow\Runtime\WorkflowExecutionStatisticsService;
+use App\Services\Enterprise\Workflow\Runtime\WorkflowExecutionTracker;
+use App\Services\Enterprise\Workflow\Runtime\WorkflowExecutionVariableResolver;
+use App\Services\Enterprise\Workflow\Runtime\WorkflowRuntimeHealthService;
+use App\Services\Enterprise\Workflow\Runtime\WorkflowRuntimeIntegrations;
+use App\Services\Enterprise\Workflow\Runtime\WorkflowRuntimeService;
 use Illuminate\Support\ServiceProvider;
 
 class EnterpriseServiceProvider extends ServiceProvider
@@ -98,6 +111,7 @@ class EnterpriseServiceProvider extends ServiceProvider
         $this->app->singleton(FileCategoryClassifier::class);
         $this->app->singleton(FileQueryService::class);
         $this->app->singleton(FileVisibilityResolver::class);
+        $this->app->singleton(EnterpriseTableHealthGuard::class);
         $this->app->singleton(EnterpriseStorageHealthService::class);
         $this->app->singleton(LaravelStorageAdapter::class);
         $this->app->singleton(LaravelFileServiceAdapter::class);
@@ -141,6 +155,21 @@ class EnterpriseServiceProvider extends ServiceProvider
         $this->app->singleton(WorkflowPort::class, LaravelWorkflowAdapter::class);
         $this->app->singleton(WorkflowDefinitionService::class);
         $this->app->singleton(WorkflowCategoryService::class);
+
+        $this->app->singleton(DefaultWorkflowExecutionHandler::class);
+        $this->app->singleton(\App\Modules\Sdk\Workflow\Runtime\Contracts\WorkflowExecutionHandler::class, DefaultWorkflowExecutionHandler::class);
+        $this->app->singleton(WorkflowExecutionTracker::class);
+        $this->app->singleton(WorkflowExecutionLogger::class);
+        $this->app->singleton(WorkflowExecutionVariableResolver::class);
+        $this->app->singleton(WorkflowExecutionContextBuilder::class);
+        $this->app->singleton(WorkflowExecutionAuditRecorder::class);
+        $this->app->singleton(WorkflowExecutionEngine::class);
+        $this->app->singleton(WorkflowExecutionStatisticsService::class);
+        $this->app->singleton(WorkflowRuntimeHealthService::class);
+        $this->app->singleton(WorkflowRuntimeIntegrations::class);
+        $this->app->singleton(LaravelWorkflowRuntimeAdapter::class);
+        $this->app->singleton(\App\Modules\Sdk\Workflow\Runtime\Contracts\WorkflowRuntimePort::class, LaravelWorkflowRuntimeAdapter::class);
+        $this->app->singleton(WorkflowRuntimeService::class);
 
         $this->app->singleton(\App\Services\Enterprise\Audit\EnterpriseFileAuditRecorder::class);
         $this->app->singleton(EnterprisePlatformJobAuditRecorder::class);

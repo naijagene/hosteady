@@ -127,4 +127,61 @@ class HeosDoctorCommandTest extends TestCase
             $payload['recommendations'],
         );
     }
+
+    public function test_doctor_does_not_crash_when_platform_jobs_table_is_missing(): void
+    {
+        \Illuminate\Support\Facades\Schema::dropIfExists('platform_jobs');
+
+        $exitCode = Artisan::call('heos:doctor', ['--json' => true]);
+
+        $this->assertSame(1, $exitCode);
+        $payload = json_decode(Artisan::output(), true);
+        $this->assertIsArray($payload);
+        $this->assertSame('warning', $payload['platform_summary']['enterprise']['jobs']['status']);
+    }
+
+    public function test_jobs_and_scheduler_health_report_missing_tables(): void
+    {
+        \Illuminate\Support\Facades\Schema::dropIfExists('platform_jobs');
+        $jobs = app(\App\Services\Enterprise\Jobs\PlatformJobHealthService::class)->assess();
+
+        \Illuminate\Support\Facades\Schema::dropIfExists('scheduled_tasks');
+        $scheduler = app(\App\Services\Enterprise\Scheduler\SchedulerHealthService::class)->assess();
+
+        $this->assertSame('warning', $jobs['status']);
+        $this->assertContains('platform_jobs', $jobs['missing_tables']);
+        $this->assertStringContainsString('Run php artisan migrate.', $jobs['warnings'][0]);
+
+        $this->assertSame('warning', $scheduler['status']);
+        $this->assertContains('scheduled_tasks', $scheduler['missing_tables']);
+    }
+
+    public function test_workflow_runtime_health_reports_missing_runtime_tables(): void
+    {
+        \Illuminate\Support\Facades\Schema::dropIfExists('workflow_instances');
+
+        $health = app(\App\Services\Enterprise\Workflow\Runtime\WorkflowRuntimeHealthService::class)->assess();
+
+        $this->assertSame('warning', $health['status']);
+        $this->assertContains('workflow_instances', $health['missing_tables']);
+        $this->assertStringContainsString('Run php artisan migrate.', $health['warnings'][0]);
+    }
+
+    public function test_doctor_json_output_includes_missing_table_warning(): void
+    {
+        \Illuminate\Support\Facades\Schema::dropIfExists('platform_jobs');
+
+        Artisan::call('heos:doctor', ['--json' => true]);
+        $payload = json_decode(Artisan::output(), true);
+
+        $this->assertStringContainsString(
+            'Required table [platform_jobs] is missing. Run php artisan migrate.',
+            $payload['platform_summary']['enterprise']['jobs']['warnings'][0],
+        );
+
+        $this->assertTrue(collect($payload['warnings'])->contains(
+            fn (string $warning): bool => str_contains($warning, 'platform_jobs')
+                && str_contains($warning, 'Run php artisan migrate.'),
+        ));
+    }
 }

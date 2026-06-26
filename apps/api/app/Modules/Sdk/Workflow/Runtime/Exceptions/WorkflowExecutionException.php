@@ -1,0 +1,9 @@
+<?php
+
+namespace App\Modules\Sdk\Workflow\Runtime\Exceptions;
+
+use RuntimeException;
+
+class WorkflowExecutionException extends RuntimeException
+{
+}

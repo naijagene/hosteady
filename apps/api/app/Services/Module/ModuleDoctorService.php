@@ -64,6 +64,16 @@ class ModuleDoctorService
             $recommendations[] = 'Enable HEOS_MODULE_SYNC_ON_SEED for automatic catalog synchronization during seeding.';
         }
 
+        $enterpriseHealth = [
+            'storage' => app(\App\Services\Enterprise\FileMedia\EnterpriseStorageHealthService::class)->assess(),
+            'jobs' => app(\App\Services\Enterprise\Jobs\PlatformJobHealthService::class)->assess(),
+            'scheduler' => app(\App\Services\Enterprise\Scheduler\SchedulerHealthService::class)->assess(),
+            'search' => app(\App\Services\Enterprise\Search\SearchHealthService::class)->assess(),
+            'workflow' => app(\App\Services\Enterprise\Workflow\WorkflowHealthService::class)->assess(),
+        ];
+
+        $this->collectEnterpriseHealthWarnings($enterpriseHealth, $warnings, $errors);
+
         $exitCode = match (true) {
             $errors !== [] => 2,
             $warnings !== [] => 1,
@@ -83,11 +93,7 @@ class ModuleDoctorService
                     'reference_data' => (bool) config('heos.enterprise.reference_data.enabled', true),
                     'files' => (bool) config('heos.enterprise.files.enabled', true),
                     'runtime_aware' => (bool) config('heos.enterprise.runtime_aware', true),
-                    'storage' => app(\App\Services\Enterprise\FileMedia\EnterpriseStorageHealthService::class)->assess(),
-                    'jobs' => app(\App\Services\Enterprise\Jobs\PlatformJobHealthService::class)->assess(),
-                    'scheduler' => app(\App\Services\Enterprise\Scheduler\SchedulerHealthService::class)->assess(),
-                    'search' => app(\App\Services\Enterprise\Search\SearchHealthService::class)->assess(),
-                    'workflow' => app(\App\Services\Enterprise\Workflow\WorkflowHealthService::class)->assess(),
+                    ...$enterpriseHealth,
                 ],
             ],
             modules: array_map(
@@ -147,5 +153,52 @@ class ModuleDoctorService
         $method = new \ReflectionMethod($module, 'contributeRuntime');
 
         return $method->getDeclaringClass()->getName() !== AbstractApplicationModule::class;
+    }
+
+    /**
+     * @param  array<string, mixed>  $enterpriseHealth
+     * @param  list<string>  $warnings
+     * @param  list<string>  $errors
+     */
+    private function collectEnterpriseHealthWarnings(array $enterpriseHealth, array &$warnings, array &$errors): void
+    {
+        foreach ($enterpriseHealth as $serviceKey => $serviceHealth) {
+            if (! is_array($serviceHealth)) {
+                continue;
+            }
+
+            $this->collectServiceHealthWarnings('enterprise.'.$serviceKey, $serviceHealth, $warnings, $errors);
+
+            if (isset($serviceHealth['runtime']) && is_array($serviceHealth['runtime'])) {
+                $this->collectServiceHealthWarnings(
+                    'enterprise.'.$serviceKey.'.runtime',
+                    $serviceHealth['runtime'],
+                    $warnings,
+                    $errors,
+                );
+            }
+        }
+    }
+
+    /**
+     * @param  array<string, mixed>  $serviceHealth
+     * @param  list<string>  $warnings
+     * @param  list<string>  $errors
+     */
+    private function collectServiceHealthWarnings(
+        string $prefix,
+        array $serviceHealth,
+        array &$warnings,
+        array &$errors,
+    ): void {
+        if (isset($serviceHealth['missing_tables']) && is_array($serviceHealth['missing_tables'])) {
+            foreach ($serviceHealth['warnings'] ?? [] as $warning) {
+                $warnings[] = sprintf('[%s] %s', $prefix, $warning);
+            }
+        }
+
+        if (($serviceHealth['status'] ?? '') === 'critical' && ! isset($serviceHealth['missing_tables'])) {
+            $errors[] = sprintf('[%s] Service reported critical health.', $prefix);
+        }
     }
 }

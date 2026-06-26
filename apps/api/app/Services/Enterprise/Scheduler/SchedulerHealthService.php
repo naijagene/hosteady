@@ -4,12 +4,14 @@ namespace App\Services\Enterprise\Scheduler;
 
 use App\Enums\ScheduledTaskStatus;
 use App\Models\ScheduledTask;
+use App\Services\Enterprise\Support\EnterpriseTableHealthGuard;
 use App\Support\Tenant\TenantContext;
 
 class SchedulerHealthService
 {
     public function __construct(
         private readonly ScheduleExpressionHelper $scheduleHelper,
+        private readonly EnterpriseTableHealthGuard $tableGuard,
     ) {
     }
 
@@ -19,6 +21,19 @@ class SchedulerHealthService
     public function assess(?TenantContext $context = null): array
     {
         $enabled = (bool) config('heos.enterprise.scheduler.enabled', true);
+
+        return $this->tableGuard->assessWhenTablesPresent(
+            ['scheduled_tasks'],
+            fn (): array => $this->assessWithTables($context, $enabled),
+            $this->fallbackAssessment($enabled),
+        );
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function assessWithTables(?TenantContext $context, bool $enabled): array
+    {
         $warnings = [];
 
         if (! $enabled) {
@@ -60,6 +75,21 @@ class SchedulerHealthService
             'due_count' => $dueCount,
             'warnings' => $warnings,
             'status' => $warnings === [] ? 'healthy' : 'warning',
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function fallbackAssessment(bool $enabled): array
+    {
+        return [
+            'enabled' => $enabled,
+            'active_count' => 0,
+            'paused_count' => 0,
+            'due_count' => 0,
+            'warnings' => [],
+            'status' => 'healthy',
         ];
     }
 

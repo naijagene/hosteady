@@ -3,15 +3,18 @@
 namespace App\Http\Controllers\Api\V1\Tenant;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\WorkflowExecutionResultResource;
 use App\Http\Resources\WorkflowDefinitionResource;
 use App\Http\Resources\WorkflowValidationReportResource;
 use App\Http\Resources\WorkflowVersionResource;
 use App\Models\WorkflowDefinition;
+use App\Models\WorkflowInstance;
 use App\Modules\Sdk\Workflow\Data\WorkflowDefinitionData;
 use App\Modules\Sdk\Workflow\Data\WorkflowNodeData;
 use App\Modules\Sdk\Workflow\Data\WorkflowTransitionData;
 use App\Modules\Sdk\Workflow\Data\WorkflowTriggerData;
 use App\Modules\Sdk\Workflow\Data\WorkflowVariableData;
+use App\Services\Enterprise\Workflow\Runtime\WorkflowRuntimeService;
 use App\Services\Enterprise\Workflow\WorkflowDefinitionService;
 use App\Support\Tenant\TenantContext;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -23,6 +26,7 @@ class WorkflowDefinitionController extends Controller
 
     public function __construct(
         private readonly WorkflowDefinitionService $workflowDefinitionService,
+        private readonly WorkflowRuntimeService $workflowRuntimeService,
     ) {
     }
 
@@ -114,6 +118,26 @@ class WorkflowDefinitionController extends Controller
                 'validation_report' => $result->validationReport->toArray(),
             ],
         ]);
+    }
+
+    public function execute(Request $request, string $publicId): WorkflowExecutionResultResource
+    {
+        $this->authorize('execute', WorkflowInstance::class);
+
+        $validated = $request->validate([
+            'input' => ['nullable', 'array'],
+        ]);
+
+        /** @var TenantContext $context */
+        $context = app(TenantContext::class);
+
+        return new WorkflowExecutionResultResource(
+            $this->workflowRuntimeService->execute(
+                $context,
+                $publicId,
+                $validated['input'] ?? null,
+            ),
+        );
     }
 
     public function archive(string $publicId): WorkflowDefinitionResource

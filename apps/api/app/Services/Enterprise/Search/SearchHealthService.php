@@ -4,12 +4,14 @@ namespace App\Services\Enterprise\Search;
 
 use App\Models\PlatformSavedSearch;
 use App\Models\PlatformSearchIndex;
+use App\Services\Enterprise\Support\EnterpriseTableHealthGuard;
 use App\Support\Tenant\TenantContext;
 
 class SearchHealthService
 {
     public function __construct(
         private readonly SearchModuleRegistry $moduleRegistry,
+        private readonly EnterpriseTableHealthGuard $tableGuard,
     ) {
     }
 
@@ -19,6 +21,19 @@ class SearchHealthService
     public function assess(?TenantContext $context = null): array
     {
         $enabled = (bool) config('heos.enterprise.search.enabled', true);
+
+        return $this->tableGuard->assessWhenTablesPresent(
+            ['platform_search_indexes', 'platform_saved_searches'],
+            fn (): array => $this->assessWithTables($context, $enabled),
+            $this->fallbackAssessment($enabled),
+        );
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function assessWithTables(?TenantContext $context, bool $enabled): array
+    {
         $warnings = [];
 
         if (! $enabled) {
@@ -49,6 +64,22 @@ class SearchHealthService
             'supported_modules' => $supportedModules,
             'warnings' => $warnings,
             'status' => $warnings === [] ? 'healthy' : 'warning',
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function fallbackAssessment(bool $enabled): array
+    {
+        return [
+            'enabled' => $enabled,
+            'index_count' => 0,
+            'indexed_entities' => 0,
+            'saved_searches' => 0,
+            'supported_modules' => $this->moduleRegistry->moduleKeys(),
+            'warnings' => [],
+            'status' => 'healthy',
         ];
     }
 

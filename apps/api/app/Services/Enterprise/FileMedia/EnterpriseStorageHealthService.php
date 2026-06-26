@@ -4,12 +4,14 @@ namespace App\Services\Enterprise\FileMedia;
 
 use App\Enums\FileCategory;
 use App\Models\PlatformFile;
+use App\Services\Enterprise\Support\EnterpriseTableHealthGuard;
 use App\Support\Tenant\TenantContext;
 
 class EnterpriseStorageHealthService
 {
     public function __construct(
         private readonly LaravelStorageAdapter $storageAdapter,
+        private readonly EnterpriseTableHealthGuard $tableGuard,
     ) {
     }
 
@@ -43,14 +45,7 @@ class EnterpriseStorageHealthService
         }
 
         $quota = (int) config('heos.enterprise.files.quota_bytes', 1073741824);
-        $used = $context !== null
-            ? (int) PlatformFile::query()
-                ->where('organization_id', $context->organization->id)
-                ->whereNull('deleted_at')
-                ->sum('size_bytes')
-            : 0;
-
-        return [
+        $baseAssessment = [
             'enabled' => (bool) config('heos.enterprise.files.enabled', true),
             'default_disk' => $defaultDisk,
             'public_disk' => $publicDisk,
@@ -62,8 +57,8 @@ class EnterpriseStorageHealthService
                 'media' => (bool) config('heos.enterprise.files.enabled', true),
             ],
             'quota_bytes' => $quota,
-            'used_bytes' => $used,
-            'remaining_bytes' => max(0, $quota - $used),
+            'used_bytes' => 0,
+            'remaining_bytes' => $quota,
             'visibility_modes' => config('heos.enterprise.files.visibility_modes', []),
             'supported_types' => config('heos.enterprise.files.allowed_mime_types', []),
             'supported_categories' => FileCategory::values(),
@@ -71,6 +66,28 @@ class EnterpriseStorageHealthService
             'warnings' => $warnings,
             'status' => $warnings === [] ? 'healthy' : 'warning',
         ];
+
+        if ($context === null) {
+            return $baseAssessment;
+        }
+
+        return $this->tableGuard->assessWhenTablesPresent(
+            ['platform_files'],
+            function () use ($context, $baseAssessment, $quota, $warnings): array {
+                $used = (int) PlatformFile::query()
+                    ->where('organization_id', $context->organization->id)
+                    ->whereNull('deleted_at')
+                    ->sum('size_bytes');
+
+                return array_merge($baseAssessment, [
+                    'used_bytes' => $used,
+                    'remaining_bytes' => max(0, $quota - $used),
+                    'warnings' => $warnings,
+                    'status' => $warnings === [] ? 'healthy' : 'warning',
+                ]);
+            },
+            $baseAssessment,
+        );
     }
 
     /**

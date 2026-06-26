@@ -19,5 +19,6 @@ enum AuditEntityType: string
     case PlatformSavedSearch = 'platform_saved_search';
     case WorkflowDefinition = 'workflow_definition';
     case WorkflowCategory = 'workflow_category';
+    case WorkflowInstance = 'workflow_instance';
     case User = 'user';
 }

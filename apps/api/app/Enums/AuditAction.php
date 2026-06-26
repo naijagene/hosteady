@@ -108,6 +108,15 @@ enum AuditAction: string
     case WorkflowCategoryCreated = 'workflow.category.created';
     case WorkflowCategoryUpdated = 'workflow.category.updated';
 
+    case WorkflowExecutionStarted = 'workflow.execution.started';
+    case WorkflowExecutionCompleted = 'workflow.execution.completed';
+    case WorkflowExecutionFailed = 'workflow.execution.failed';
+    case WorkflowExecutionCancelled = 'workflow.execution.cancelled';
+    case WorkflowExecutionResumed = 'workflow.execution.resumed';
+    case WorkflowExecutionNodeExecuted = 'workflow.execution.node.executed';
+    case WorkflowExecutionCondition = 'workflow.execution.condition';
+    case WorkflowExecutionVariableResolved = 'workflow.execution.variable.resolved';
+
     public function category(): AuditCategory
     {
         return match ($this) {
@@ -189,7 +198,15 @@ enum AuditAction: string
             self::WorkflowArchived,
             self::WorkflowValidated,
             self::WorkflowCategoryCreated,
-            self::WorkflowCategoryUpdated => AuditCategory::Application,
+            self::WorkflowCategoryUpdated,
+            self::WorkflowExecutionStarted,
+            self::WorkflowExecutionCompleted,
+            self::WorkflowExecutionFailed,
+            self::WorkflowExecutionCancelled,
+            self::WorkflowExecutionResumed,
+            self::WorkflowExecutionNodeExecuted,
+            self::WorkflowExecutionCondition,
+            self::WorkflowExecutionVariableResolved => AuditCategory::Application,
 
             self::ApplicationInstalled,
             self::ApplicationEnabled,
@@ -232,7 +249,8 @@ enum AuditAction: string
             self::FileAccessDenied => AuditSeverity::Warning,
 
             self::PlatformJobFailed,
-            self::SchedulerTaskFailed => AuditSeverity::Warning,
+            self::SchedulerTaskFailed,
+            self::WorkflowExecutionFailed => AuditSeverity::Warning,
 
             self::WorkspaceRuntimeFailed => AuditSeverity::Warning,
 
@@ -335,7 +353,15 @@ enum AuditAction: string
             self::WorkflowArchived,
             self::WorkflowValidated,
             self::WorkflowCategoryCreated,
-            self::WorkflowCategoryUpdated => AuditRetentionClass::Ephemeral,
+            self::WorkflowCategoryUpdated,
+            self::WorkflowExecutionStarted,
+            self::WorkflowExecutionCompleted,
+            self::WorkflowExecutionFailed,
+            self::WorkflowExecutionCancelled,
+            self::WorkflowExecutionResumed,
+            self::WorkflowExecutionNodeExecuted,
+            self::WorkflowExecutionCondition,
+            self::WorkflowExecutionVariableResolved => AuditRetentionClass::Ephemeral,
         };
     }
 

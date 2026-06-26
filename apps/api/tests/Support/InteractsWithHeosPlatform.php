@@ -56,6 +56,8 @@ trait InteractsWithHeosPlatform
             'workflow.read',
             'workflow.manage',
             'workflow.publish',
+            'workflow.execute',
+            'workflow.runtime.read',
         ];
     }
 
@@ -77,7 +79,7 @@ trait InteractsWithHeosPlatform
 
     protected function assertPermissionCatalogComplete(): void
     {
-        $this->assertSame(38, Permission::query()->count());
+        $this->assertSame(40, Permission::query()->count());
     }
 
     /**
