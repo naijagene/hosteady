@@ -40,6 +40,11 @@ class PermissionCatalogSeeder extends Seeder
         ['key' => 'files.read', 'name' => 'Read Files', 'description' => null, 'domain' => 'files'],
         ['key' => 'files.upload', 'name' => 'Upload Files', 'description' => null, 'domain' => 'files'],
         ['key' => 'files.manage', 'name' => 'Manage Files', 'description' => null, 'domain' => 'files'],
+        ['key' => 'jobs.read', 'name' => 'Read Jobs', 'description' => null, 'domain' => 'jobs'],
+        ['key' => 'jobs.dispatch', 'name' => 'Dispatch Jobs', 'description' => null, 'domain' => 'jobs'],
+        ['key' => 'jobs.manage', 'name' => 'Manage Jobs', 'description' => null, 'domain' => 'jobs'],
+        ['key' => 'scheduler.read', 'name' => 'Read Scheduled Tasks', 'description' => null, 'domain' => 'scheduler'],
+        ['key' => 'scheduler.manage', 'name' => 'Manage Scheduled Tasks', 'description' => null, 'domain' => 'scheduler'],
     ];
 
     public function run(): void

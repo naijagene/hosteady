@@ -26,7 +26,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
     public const SCHEMA_VERSION = 1;
 
     /**
-     * @return array{audit: bool, settings: bool, workspace: bool, notifications: bool, events: bool, reference_data: bool, storage: bool, media: bool, automation: bool}
+     * @return array{audit: bool, settings: bool, workspace: bool, notifications: bool, events: bool, reference_data: bool, storage: bool, media: bool, jobs: bool, scheduler: bool, automation: bool}
      */
     private function platformCapabilities(): array
     {
@@ -39,6 +39,8 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
             'reference_data' => (bool) config('heos.enterprise.reference_data.enabled', true),
             'storage' => (bool) config('heos.enterprise.files.enabled', true),
             'media' => (bool) config('heos.enterprise.files.enabled', true),
+            'jobs' => (bool) config('heos.enterprise.jobs.enabled', true),
+            'scheduler' => (bool) config('heos.enterprise.scheduler.enabled', true),
             'automation' => false,
         ];
     }
@@ -52,6 +54,8 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
         private readonly RuntimeExtensionService $runtimeExtensionService,
         private readonly \App\Modules\Sdk\Runtime\RuntimeExtensionManager $runtimeExtensionManager,
         private readonly \App\Services\Enterprise\FileMedia\EnterpriseStorageHealthService $storageHealthService,
+        private readonly \App\Services\Enterprise\Jobs\PlatformJobHealthService $jobHealthService,
+        private readonly \App\Services\Enterprise\Scheduler\SchedulerHealthService $schedulerHealthService,
     ) {
     }
 
@@ -290,6 +294,8 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
             'schema_version' => self::SCHEMA_VERSION,
             'enterprise' => [
                 'storage' => $this->storageHealthService->runtimeContribution($context),
+                'jobs' => $this->jobHealthService->runtimeContribution($context),
+                'scheduler' => $this->schedulerHealthService->runtimeContribution($context),
             ],
         ];
     }

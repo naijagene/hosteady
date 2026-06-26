@@ -84,6 +84,8 @@ class ModuleDoctorService
                     'files' => (bool) config('heos.enterprise.files.enabled', true),
                     'runtime_aware' => (bool) config('heos.enterprise.runtime_aware', true),
                     'storage' => app(\App\Services\Enterprise\FileMedia\EnterpriseStorageHealthService::class)->assess(),
+                    'jobs' => app(\App\Services\Enterprise\Jobs\PlatformJobHealthService::class)->assess(),
+                    'scheduler' => app(\App\Services\Enterprise\Scheduler\SchedulerHealthService::class)->assess(),
                 ],
             ],
             modules: array_map(

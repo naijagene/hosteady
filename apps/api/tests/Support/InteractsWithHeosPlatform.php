@@ -46,6 +46,11 @@ trait InteractsWithHeosPlatform
             'files.read',
             'files.upload',
             'files.manage',
+            'jobs.read',
+            'jobs.dispatch',
+            'jobs.manage',
+            'scheduler.read',
+            'scheduler.manage',
         ];
     }
 
@@ -67,7 +72,7 @@ trait InteractsWithHeosPlatform
 
     protected function assertPermissionCatalogComplete(): void
     {
-        $this->assertSame(28, Permission::query()->count());
+        $this->assertSame(33, Permission::query()->count());
     }
 
     /**

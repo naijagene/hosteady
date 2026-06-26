@@ -81,6 +81,20 @@ enum AuditAction: string
     case FileDownloaded = 'file.downloaded';
     case FileAccessDenied = 'file.access.denied';
 
+    case PlatformJobDispatched = 'platform.job.dispatched';
+    case PlatformJobStarted = 'platform.job.started';
+    case PlatformJobCompleted = 'platform.job.completed';
+    case PlatformJobFailed = 'platform.job.failed';
+    case PlatformJobCancelled = 'platform.job.cancelled';
+
+    case SchedulerTaskCreated = 'scheduler.task.created';
+    case SchedulerTaskUpdated = 'scheduler.task.updated';
+    case SchedulerTaskPaused = 'scheduler.task.paused';
+    case SchedulerTaskResumed = 'scheduler.task.resumed';
+    case SchedulerTaskCancelled = 'scheduler.task.cancelled';
+    case SchedulerTaskExecuted = 'scheduler.task.executed';
+    case SchedulerTaskFailed = 'scheduler.task.failed';
+
     public function category(): AuditCategory
     {
         return match ($this) {
@@ -139,7 +153,19 @@ enum AuditAction: string
             self::FileUpdated,
             self::FileDeleted,
             self::FileDownloaded,
-            self::FileAccessDenied => AuditCategory::Application,
+            self::FileAccessDenied,
+            self::PlatformJobDispatched,
+            self::PlatformJobStarted,
+            self::PlatformJobCompleted,
+            self::PlatformJobFailed,
+            self::PlatformJobCancelled,
+            self::SchedulerTaskCreated,
+            self::SchedulerTaskUpdated,
+            self::SchedulerTaskPaused,
+            self::SchedulerTaskResumed,
+            self::SchedulerTaskCancelled,
+            self::SchedulerTaskExecuted,
+            self::SchedulerTaskFailed => AuditCategory::Application,
 
             self::ApplicationInstalled,
             self::ApplicationEnabled,
@@ -180,6 +206,9 @@ enum AuditAction: string
             self::SecurityAuthUnauthenticated => AuditSeverity::Warning,
 
             self::FileAccessDenied => AuditSeverity::Warning,
+
+            self::PlatformJobFailed,
+            self::SchedulerTaskFailed => AuditSeverity::Warning,
 
             self::WorkspaceRuntimeFailed => AuditSeverity::Warning,
 
@@ -259,7 +288,19 @@ enum AuditAction: string
             self::FileUpdated,
             self::FileDeleted,
             self::FileDownloaded,
-            self::FileAccessDenied => AuditRetentionClass::Ephemeral,
+            self::FileAccessDenied,
+            self::PlatformJobDispatched,
+            self::PlatformJobStarted,
+            self::PlatformJobCompleted,
+            self::PlatformJobFailed,
+            self::PlatformJobCancelled,
+            self::SchedulerTaskCreated,
+            self::SchedulerTaskUpdated,
+            self::SchedulerTaskPaused,
+            self::SchedulerTaskResumed,
+            self::SchedulerTaskCancelled,
+            self::SchedulerTaskExecuted,
+            self::SchedulerTaskFailed => AuditRetentionClass::Ephemeral,
         };
     }
 

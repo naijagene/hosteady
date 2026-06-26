@@ -60,5 +60,13 @@ return [
             ],
             'visibility_modes' => ['private', 'workspace', 'organization', 'public'],
         ],
+        'jobs' => [
+            'enabled' => env('HEOS_JOBS_ENABLED', true),
+            'default_queue' => env('HEOS_JOBS_QUEUE', 'default'),
+            'max_attempts' => (int) env('HEOS_JOBS_MAX_ATTEMPTS', 3),
+        ],
+        'scheduler' => [
+            'enabled' => env('HEOS_SCHEDULER_ENABLED', true),
+        ],
     ],
 ];
