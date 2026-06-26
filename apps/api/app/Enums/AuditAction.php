@@ -130,6 +130,17 @@ enum AuditAction: string
     case ApprovalRejected = 'approval.rejected';
     case ApprovalCompleted = 'approval.completed';
 
+    case WorkflowAutomationRuleCreated = 'workflow.automation.rule.created';
+    case WorkflowAutomationRuleEnabled = 'workflow.automation.rule.enabled';
+    case WorkflowAutomationRuleDisabled = 'workflow.automation.rule.disabled';
+    case WorkflowAutomationRuleDeleted = 'workflow.automation.rule.deleted';
+    case WorkflowTriggerExecuted = 'workflow.trigger.executed';
+    case WorkflowTriggerFailed = 'workflow.trigger.failed';
+    case WorkflowTimerCreated = 'workflow.timer.created';
+    case WorkflowTimerExecuted = 'workflow.timer.executed';
+    case WorkflowTimerFailed = 'workflow.timer.failed';
+    case WorkflowTimerCancelled = 'workflow.timer.cancelled';
+
     public function category(): AuditCategory
     {
         return match ($this) {
@@ -230,7 +241,17 @@ enum AuditAction: string
             self::ApprovalRequested,
             self::ApprovalApproved,
             self::ApprovalRejected,
-            self::ApprovalCompleted => AuditCategory::Application,
+            self::ApprovalCompleted,
+            self::WorkflowAutomationRuleCreated,
+            self::WorkflowAutomationRuleEnabled,
+            self::WorkflowAutomationRuleDisabled,
+            self::WorkflowAutomationRuleDeleted,
+            self::WorkflowTriggerExecuted,
+            self::WorkflowTriggerFailed,
+            self::WorkflowTimerCreated,
+            self::WorkflowTimerExecuted,
+            self::WorkflowTimerFailed,
+            self::WorkflowTimerCancelled => AuditCategory::Application,
 
             self::ApplicationInstalled,
             self::ApplicationEnabled,
@@ -275,7 +296,9 @@ enum AuditAction: string
             self::PlatformJobFailed,
             self::SchedulerTaskFailed,
             self::WorkflowExecutionFailed,
-            self::ApprovalRejected => AuditSeverity::Warning,
+            self::ApprovalRejected,
+            self::WorkflowTriggerFailed,
+            self::WorkflowTimerFailed => AuditSeverity::Warning,
 
             self::WorkspaceRuntimeFailed => AuditSeverity::Warning,
 
@@ -397,7 +420,17 @@ enum AuditAction: string
             self::ApprovalRequested,
             self::ApprovalApproved,
             self::ApprovalRejected,
-            self::ApprovalCompleted => AuditRetentionClass::Ephemeral,
+            self::ApprovalCompleted,
+            self::WorkflowAutomationRuleCreated,
+            self::WorkflowAutomationRuleEnabled,
+            self::WorkflowAutomationRuleDisabled,
+            self::WorkflowAutomationRuleDeleted,
+            self::WorkflowTriggerExecuted,
+            self::WorkflowTriggerFailed,
+            self::WorkflowTimerCreated,
+            self::WorkflowTimerExecuted,
+            self::WorkflowTimerFailed,
+            self::WorkflowTimerCancelled => AuditRetentionClass::Ephemeral,
         };
     }
 

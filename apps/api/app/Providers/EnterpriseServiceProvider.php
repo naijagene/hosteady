@@ -55,6 +55,17 @@ use App\Services\Enterprise\Search\SearchModuleRegistry;
 use App\Services\Enterprise\Search\SearchService;
 use App\Services\Enterprise\Search\SearchVisibilityResolver;
 use App\Services\Enterprise\Support\EnterpriseTableHealthGuard;
+use App\Services\Enterprise\Workflow\Automation\LaravelWorkflowAutomationAdapter;
+use App\Services\Enterprise\Workflow\Automation\WorkflowAutomationAuditRecorder;
+use App\Services\Enterprise\Workflow\Automation\WorkflowAutomationHealthService;
+use App\Services\Enterprise\Workflow\Automation\WorkflowAutomationIntegrations;
+use App\Services\Enterprise\Workflow\Automation\WorkflowAutomationService;
+use App\Services\Enterprise\Workflow\Automation\WorkflowAutomationStatisticsService;
+use App\Services\Enterprise\Workflow\Automation\WorkflowEventTriggerService;
+use App\Services\Enterprise\Workflow\Automation\WorkflowScheduledTriggerService;
+use App\Services\Enterprise\Workflow\Automation\WorkflowTimerRunner;
+use App\Services\Enterprise\Workflow\Automation\WorkflowTimerService;
+use App\Services\Enterprise\Workflow\Automation\WorkflowTriggerService;
 use App\Services\Enterprise\Workflow\Human\ApprovalService;
 use App\Services\Enterprise\Workflow\Human\DefaultAssignmentStrategy;
 use App\Services\Enterprise\Workflow\Human\HumanTaskAuditRecorder;
@@ -105,7 +116,9 @@ class EnterpriseServiceProvider extends ServiceProvider
 
         $this->app->singleton(PlatformEventProcessor::class, function ($app) {
             return new PlatformEventProcessor(
-                subscribers: [],
+                subscribers: [
+                    $app->make(WorkflowEventTriggerService::class),
+                ],
                 auditRecorder: $app->make(\App\Services\Enterprise\Audit\EnterpriseEventAuditRecorder::class),
                 mapper: $app->make(PlatformEventMapper::class),
             );
@@ -205,6 +218,22 @@ class EnterpriseServiceProvider extends ServiceProvider
         $this->app->singleton(ApprovalService::class);
         $this->app->singleton(TaskInboxService::class);
 
+        $this->app->singleton(WorkflowAutomationStatisticsService::class);
+        $this->app->singleton(WorkflowAutomationAuditRecorder::class);
+        $this->app->singleton(WorkflowAutomationIntegrations::class);
+        $this->app->singleton(WorkflowTriggerService::class);
+        $this->app->singleton(WorkflowScheduledTriggerService::class);
+        $this->app->singleton(LaravelWorkflowAutomationAdapter::class);
+        $this->app->singleton(\App\Modules\Sdk\Workflow\Automation\Contracts\WorkflowAutomationPort::class, LaravelWorkflowAutomationAdapter::class);
+        $this->app->singleton(\App\Modules\Sdk\Workflow\Automation\Contracts\WorkflowTriggerHandler::class, WorkflowTriggerService::class);
+        $this->app->singleton(\App\Modules\Sdk\Workflow\Automation\Contracts\WorkflowTimerHandler::class, WorkflowTimerService::class);
+        $this->app->singleton(\App\Modules\Sdk\Workflow\Automation\Contracts\WorkflowEventTriggerProvider::class, WorkflowEventTriggerService::class);
+        $this->app->singleton(WorkflowEventTriggerService::class);
+        $this->app->singleton(WorkflowTimerService::class);
+        $this->app->singleton(WorkflowAutomationHealthService::class);
+        $this->app->singleton(WorkflowAutomationService::class);
+        $this->app->singleton(WorkflowTimerRunner::class);
+
         $this->app->singleton(\App\Services\Enterprise\Audit\EnterpriseFileAuditRecorder::class);
         $this->app->singleton(EnterprisePlatformJobAuditRecorder::class);
         $this->app->singleton(EnterpriseSchedulerAuditRecorder::class);
@@ -223,5 +252,15 @@ class EnterpriseServiceProvider extends ServiceProvider
         $this->app->singleton(\App\Services\Enterprise\Audit\EnterpriseReferenceAuditRecorder::class);
         $this->app->singleton(InAppNotificationChannel::class);
         $this->app->singleton(LogEmailNotificationChannel::class);
+    }
+
+    public function boot(): void
+    {
+        $this->app->booted(function () {
+            $this->app->make(PlatformJobHandlerRegistry::class)->register(
+                'workflow.automation.trigger',
+                fn (\App\Models\PlatformJob $job) => $this->app->make(WorkflowScheduledTriggerService::class)->executeFromJob($job),
+            );
+        });
     }
 }

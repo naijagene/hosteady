@@ -82,5 +82,8 @@ return [
         'approvals' => [
             'enabled' => env('HEOS_APPROVALS_ENABLED', true),
         ],
+        'automation' => [
+            'enabled' => env('HEOS_AUTOMATION_ENABLED', true),
+        ],
     ],
 ];

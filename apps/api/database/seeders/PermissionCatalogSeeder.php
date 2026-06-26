@@ -56,6 +56,8 @@ class PermissionCatalogSeeder extends Seeder
         ['key' => 'task.manage', 'name' => 'Manage Tasks', 'description' => null, 'domain' => 'workflow'],
         ['key' => 'approval.read', 'name' => 'Read Approvals', 'description' => null, 'domain' => 'workflow'],
         ['key' => 'approval.decide', 'name' => 'Decide Approvals', 'description' => null, 'domain' => 'workflow'],
+        ['key' => 'workflow.automation.read', 'name' => 'Read Workflow Automation', 'description' => null, 'domain' => 'workflow'],
+        ['key' => 'workflow.automation.manage', 'name' => 'Manage Workflow Automation', 'description' => null, 'domain' => 'workflow'],
     ];
 
     public function run(): void

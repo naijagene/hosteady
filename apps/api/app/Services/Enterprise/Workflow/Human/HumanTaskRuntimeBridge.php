@@ -54,6 +54,22 @@ class HumanTaskRuntimeBridge
             $this->resolveMembershipId($context),
         );
 
+        if ($nodeType === WorkflowNodeType::Wait->value) {
+            $timerConfig = $this->resolveTimerConfig($node);
+
+            if ($timerConfig !== null) {
+                try {
+                    app(\App\Services\Enterprise\Workflow\Automation\WorkflowTimerService::class)->createFromWaitNode(
+                        $scope,
+                        $instancePublicId,
+                        array_merge($node, ['timer' => $timerConfig]),
+                        $context,
+                    );
+                } catch (\Throwable) {
+                }
+            }
+        }
+
         return new WorkflowActionResult(
             status: WorkflowActionStatus::Waiting->value,
             metadata: [
@@ -89,5 +105,22 @@ class HumanTaskRuntimeBridge
         return \App\Models\OrganizationMembership::query()
             ->where('public_id', $context->membershipPublicId)
             ->value('id');
+    }
+
+    /**
+     * @param  array<string, mixed>  $node
+     * @return array<string, mixed>|null
+     */
+    private function resolveTimerConfig(array $node): ?array
+    {
+        if (isset($node['timer']) && is_array($node['timer'])) {
+            return $node['timer'];
+        }
+
+        if (isset($node['metadata']['timer']) && is_array($node['metadata']['timer'])) {
+            return $node['metadata']['timer'];
+        }
+
+        return null;
     }
 }

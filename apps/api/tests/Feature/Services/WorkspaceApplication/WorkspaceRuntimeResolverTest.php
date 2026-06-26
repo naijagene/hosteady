@@ -292,7 +292,7 @@ class WorkspaceRuntimeResolverTest extends TestCase
         $this->assertTrue($runtime->capabilities['audit']);
         $this->assertTrue($runtime->capabilities['settings']);
         $this->assertTrue($runtime->capabilities['workspace']);
-        $this->assertFalse($runtime->capabilities['automation']);
+        $this->assertTrue($runtime->capabilities['automation']);
         $this->assertTrue($runtime->capabilities['notifications']);
         $this->assertTrue($runtime->capabilities['storage']);
         $this->assertTrue($runtime->capabilities['media']);

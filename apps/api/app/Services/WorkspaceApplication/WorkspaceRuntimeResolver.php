@@ -47,7 +47,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
             'human_tasks' => (bool) config('heos.enterprise.human_tasks.enabled', true),
             'approvals' => (bool) config('heos.enterprise.approvals.enabled', true),
             'approval' => (bool) config('heos.enterprise.approvals.enabled', true),
-            'automation' => false,
+            'automation' => (bool) config('heos.enterprise.automation.enabled', true),
         ];
     }
 

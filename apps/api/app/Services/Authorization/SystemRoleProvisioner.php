@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class SystemRoleProvisioner
 {
-    private const EXPECTED_PERMISSION_COUNT = 44;
+    private const EXPECTED_PERMISSION_COUNT = 46;
 
     /**
      * @var array<string, string>
@@ -43,6 +43,7 @@ class SystemRoleProvisioner
         'task.read',
         'approval.read',
         'approval.decide',
+        'workflow.automation.read',
     ];
 
     /**
@@ -64,6 +65,7 @@ class SystemRoleProvisioner
         'workflow.runtime.read',
         'task.read',
         'approval.read',
+        'workflow.automation.read',
     ];
 
     /**
