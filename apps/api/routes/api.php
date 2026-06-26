@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\V1\Tenant\TenantContextController;
 use App\Http\Controllers\Api\V1\Tenant\ApprovalController;
 use App\Http\Controllers\Api\V1\Tenant\HumanTaskController;
 use App\Http\Controllers\Api\V1\Tenant\WorkflowAutomationController;
+use App\Http\Controllers\Api\V1\Tenant\WorkflowDesignerController;
 use App\Http\Controllers\Api\V1\Tenant\WorkflowCategoryController;
 use App\Http\Controllers\Api\V1\Tenant\WorkflowDefinitionController;
 use App\Http\Controllers\Api\V1\Tenant\WorkflowInstanceController;
@@ -130,6 +131,17 @@ Route::prefix('v1')->group(function () {
             Route::delete('tenant/workflows/automation/rules/{publicId}', [WorkflowAutomationController::class, 'destroyRule']);
             Route::get('tenant/workflows/automation/triggers', [WorkflowAutomationController::class, 'indexTriggers']);
             Route::get('tenant/workflows/automation/timers', [WorkflowAutomationController::class, 'indexTimers']);
+
+            Route::get('tenant/workflows/designer/definitions/{definitionPublicId}/preview', [WorkflowDesignerController::class, 'preview']);
+            Route::get('tenant/workflows/designer/definitions/{definitionPublicId}/canvas', [WorkflowDesignerController::class, 'showCanvas']);
+            Route::post('tenant/workflows/designer/definitions/{definitionPublicId}/canvas', [WorkflowDesignerController::class, 'storeCanvas']);
+            Route::get('tenant/workflows/designer/definitions/{definitionPublicId}/snapshots', [WorkflowDesignerController::class, 'indexSnapshots']);
+            Route::get('tenant/workflows/designer/snapshots/{snapshotPublicId}', [WorkflowDesignerController::class, 'showSnapshot']);
+            Route::get('tenant/workflows/designer/snapshots/{fromPublicId}/diff/{toPublicId}', [WorkflowDesignerController::class, 'diffSnapshots']);
+            Route::post('tenant/workflows/designer/definitions/{definitionPublicId}/clone', [WorkflowDesignerController::class, 'clone']);
+            Route::get('tenant/workflows/designer/definitions/{definitionPublicId}/export', [WorkflowDesignerController::class, 'export']);
+            Route::post('tenant/workflows/designer/import', [WorkflowDesignerController::class, 'import']);
+            Route::get('tenant/workflows/designer/node-templates', [WorkflowDesignerController::class, 'indexNodeTemplates']);
         });
     });
 });

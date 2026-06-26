@@ -28,6 +28,7 @@ readonly class ConfigEnterpriseRuntimeContext implements EnterpriseRuntimeContex
             'approvals' => (bool) config('heos.enterprise.approvals.enabled', true),
             'approval' => (bool) config('heos.enterprise.approvals.enabled', true),
             'automation' => (bool) config('heos.enterprise.automation.enabled', true),
+            'workflow_designer' => (bool) config('heos.enterprise.workflow_designer.enabled', true),
             default => false,
         };
     }

@@ -85,5 +85,8 @@ return [
         'automation' => [
             'enabled' => env('HEOS_AUTOMATION_ENABLED', true),
         ],
+        'workflow_designer' => [
+            'enabled' => env('HEOS_WORKFLOW_DESIGNER_ENABLED', true),
+        ],
     ],
 ];

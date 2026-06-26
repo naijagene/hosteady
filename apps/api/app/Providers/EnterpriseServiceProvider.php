@@ -234,6 +234,22 @@ class EnterpriseServiceProvider extends ServiceProvider
         $this->app->singleton(WorkflowAutomationService::class);
         $this->app->singleton(WorkflowTimerRunner::class);
 
+        $this->app->singleton(\App\Services\Enterprise\Workflow\Designer\WorkflowCanvasNormalizationService::class);
+        $this->app->singleton(\App\Modules\Sdk\Workflow\Designer\Contracts\WorkflowCanvasNormalizer::class, \App\Services\Enterprise\Workflow\Designer\WorkflowCanvasNormalizationService::class);
+        $this->app->singleton(\App\Services\Enterprise\Workflow\Designer\WorkflowCanvasDiffService::class);
+        $this->app->singleton(\App\Services\Enterprise\Workflow\Designer\WorkflowCanvasService::class);
+        $this->app->singleton(\App\Services\Enterprise\Workflow\Designer\WorkflowCloneService::class);
+        $this->app->singleton(\App\Services\Enterprise\Workflow\Designer\WorkflowImportExportService::class);
+        $this->app->singleton(\App\Services\Enterprise\Workflow\Designer\WorkflowNodeTemplateService::class);
+        $this->app->singleton(\App\Modules\Sdk\Workflow\Designer\Contracts\WorkflowTemplateProvider::class, \App\Services\Enterprise\Workflow\Designer\WorkflowNodeTemplateService::class);
+        $this->app->singleton(\App\Services\Enterprise\Workflow\Designer\WorkflowDesignerPreviewService::class);
+        $this->app->singleton(\App\Services\Enterprise\Workflow\Designer\WorkflowDesignerHealthService::class);
+        $this->app->singleton(\App\Services\Enterprise\Workflow\Designer\WorkflowDesignerAuditRecorder::class);
+        $this->app->singleton(\App\Services\Enterprise\Workflow\Designer\WorkflowDesignerSearchIndexer::class);
+        $this->app->singleton(\App\Services\Enterprise\Workflow\Designer\LaravelWorkflowDesignerAdapter::class);
+        $this->app->singleton(\App\Modules\Sdk\Workflow\Designer\Contracts\WorkflowDesignerPort::class, \App\Services\Enterprise\Workflow\Designer\LaravelWorkflowDesignerAdapter::class);
+        $this->app->singleton(\App\Services\Enterprise\Workflow\Designer\WorkflowDesignerService::class);
+
         $this->app->singleton(\App\Services\Enterprise\Audit\EnterpriseFileAuditRecorder::class);
         $this->app->singleton(EnterprisePlatformJobAuditRecorder::class);
         $this->app->singleton(EnterpriseSchedulerAuditRecorder::class);

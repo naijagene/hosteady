@@ -64,6 +64,10 @@ trait InteractsWithHeosPlatform
             'approval.decide',
             'workflow.automation.read',
             'workflow.automation.manage',
+            'workflow.designer.read',
+            'workflow.designer.manage',
+            'workflow.designer.import',
+            'workflow.designer.export',
         ];
     }
 
@@ -85,7 +89,7 @@ trait InteractsWithHeosPlatform
 
     protected function assertPermissionCatalogComplete(): void
     {
-        $this->assertSame(46, Permission::query()->count());
+        $this->assertSame(50, Permission::query()->count());
     }
 
     /**

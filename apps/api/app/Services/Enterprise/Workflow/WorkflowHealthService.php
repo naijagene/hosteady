@@ -4,6 +4,7 @@ namespace App\Services\Enterprise\Workflow;
 
 use App\Services\Enterprise\Support\EnterpriseTableHealthGuard;
 use App\Services\Enterprise\Workflow\Automation\WorkflowAutomationHealthService;
+use App\Services\Enterprise\Workflow\Designer\WorkflowDesignerHealthService;
 use App\Services\Enterprise\Workflow\Human\HumanTaskHealthService;
 use App\Services\Enterprise\Workflow\Runtime\WorkflowRuntimeHealthService;
 use App\Support\Tenant\TenantContext;
@@ -15,6 +16,7 @@ class WorkflowHealthService
         private readonly WorkflowRuntimeHealthService $runtimeHealthService,
         private readonly HumanTaskHealthService $humanTaskHealthService,
         private readonly WorkflowAutomationHealthService $automationHealthService,
+        private readonly WorkflowDesignerHealthService $designerHealthService,
         private readonly EnterpriseTableHealthGuard $tableGuard,
     ) {
     }
@@ -33,6 +35,7 @@ class WorkflowHealthService
                 'runtime' => $this->runtimeHealthService->assess($context),
                 'human' => $this->humanTaskHealthService->assess($context),
                 'automation' => $this->automationHealthService->assess($context),
+                'designer' => $this->designerHealthService->assess($context),
             ]),
         );
     }
@@ -88,6 +91,7 @@ class WorkflowHealthService
             'runtime' => $this->runtimeHealthService->assess($context),
             'human' => $this->humanTaskHealthService->assess($context),
             'automation' => $this->automationHealthService->assess($context),
+            'designer' => $this->designerHealthService->assess($context),
             'warnings' => $warnings,
             'status' => $status,
         ];
@@ -127,6 +131,7 @@ class WorkflowHealthService
             'runtime' => $this->runtimeHealthService->runtimeContribution($context),
             'human' => $this->humanTaskHealthService->runtimeContribution($context),
             'automation' => $this->automationHealthService->runtimeContribution($context),
+            'designer' => $this->designerHealthService->runtimeContribution($context),
         ];
     }
 }

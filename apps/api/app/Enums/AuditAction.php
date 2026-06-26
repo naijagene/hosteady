@@ -141,6 +141,15 @@ enum AuditAction: string
     case WorkflowTimerFailed = 'workflow.timer.failed';
     case WorkflowTimerCancelled = 'workflow.timer.cancelled';
 
+    case WorkflowDesignerCanvasSaved = 'workflow.designer.canvas.saved';
+    case WorkflowDesignerSnapshotCreated = 'workflow.designer.snapshot.created';
+    case WorkflowDesignerSnapshotDiffed = 'workflow.designer.snapshot.diffed';
+    case WorkflowCloned = 'workflow.designer.workflow.cloned';
+    case WorkflowImported = 'workflow.designer.workflow.imported';
+    case WorkflowExported = 'workflow.designer.workflow.exported';
+    case WorkflowDesignerTemplateCreated = 'workflow.designer.template.created';
+    case WorkflowDesignerPreviewGenerated = 'workflow.designer.preview.generated';
+
     public function category(): AuditCategory
     {
         return match ($this) {
@@ -251,7 +260,15 @@ enum AuditAction: string
             self::WorkflowTimerCreated,
             self::WorkflowTimerExecuted,
             self::WorkflowTimerFailed,
-            self::WorkflowTimerCancelled => AuditCategory::Application,
+            self::WorkflowTimerCancelled,
+            self::WorkflowDesignerCanvasSaved,
+            self::WorkflowDesignerSnapshotCreated,
+            self::WorkflowDesignerSnapshotDiffed,
+            self::WorkflowCloned,
+            self::WorkflowImported,
+            self::WorkflowExported,
+            self::WorkflowDesignerTemplateCreated,
+            self::WorkflowDesignerPreviewGenerated => AuditCategory::Application,
 
             self::ApplicationInstalled,
             self::ApplicationEnabled,
