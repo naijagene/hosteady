@@ -26,7 +26,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
     public const SCHEMA_VERSION = 1;
 
     /**
-     * @return array{audit: bool, settings: bool, workspace: bool, notifications: bool, events: bool, reference_data: bool, storage: bool, media: bool, jobs: bool, scheduler: bool, automation: bool}
+     * @return array{audit: bool, settings: bool, workspace: bool, notifications: bool, events: bool, reference_data: bool, storage: bool, media: bool, jobs: bool, scheduler: bool, search: bool, indexing: bool, automation: bool}
      */
     private function platformCapabilities(): array
     {
@@ -41,6 +41,8 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
             'media' => (bool) config('heos.enterprise.files.enabled', true),
             'jobs' => (bool) config('heos.enterprise.jobs.enabled', true),
             'scheduler' => (bool) config('heos.enterprise.scheduler.enabled', true),
+            'search' => (bool) config('heos.enterprise.search.enabled', true),
+            'indexing' => (bool) config('heos.enterprise.search.enabled', true),
             'automation' => false,
         ];
     }
@@ -56,6 +58,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
         private readonly \App\Services\Enterprise\FileMedia\EnterpriseStorageHealthService $storageHealthService,
         private readonly \App\Services\Enterprise\Jobs\PlatformJobHealthService $jobHealthService,
         private readonly \App\Services\Enterprise\Scheduler\SchedulerHealthService $schedulerHealthService,
+        private readonly \App\Services\Enterprise\Search\SearchHealthService $searchHealthService,
     ) {
     }
 
@@ -296,6 +299,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
                 'storage' => $this->storageHealthService->runtimeContribution($context),
                 'jobs' => $this->jobHealthService->runtimeContribution($context),
                 'scheduler' => $this->schedulerHealthService->runtimeContribution($context),
+                'search' => $this->searchHealthService->runtimeContribution($context),
             ],
         ];
     }

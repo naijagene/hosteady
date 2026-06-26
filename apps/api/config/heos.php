@@ -68,5 +68,10 @@ return [
         'scheduler' => [
             'enabled' => env('HEOS_SCHEDULER_ENABLED', true),
         ],
+        'search' => [
+            'enabled' => env('HEOS_SEARCH_ENABLED', true),
+            'max_results' => (int) env('HEOS_SEARCH_MAX_RESULTS', 50),
+            'recent_limit' => (int) env('HEOS_SEARCH_RECENT_LIMIT', 10),
+        ],
     ],
 ];

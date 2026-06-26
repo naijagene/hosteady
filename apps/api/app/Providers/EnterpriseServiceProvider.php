@@ -4,13 +4,16 @@ namespace App\Providers;
 
 use App\Modules\Sdk\Enterprise\Contracts\EventBusPort;
 use App\Modules\Sdk\Enterprise\Contracts\FileServicePort;
+use App\Modules\Sdk\Enterprise\Contracts\IndexPort;
 use App\Modules\Sdk\Enterprise\Contracts\NotificationPort;
 use App\Modules\Sdk\Enterprise\Contracts\PlatformJobPort;
 use App\Modules\Sdk\Enterprise\Contracts\ReferenceDataPort;
 use App\Modules\Sdk\Enterprise\Contracts\SchedulerPort;
+use App\Modules\Sdk\Enterprise\Contracts\SearchPort;
 use App\Modules\Sdk\Enterprise\Contracts\StoragePort;
 use App\Services\Enterprise\Audit\EnterprisePlatformJobAuditRecorder;
 use App\Services\Enterprise\Audit\EnterpriseSchedulerAuditRecorder;
+use App\Services\Enterprise\Audit\EnterpriseSearchAuditRecorder;
 use App\Services\Enterprise\EventBus\EventBusService;
 use App\Services\Enterprise\EventBus\LaravelEventBusAdapter;
 use App\Services\Enterprise\EventBus\PlatformEventMapper;
@@ -43,6 +46,12 @@ use App\Services\Enterprise\Scheduler\ScheduleExpressionHelper;
 use App\Services\Enterprise\Scheduler\ScheduledTaskRunner;
 use App\Services\Enterprise\Scheduler\SchedulerHealthService;
 use App\Services\Enterprise\Scheduler\SchedulerService;
+use App\Services\Enterprise\Search\LaravelSearchAdapter;
+use App\Services\Enterprise\Search\SearchHealthService;
+use App\Services\Enterprise\Search\SearchIndexService;
+use App\Services\Enterprise\Search\SearchModuleRegistry;
+use App\Services\Enterprise\Search\SearchService;
+use App\Services\Enterprise\Search\SearchVisibilityResolver;
 use Illuminate\Support\ServiceProvider;
 
 class EnterpriseServiceProvider extends ServiceProvider
@@ -101,9 +110,19 @@ class EnterpriseServiceProvider extends ServiceProvider
         $this->app->singleton(SchedulerPort::class, LaravelSchedulerAdapter::class);
         $this->app->singleton(SchedulerService::class);
 
+        $this->app->singleton(SearchModuleRegistry::class);
+        $this->app->singleton(SearchVisibilityResolver::class);
+        $this->app->singleton(SearchHealthService::class);
+        $this->app->singleton(LaravelSearchAdapter::class);
+        $this->app->singleton(SearchPort::class, LaravelSearchAdapter::class);
+        $this->app->singleton(IndexPort::class, LaravelSearchAdapter::class);
+        $this->app->singleton(SearchService::class);
+        $this->app->singleton(SearchIndexService::class);
+
         $this->app->singleton(\App\Services\Enterprise\Audit\EnterpriseFileAuditRecorder::class);
         $this->app->singleton(EnterprisePlatformJobAuditRecorder::class);
         $this->app->singleton(EnterpriseSchedulerAuditRecorder::class);
+        $this->app->singleton(EnterpriseSearchAuditRecorder::class);
 
         $this->app->singleton(EventBusPort::class, LaravelEventBusAdapter::class);
         $this->app->singleton(NotificationPort::class, LaravelNotificationAdapter::class);

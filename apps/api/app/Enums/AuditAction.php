@@ -95,6 +95,11 @@ enum AuditAction: string
     case SchedulerTaskExecuted = 'scheduler.task.executed';
     case SchedulerTaskFailed = 'scheduler.task.failed';
 
+    case SearchExecuted = 'search.executed';
+    case SearchSaved = 'search.saved';
+    case SearchDeleted = 'search.deleted';
+    case IndexUpdated = 'index.updated';
+
     public function category(): AuditCategory
     {
         return match ($this) {
@@ -165,7 +170,11 @@ enum AuditAction: string
             self::SchedulerTaskResumed,
             self::SchedulerTaskCancelled,
             self::SchedulerTaskExecuted,
-            self::SchedulerTaskFailed => AuditCategory::Application,
+            self::SchedulerTaskFailed,
+            self::SearchExecuted,
+            self::SearchSaved,
+            self::SearchDeleted,
+            self::IndexUpdated => AuditCategory::Application,
 
             self::ApplicationInstalled,
             self::ApplicationEnabled,
@@ -300,7 +309,11 @@ enum AuditAction: string
             self::SchedulerTaskResumed,
             self::SchedulerTaskCancelled,
             self::SchedulerTaskExecuted,
-            self::SchedulerTaskFailed => AuditRetentionClass::Ephemeral,
+            self::SchedulerTaskFailed,
+            self::SearchExecuted,
+            self::SearchSaved,
+            self::SearchDeleted,
+            self::IndexUpdated => AuditRetentionClass::Ephemeral,
         };
     }
 

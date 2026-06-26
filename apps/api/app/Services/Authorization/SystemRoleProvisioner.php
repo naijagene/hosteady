@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class SystemRoleProvisioner
 {
-    private const EXPECTED_PERMISSION_COUNT = 33;
+    private const EXPECTED_PERMISSION_COUNT = 35;
 
     /**
      * @var array<string, string>
@@ -37,6 +37,7 @@ class SystemRoleProvisioner
         'files.read',
         'files.upload',
         'jobs.read',
+        'search.read',
     ];
 
     /**
@@ -53,6 +54,7 @@ class SystemRoleProvisioner
         'reference.read',
         'files.read',
         'jobs.read',
+        'search.read',
     ];
 
     /**

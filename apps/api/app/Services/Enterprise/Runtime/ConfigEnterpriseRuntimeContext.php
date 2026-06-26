@@ -21,6 +21,8 @@ readonly class ConfigEnterpriseRuntimeContext implements EnterpriseRuntimeContex
             'media' => (bool) config('heos.enterprise.files.enabled', true),
             'jobs' => (bool) config('heos.enterprise.jobs.enabled', true),
             'scheduler' => (bool) config('heos.enterprise.scheduler.enabled', true),
+            'search' => (bool) config('heos.enterprise.search.enabled', true),
+            'indexing' => (bool) config('heos.enterprise.search.enabled', true),
             default => false,
         };
     }

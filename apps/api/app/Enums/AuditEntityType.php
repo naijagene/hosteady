@@ -15,5 +15,7 @@ enum AuditEntityType: string
     case PlatformFile = 'platform_file';
     case PlatformJob = 'platform_job';
     case ScheduledTask = 'scheduled_task';
+    case PlatformSearchIndex = 'platform_search_index';
+    case PlatformSavedSearch = 'platform_saved_search';
     case User = 'user';
 }
