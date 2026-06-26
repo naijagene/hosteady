@@ -9,6 +9,8 @@ use App\Http\Controllers\Api\V1\Tenant\ApplicationSettingDefinitionController;
 use App\Http\Controllers\Api\V1\Tenant\AuditEventController;
 use App\Http\Controllers\Api\V1\Tenant\ApplicationCatalogController as TenantApplicationCatalogController;
 use App\Http\Controllers\Api\V1\Tenant\OrganizationApplicationController;
+use App\Http\Controllers\Api\V1\Tenant\PlatformNotificationController;
+use App\Http\Controllers\Api\V1\Tenant\ReferenceDataController;
 use App\Http\Controllers\Api\V1\Tenant\TenantContextController;
 use App\Http\Controllers\Api\V1\Tenant\WorkspaceApplicationController;
 use App\Http\Controllers\Api\V1\Tenant\WorkspaceApplicationSettingsController;
@@ -54,6 +56,10 @@ Route::prefix('v1')->group(function () {
                 ->name('tenant.audit.summary');
             Route::get('tenant/audit/events/{eventPublicId}', [AuditEventController::class, 'show'])
                 ->name('tenant.audit.events.show');
+            Route::get('tenant/notifications', [PlatformNotificationController::class, 'index']);
+            Route::patch('tenant/notifications/{notificationPublicId}/read', [PlatformNotificationController::class, 'markRead']);
+            Route::get('tenant/reference/{catalogKey}', [ReferenceDataController::class, 'catalog']);
+            Route::get('tenant/reference/{catalogKey}/{code}', [ReferenceDataController::class, 'item']);
         });
     });
 });

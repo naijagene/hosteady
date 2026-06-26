@@ -67,6 +67,14 @@ enum AuditAction: string
     case ModuleDoctorExecuted = 'module.doctor.executed';
     case ModuleDocumentationGenerated = 'module.documentation.generated';
 
+    case PlatformEventDispatched = 'platform.event.dispatched';
+    case PlatformEventProcessed = 'platform.event.processed';
+    case PlatformEventFailed = 'platform.event.failed';
+    case NotificationSent = 'notification.sent';
+    case NotificationRead = 'notification.read';
+    case NotificationPreferenceUpdated = 'notification.preference.updated';
+    case ReferenceCatalogRegistered = 'reference.catalog.registered';
+
     public function category(): AuditCategory
     {
         return match ($this) {
@@ -113,7 +121,14 @@ enum AuditAction: string
             self::ModuleRuntimeContribution,
             self::ModuleValidationExecuted,
             self::ModuleDoctorExecuted,
-            self::ModuleDocumentationGenerated => AuditCategory::Application,
+            self::ModuleDocumentationGenerated,
+            self::PlatformEventDispatched,
+            self::PlatformEventProcessed,
+            self::PlatformEventFailed,
+            self::NotificationSent,
+            self::NotificationRead,
+            self::NotificationPreferenceUpdated,
+            self::ReferenceCatalogRegistered => AuditCategory::Application,
 
             self::ApplicationInstalled,
             self::ApplicationEnabled,
@@ -219,7 +234,14 @@ enum AuditAction: string
             self::ModuleRuntimeContribution,
             self::ModuleValidationExecuted,
             self::ModuleDoctorExecuted,
-            self::ModuleDocumentationGenerated => AuditRetentionClass::Ephemeral,
+            self::ModuleDocumentationGenerated,
+            self::PlatformEventDispatched,
+            self::PlatformEventProcessed,
+            self::PlatformEventFailed,
+            self::NotificationSent,
+            self::NotificationRead,
+            self::NotificationPreferenceUpdated,
+            self::ReferenceCatalogRegistered => AuditRetentionClass::Ephemeral,
         };
     }
 

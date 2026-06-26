@@ -292,8 +292,8 @@ class WorkspaceRuntimeResolverTest extends TestCase
         $this->assertTrue($runtime->capabilities['audit']);
         $this->assertTrue($runtime->capabilities['settings']);
         $this->assertTrue($runtime->capabilities['workspace']);
-        $this->assertFalse($runtime->capabilities['notifications']);
         $this->assertFalse($runtime->capabilities['automation']);
+        $this->assertTrue($runtime->capabilities['notifications']);
     }
 
     public function test_includes_application_dependencies_from_catalog(): void

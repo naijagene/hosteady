@@ -77,6 +77,12 @@ class ModuleDoctorService
                 'manifest_version' => \App\Modules\Sdk\Data\ModuleManifest::CURRENT_MANIFEST_VERSION,
                 'sync_on_seed' => (bool) config('heos.sync.on_seed', true),
                 'overall_status' => $health->overallStatus,
+                'enterprise' => [
+                    'event_bus' => (bool) config('heos.enterprise.event_bus.enabled', true),
+                    'notifications' => (bool) config('heos.enterprise.notifications.enabled', true),
+                    'reference_data' => (bool) config('heos.enterprise.reference_data.enabled', true),
+                    'runtime_aware' => (bool) config('heos.enterprise.runtime_aware', true),
+                ],
             ],
             modules: array_map(
                 fn ($module) => $module->toArray(),

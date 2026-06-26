@@ -59,7 +59,7 @@ class WorkspaceRuntimeTest extends TestCase
             ->assertJsonPath('data.runtime_metadata.generated_by', 'WorkspaceRuntimeResolver')
             ->assertJsonPath('data.runtime_metadata.schema_version', 1)
             ->assertJsonPath('data.capabilities.audit', true)
-            ->assertJsonPath('data.capabilities.notifications', false);
+            ->assertJsonPath('data.capabilities.notifications', true);
 
         $this->assertResponseUsesPublicIdsOnly($response->json());
     }

@@ -14,7 +14,7 @@ class TenantAuthorizationServiceTest extends TestCase
     use InteractsWithHeosPlatform;
     use RefreshDatabase;
 
-    public function test_owner_receives_all_twenty_two_permissions(): void
+    public function test_owner_receives_all_permissions(): void
     {
         $this->seedHeosPermissions();
 
@@ -27,7 +27,7 @@ class TenantAuthorizationServiceTest extends TestCase
         $context = TenantContext::fromModels($user, $organization, $membership, $workspace);
         $service = app(TenantAuthorizationService::class);
 
-        $this->assertCount(22, $service->permissionsFor($context));
+        $this->assertCount(25, $service->permissionsFor($context));
         $this->assertTrue($service->allows($context, 'organization.archive'));
         $this->assertTrue($service->allows($context, 'workspace.applications.manage'));
     }
@@ -68,7 +68,9 @@ class TenantAuthorizationServiceTest extends TestCase
 
         $this->assertSame([
             'applications.read',
+            'notifications.read',
             'organization.read',
+            'reference.read',
             'workspace.applications.read',
             'workspace.read',
         ], $permissions);

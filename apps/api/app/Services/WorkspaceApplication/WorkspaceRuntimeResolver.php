@@ -26,15 +26,20 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
     public const SCHEMA_VERSION = 1;
 
     /**
-     * @return array{audit: bool, settings: bool, workspace: bool, notifications: bool, automation: bool}
+     * @return array{audit: bool, settings: bool, workspace: bool, notifications: bool, events: bool, reference_data: bool, automation: bool}
      */
-    private const CAPABILITIES = [
-        'audit' => true,
-        'settings' => true,
-        'workspace' => true,
-        'notifications' => false,
-        'automation' => false,
-    ];
+    private function platformCapabilities(): array
+    {
+        return [
+            'audit' => true,
+            'settings' => true,
+            'workspace' => true,
+            'notifications' => (bool) config('heos.enterprise.notifications.enabled', true),
+            'events' => (bool) config('heos.enterprise.event_bus.enabled', true),
+            'reference_data' => (bool) config('heos.enterprise.reference_data.enabled', true),
+            'automation' => false,
+        ];
+    }
 
     public function __construct(
         private readonly WorkspaceApplicationService $workspaceApplicationService,
@@ -82,7 +87,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
             settingsVersion: $settingsVersion,
             runtimeMetadata: $this->mergeRuntimeMetadata($this->runtimeMetadata(), $mergedExtensions['runtime_metadata']),
             capabilities: $this->runtimeExtensionManager->mergeCapabilities(
-                self::CAPABILITIES,
+                $this->platformCapabilities(),
                 $extensionReport->contributions,
             ),
             navigation: $mergedExtensions['navigation'],
