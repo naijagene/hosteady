@@ -17,6 +17,8 @@ readonly class ConfigEnterpriseRuntimeContext implements EnterpriseRuntimeContex
             'notifications' => (bool) config('heos.enterprise.notifications.enabled', true),
             'events' => (bool) config('heos.enterprise.event_bus.enabled', true),
             'reference_data' => (bool) config('heos.enterprise.reference_data.enabled', true),
+            'storage' => (bool) config('heos.enterprise.files.enabled', true),
+            'media' => (bool) config('heos.enterprise.files.enabled', true),
             default => false,
         };
     }

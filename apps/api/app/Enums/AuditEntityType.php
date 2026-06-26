@@ -12,5 +12,6 @@ enum AuditEntityType: string
     case Application = 'application';
     case OrganizationApplication = 'organization_application';
     case WorkspaceApplication = 'workspace_application';
+    case PlatformFile = 'platform_file';
     case User = 'user';
 }

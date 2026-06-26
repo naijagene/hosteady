@@ -42,5 +42,23 @@ return [
             'enabled' => env('HEOS_REFERENCE_DATA_ENABLED', true),
             'cache_ttl' => (int) env('HEOS_REFERENCE_DATA_CACHE_TTL', 3600),
         ],
+        'files' => [
+            'enabled' => env('HEOS_FILES_ENABLED', true),
+            'default_disk' => env('HEOS_FILES_DISK', 'local'),
+            'public_disk' => env('HEOS_FILES_PUBLIC_DISK', 'public'),
+            'max_upload_size' => (int) env('HEOS_FILES_MAX_UPLOAD_SIZE', 10485760),
+            'quota_bytes' => (int) env('HEOS_FILES_QUOTA_BYTES', 1073741824),
+            'allowed_mime_types' => [
+                'image/png',
+                'image/jpeg',
+                'image/gif',
+                'image/webp',
+                'application/pdf',
+                'text/plain',
+                'text/csv',
+                'application/json',
+            ],
+            'visibility_modes' => ['private', 'workspace', 'organization', 'public'],
+        ],
     ],
 ];

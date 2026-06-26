@@ -2,7 +2,15 @@
 
 namespace App\Providers;
 
+use App\Services\Enterprise\FileMedia\EnterpriseStorageHealthService;
+use App\Services\Enterprise\FileMedia\FileQueryService;
+use App\Services\Enterprise\FileMedia\FileService;
+use App\Services\Enterprise\FileMedia\FileVisibilityResolver;
+use App\Services\Enterprise\FileMedia\LaravelFileServiceAdapter;
+use App\Services\Enterprise\FileMedia\LaravelStorageAdapter;
 use App\Modules\Sdk\Enterprise\Contracts\EventBusPort;
+use App\Modules\Sdk\Enterprise\Contracts\FileServicePort;
+use App\Modules\Sdk\Enterprise\Contracts\StoragePort;
 use App\Modules\Sdk\Enterprise\Contracts\NotificationPort;
 use App\Modules\Sdk\Enterprise\Contracts\ReferenceDataPort;
 use App\Services\Enterprise\EventBus\EventBusService;
@@ -50,6 +58,19 @@ class EnterpriseServiceProvider extends ServiceProvider
             );
         });
         $this->app->singleton(LaravelReferenceDataAdapter::class);
+
+        $this->app->singleton(FileCategoryClassifier::class);
+        $this->app->singleton(FileQueryService::class);
+        $this->app->singleton(FileVisibilityResolver::class);
+        $this->app->singleton(EnterpriseStorageHealthService::class);
+        $this->app->singleton(LaravelStorageAdapter::class);
+        $this->app->singleton(LaravelFileServiceAdapter::class);
+
+        $this->app->singleton(StoragePort::class, LaravelStorageAdapter::class);
+        $this->app->singleton(FileServicePort::class, LaravelFileServiceAdapter::class);
+        $this->app->singleton(FileService::class);
+
+        $this->app->singleton(\App\Services\Enterprise\Audit\EnterpriseFileAuditRecorder::class);
 
         $this->app->singleton(EventBusPort::class, LaravelEventBusAdapter::class);
         $this->app->singleton(NotificationPort::class, LaravelNotificationAdapter::class);

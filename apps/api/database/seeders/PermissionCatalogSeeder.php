@@ -37,6 +37,9 @@ class PermissionCatalogSeeder extends Seeder
         ['key' => 'notifications.read', 'name' => 'Read Notifications', 'description' => null, 'domain' => 'notifications'],
         ['key' => 'notifications.manage', 'name' => 'Manage Notifications', 'description' => null, 'domain' => 'notifications'],
         ['key' => 'reference.read', 'name' => 'Read Reference Data', 'description' => null, 'domain' => 'reference'],
+        ['key' => 'files.read', 'name' => 'Read Files', 'description' => null, 'domain' => 'files'],
+        ['key' => 'files.upload', 'name' => 'Upload Files', 'description' => null, 'domain' => 'files'],
+        ['key' => 'files.manage', 'name' => 'Manage Files', 'description' => null, 'domain' => 'files'],
     ];
 
     public function run(): void

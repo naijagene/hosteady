@@ -81,7 +81,9 @@ class ModuleDoctorService
                     'event_bus' => (bool) config('heos.enterprise.event_bus.enabled', true),
                     'notifications' => (bool) config('heos.enterprise.notifications.enabled', true),
                     'reference_data' => (bool) config('heos.enterprise.reference_data.enabled', true),
+                    'files' => (bool) config('heos.enterprise.files.enabled', true),
                     'runtime_aware' => (bool) config('heos.enterprise.runtime_aware', true),
+                    'storage' => app(\App\Services\Enterprise\FileMedia\EnterpriseStorageHealthService::class)->assess(),
                 ],
             ],
             modules: array_map(

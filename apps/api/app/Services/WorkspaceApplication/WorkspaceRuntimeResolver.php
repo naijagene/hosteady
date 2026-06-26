@@ -26,7 +26,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
     public const SCHEMA_VERSION = 1;
 
     /**
-     * @return array{audit: bool, settings: bool, workspace: bool, notifications: bool, events: bool, reference_data: bool, automation: bool}
+     * @return array{audit: bool, settings: bool, workspace: bool, notifications: bool, events: bool, reference_data: bool, storage: bool, media: bool, automation: bool}
      */
     private function platformCapabilities(): array
     {
@@ -37,6 +37,8 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
             'notifications' => (bool) config('heos.enterprise.notifications.enabled', true),
             'events' => (bool) config('heos.enterprise.event_bus.enabled', true),
             'reference_data' => (bool) config('heos.enterprise.reference_data.enabled', true),
+            'storage' => (bool) config('heos.enterprise.files.enabled', true),
+            'media' => (bool) config('heos.enterprise.files.enabled', true),
             'automation' => false,
         ];
     }
@@ -49,6 +51,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
         private readonly ModuleLifecycleManager $moduleLifecycleManager,
         private readonly RuntimeExtensionService $runtimeExtensionService,
         private readonly \App\Modules\Sdk\Runtime\RuntimeExtensionManager $runtimeExtensionManager,
+        private readonly \App\Services\Enterprise\FileMedia\EnterpriseStorageHealthService $storageHealthService,
     ) {
     }
 
@@ -85,7 +88,10 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
             activeApplication: $activeApplication,
             runtimeVersion: $runtimeVersion,
             settingsVersion: $settingsVersion,
-            runtimeMetadata: $this->mergeRuntimeMetadata($this->runtimeMetadata(), $mergedExtensions['runtime_metadata']),
+            runtimeMetadata: $this->mergeRuntimeMetadata(
+                $this->runtimeMetadata($context),
+                $mergedExtensions['runtime_metadata'],
+            ),
             capabilities: $this->runtimeExtensionManager->mergeCapabilities(
                 $this->platformCapabilities(),
                 $extensionReport->contributions,
@@ -274,14 +280,17 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
     }
 
     /**
-     * @return array{generated_at: string, generated_by: string, schema_version: int}
+     * @return array{generated_at: string, generated_by: string, schema_version: int, enterprise?: array<string, mixed>}
      */
-    private function runtimeMetadata(): array
+    private function runtimeMetadata(TenantContext $context): array
     {
         return [
             'generated_at' => now()->toIso8601String(),
             'generated_by' => self::GENERATED_BY,
             'schema_version' => self::SCHEMA_VERSION,
+            'enterprise' => [
+                'storage' => $this->storageHealthService->runtimeContribution($context),
+            ],
         ];
     }
 }

@@ -75,6 +75,12 @@ enum AuditAction: string
     case NotificationPreferenceUpdated = 'notification.preference.updated';
     case ReferenceCatalogRegistered = 'reference.catalog.registered';
 
+    case FileUploaded = 'file.uploaded';
+    case FileUpdated = 'file.updated';
+    case FileDeleted = 'file.deleted';
+    case FileDownloaded = 'file.downloaded';
+    case FileAccessDenied = 'file.access.denied';
+
     public function category(): AuditCategory
     {
         return match ($this) {
@@ -128,7 +134,12 @@ enum AuditAction: string
             self::NotificationSent,
             self::NotificationRead,
             self::NotificationPreferenceUpdated,
-            self::ReferenceCatalogRegistered => AuditCategory::Application,
+            self::ReferenceCatalogRegistered,
+            self::FileUploaded,
+            self::FileUpdated,
+            self::FileDeleted,
+            self::FileDownloaded,
+            self::FileAccessDenied => AuditCategory::Application,
 
             self::ApplicationInstalled,
             self::ApplicationEnabled,
@@ -167,6 +178,8 @@ enum AuditAction: string
             self::SecurityTenantInvalidHeader,
             self::SecurityCoreActionBlocked,
             self::SecurityAuthUnauthenticated => AuditSeverity::Warning,
+
+            self::FileAccessDenied => AuditSeverity::Warning,
 
             self::WorkspaceRuntimeFailed => AuditSeverity::Warning,
 
@@ -241,7 +254,12 @@ enum AuditAction: string
             self::NotificationSent,
             self::NotificationRead,
             self::NotificationPreferenceUpdated,
-            self::ReferenceCatalogRegistered => AuditRetentionClass::Ephemeral,
+            self::ReferenceCatalogRegistered,
+            self::FileUploaded,
+            self::FileUpdated,
+            self::FileDeleted,
+            self::FileDownloaded,
+            self::FileAccessDenied => AuditRetentionClass::Ephemeral,
         };
     }
 
