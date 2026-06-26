@@ -6,12 +6,8 @@ use App\Modules\Sdk\Workflow\Enums\WorkflowNodeType;
 use App\Modules\Sdk\Workflow\Runtime\Contracts\WorkflowExecutionHandler;
 use App\Modules\Sdk\Workflow\Runtime\Data\WorkflowActionResult;
 use App\Modules\Sdk\Workflow\Runtime\Data\WorkflowExecutionContext;
-use App\Modules\Sdk\Workflow\Runtime\Data\WorkflowExecutionReference;
 use App\Modules\Sdk\Workflow\Runtime\Enums\WorkflowActionStatus;
-use App\Modules\Sdk\Workflow\Runtime\Enums\WorkflowExecutionStatus;
-use App\Modules\Sdk\Workflow\Runtime\Enums\WorkflowInstanceStatus;
-use App\Modules\Sdk\Workflow\Runtime\Exceptions\WorkflowExecutionException;
-use App\Models\WorkflowInstance;
+use App\Services\Enterprise\Workflow\Human\HumanTaskRuntimeBridge;
 
 class DefaultWorkflowExecutionHandler implements WorkflowExecutionHandler
 {
@@ -21,6 +17,11 @@ class DefaultWorkflowExecutionHandler implements WorkflowExecutionHandler
     private const SUPPORTED = [
         'start', 'end', 'task', 'approval', 'condition', 'parallel', 'merge', 'event', 'subprocess', 'wait',
     ];
+
+    public function __construct(
+        private readonly HumanTaskRuntimeBridge $humanTaskBridge,
+    ) {
+    }
 
     public function supports(string $nodeType): bool
     {
@@ -37,20 +38,15 @@ class DefaultWorkflowExecutionHandler implements WorkflowExecutionHandler
         WorkflowExecutionContext $context,
         array $variables,
     ): WorkflowActionResult {
+        if ($this->humanTaskBridge->supports($nodeType)) {
+            return $this->humanTaskBridge->handle($nodeType, $node, $context, $variables);
+        }
+
         return match ($nodeType) {
-            WorkflowNodeType::Wait->value => new WorkflowActionResult(
-                status: WorkflowActionStatus::Waiting->value,
-                metadata: ['placeholder' => true],
-                halt: true,
-            ),
             WorkflowNodeType::Subprocess->value => new WorkflowActionResult(
                 status: WorkflowActionStatus::Succeeded->value,
                 warnings: ['Subprocess execution is not implemented yet.'],
                 metadata: ['placeholder' => true],
-            ),
-            WorkflowNodeType::Approval->value => new WorkflowActionResult(
-                status: WorkflowActionStatus::Succeeded->value,
-                metadata: ['approval' => 'placeholder'],
             ),
             default => new WorkflowActionResult(status: WorkflowActionStatus::Succeeded->value),
         };

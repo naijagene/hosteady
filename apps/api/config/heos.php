@@ -76,5 +76,11 @@ return [
         'workflow' => [
             'enabled' => env('HEOS_WORKFLOW_ENABLED', true),
         ],
+        'human_tasks' => [
+            'enabled' => env('HEOS_HUMAN_TASKS_ENABLED', true),
+        ],
+        'approvals' => [
+            'enabled' => env('HEOS_APPROVALS_ENABLED', true),
+        ],
     ],
 ];

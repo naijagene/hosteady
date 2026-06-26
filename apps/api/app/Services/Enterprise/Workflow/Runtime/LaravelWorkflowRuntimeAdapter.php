@@ -61,10 +61,20 @@ class LaravelWorkflowRuntimeAdapter implements WorkflowRuntimePort
 
             $this->auditRecorder->recordStarted($instance->fresh('definition'));
 
+            $executionContext = new WorkflowExecutionContext(
+                organizationPublicId: $context->organizationPublicId,
+                workspacePublicId: $context->workspacePublicId,
+                userPublicId: $context->userPublicId,
+                membershipPublicId: $context->membershipPublicId,
+                moduleKey: $context->moduleKey,
+                entityReference: $context->entityReference,
+                metadata: array_merge($context->metadata, ['workflow_instance_id' => $instance->public_id]),
+            );
+
             $steps = $this->engine->run(
                 $instance->fresh('definition'),
                 $version->definition_json ?? [],
-                $context,
+                $executionContext,
                 $variables,
             );
 
@@ -141,6 +151,7 @@ class LaravelWorkflowRuntimeAdapter implements WorkflowRuntimePort
         $context = new WorkflowExecutionContext(
             organizationPublicId: $scope->organizationPublicId,
             workspacePublicId: $scope->workspacePublicId,
+            metadata: ['workflow_instance_id' => $instance->public_id],
         );
 
         $startNodeId = $this->nextNodeId($instance) ?? $instance->current_node_id;

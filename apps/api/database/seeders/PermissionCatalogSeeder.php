@@ -52,6 +52,10 @@ class PermissionCatalogSeeder extends Seeder
         ['key' => 'workflow.publish', 'name' => 'Publish Workflows', 'description' => null, 'domain' => 'workflow'],
         ['key' => 'workflow.execute', 'name' => 'Execute Workflows', 'description' => null, 'domain' => 'workflow'],
         ['key' => 'workflow.runtime.read', 'name' => 'Read Workflow Runtime', 'description' => null, 'domain' => 'workflow'],
+        ['key' => 'task.read', 'name' => 'Read Tasks', 'description' => null, 'domain' => 'workflow'],
+        ['key' => 'task.manage', 'name' => 'Manage Tasks', 'description' => null, 'domain' => 'workflow'],
+        ['key' => 'approval.read', 'name' => 'Read Approvals', 'description' => null, 'domain' => 'workflow'],
+        ['key' => 'approval.decide', 'name' => 'Decide Approvals', 'description' => null, 'domain' => 'workflow'],
     ];
 
     public function run(): void

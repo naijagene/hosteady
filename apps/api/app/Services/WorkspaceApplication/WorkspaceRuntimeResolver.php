@@ -26,7 +26,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
     public const SCHEMA_VERSION = 1;
 
     /**
-     * @return array{audit: bool, settings: bool, workspace: bool, notifications: bool, events: bool, reference_data: bool, storage: bool, media: bool, jobs: bool, scheduler: bool, search: bool, indexing: bool, workflow: bool, approval: bool, automation: bool}
+     * @return array{audit: bool, settings: bool, workspace: bool, notifications: bool, events: bool, reference_data: bool, storage: bool, media: bool, jobs: bool, scheduler: bool, search: bool, indexing: bool, workflow: bool, human_tasks: bool, approvals: bool, approval: bool, automation: bool}
      */
     private function platformCapabilities(): array
     {
@@ -44,7 +44,9 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
             'search' => (bool) config('heos.enterprise.search.enabled', true),
             'indexing' => (bool) config('heos.enterprise.search.enabled', true),
             'workflow' => (bool) config('heos.enterprise.workflow.enabled', true),
-            'approval' => false,
+            'human_tasks' => (bool) config('heos.enterprise.human_tasks.enabled', true),
+            'approvals' => (bool) config('heos.enterprise.approvals.enabled', true),
+            'approval' => (bool) config('heos.enterprise.approvals.enabled', true),
             'automation' => false,
         ];
     }

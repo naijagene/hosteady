@@ -221,7 +221,9 @@ class M4WorkflowDefinitionServiceTest extends TestCase
         $runtime = app(WorkspaceRuntimeProvider::class)->resolve($context);
 
         $this->assertTrue($runtime->capabilities['workflow']);
-        $this->assertFalse($runtime->capabilities['approval']);
+        $this->assertTrue($runtime->capabilities['human_tasks']);
+        $this->assertTrue($runtime->capabilities['approvals']);
+        $this->assertTrue($runtime->capabilities['approval']);
         $this->assertArrayHasKey('workflow', $runtime->runtimeMetadata['enterprise']);
     }
 

@@ -20,5 +20,6 @@ enum AuditEntityType: string
     case WorkflowDefinition = 'workflow_definition';
     case WorkflowCategory = 'workflow_category';
     case WorkflowInstance = 'workflow_instance';
+    case WorkflowHumanTask = 'workflow_human_task';
     case User = 'user';
 }

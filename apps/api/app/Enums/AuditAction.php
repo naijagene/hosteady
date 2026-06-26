@@ -117,6 +117,19 @@ enum AuditAction: string
     case WorkflowExecutionCondition = 'workflow.execution.condition';
     case WorkflowExecutionVariableResolved = 'workflow.execution.variable.resolved';
 
+    case TaskCreated = 'task.created';
+    case TaskAssigned = 'task.assigned';
+    case TaskOpened = 'task.opened';
+    case TaskCompleted = 'task.completed';
+    case TaskCancelled = 'task.cancelled';
+    case TaskCommented = 'task.commented';
+    case TaskEscalated = 'task.escalated';
+
+    case ApprovalRequested = 'approval.requested';
+    case ApprovalApproved = 'approval.approved';
+    case ApprovalRejected = 'approval.rejected';
+    case ApprovalCompleted = 'approval.completed';
+
     public function category(): AuditCategory
     {
         return match ($this) {
@@ -206,7 +219,18 @@ enum AuditAction: string
             self::WorkflowExecutionResumed,
             self::WorkflowExecutionNodeExecuted,
             self::WorkflowExecutionCondition,
-            self::WorkflowExecutionVariableResolved => AuditCategory::Application,
+            self::WorkflowExecutionVariableResolved,
+            self::TaskCreated,
+            self::TaskAssigned,
+            self::TaskOpened,
+            self::TaskCompleted,
+            self::TaskCancelled,
+            self::TaskCommented,
+            self::TaskEscalated,
+            self::ApprovalRequested,
+            self::ApprovalApproved,
+            self::ApprovalRejected,
+            self::ApprovalCompleted => AuditCategory::Application,
 
             self::ApplicationInstalled,
             self::ApplicationEnabled,
@@ -250,7 +274,8 @@ enum AuditAction: string
 
             self::PlatformJobFailed,
             self::SchedulerTaskFailed,
-            self::WorkflowExecutionFailed => AuditSeverity::Warning,
+            self::WorkflowExecutionFailed,
+            self::ApprovalRejected => AuditSeverity::Warning,
 
             self::WorkspaceRuntimeFailed => AuditSeverity::Warning,
 
@@ -361,7 +386,18 @@ enum AuditAction: string
             self::WorkflowExecutionResumed,
             self::WorkflowExecutionNodeExecuted,
             self::WorkflowExecutionCondition,
-            self::WorkflowExecutionVariableResolved => AuditRetentionClass::Ephemeral,
+            self::WorkflowExecutionVariableResolved,
+            self::TaskCreated,
+            self::TaskAssigned,
+            self::TaskOpened,
+            self::TaskCompleted,
+            self::TaskCancelled,
+            self::TaskCommented,
+            self::TaskEscalated,
+            self::ApprovalRequested,
+            self::ApprovalApproved,
+            self::ApprovalRejected,
+            self::ApprovalCompleted => AuditRetentionClass::Ephemeral,
         };
     }
 

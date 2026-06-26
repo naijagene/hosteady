@@ -3,6 +3,7 @@
 namespace App\Services\Enterprise\Workflow;
 
 use App\Services\Enterprise\Support\EnterpriseTableHealthGuard;
+use App\Services\Enterprise\Workflow\Human\HumanTaskHealthService;
 use App\Services\Enterprise\Workflow\Runtime\WorkflowRuntimeHealthService;
 use App\Support\Tenant\TenantContext;
 
@@ -11,6 +12,7 @@ class WorkflowHealthService
     public function __construct(
         private readonly WorkflowStatisticsService $statisticsService,
         private readonly WorkflowRuntimeHealthService $runtimeHealthService,
+        private readonly HumanTaskHealthService $humanTaskHealthService,
         private readonly EnterpriseTableHealthGuard $tableGuard,
     ) {
     }
@@ -27,6 +29,7 @@ class WorkflowHealthService
             fn (): array => $this->assessWithTables($context, $enabled),
             array_merge($this->fallbackAssessment($enabled), [
                 'runtime' => $this->runtimeHealthService->assess($context),
+                'human' => $this->humanTaskHealthService->assess($context),
             ]),
         );
     }
@@ -80,6 +83,7 @@ class WorkflowHealthService
             'archived' => $stats->archived,
             'categories' => $stats->categories,
             'runtime' => $this->runtimeHealthService->assess($context),
+            'human' => $this->humanTaskHealthService->assess($context),
             'warnings' => $warnings,
             'status' => $status,
         ];
@@ -117,6 +121,7 @@ class WorkflowHealthService
             'archived' => $assessment['archived'],
             'categories' => $assessment['categories'],
             'runtime' => $this->runtimeHealthService->runtimeContribution($context),
+            'human' => $this->humanTaskHealthService->runtimeContribution($context),
         ];
     }
 }

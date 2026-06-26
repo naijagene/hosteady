@@ -4,8 +4,10 @@ namespace App\Providers;
 
 use App\Models\Application;
 use App\Models\ApplicationSettingDefinition;
+use App\Models\WorkflowHumanTask;
 use App\Observers\ApplicationRuntimeCacheObserver;
 use App\Observers\ApplicationSettingDefinitionRuntimeCacheObserver;
+use App\Policies\HumanTaskPolicy;
 use App\Services\Runtime\AuditedWorkspaceRuntimeProvider;
 use App\Services\Runtime\CachedWorkspaceRuntimeProvider;
 use App\Services\Runtime\LaravelRuntimeCacheStore;
@@ -14,6 +16,7 @@ use App\Services\Runtime\RuntimeMetricsCollector;
 use App\Services\WorkspaceApplication\WorkspaceRuntimeProvider;
 use App\Services\WorkspaceApplication\WorkspaceRuntimeResolver;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -61,6 +64,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Gate::policy(WorkflowHumanTask::class, HumanTaskPolicy::class);
+
         Application::observe(ApplicationRuntimeCacheObserver::class);
         ApplicationSettingDefinition::observe(ApplicationSettingDefinitionRuntimeCacheObserver::class);
     }
