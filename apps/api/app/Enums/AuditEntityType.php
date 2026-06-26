@@ -17,5 +17,7 @@ enum AuditEntityType: string
     case ScheduledTask = 'scheduled_task';
     case PlatformSearchIndex = 'platform_search_index';
     case PlatformSavedSearch = 'platform_saved_search';
+    case WorkflowDefinition = 'workflow_definition';
+    case WorkflowCategory = 'workflow_category';
     case User = 'user';
 }

@@ -73,5 +73,8 @@ return [
             'max_results' => (int) env('HEOS_SEARCH_MAX_RESULTS', 50),
             'recent_limit' => (int) env('HEOS_SEARCH_RECENT_LIMIT', 10),
         ],
+        'workflow' => [
+            'enabled' => env('HEOS_WORKFLOW_ENABLED', true),
+        ],
     ],
 ];

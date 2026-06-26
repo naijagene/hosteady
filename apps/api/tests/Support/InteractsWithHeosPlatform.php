@@ -53,6 +53,9 @@ trait InteractsWithHeosPlatform
             'scheduler.manage',
             'search.read',
             'search.manage',
+            'workflow.read',
+            'workflow.manage',
+            'workflow.publish',
         ];
     }
 
@@ -74,7 +77,7 @@ trait InteractsWithHeosPlatform
 
     protected function assertPermissionCatalogComplete(): void
     {
-        $this->assertSame(35, Permission::query()->count());
+        $this->assertSame(38, Permission::query()->count());
     }
 
     /**

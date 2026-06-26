@@ -100,6 +100,14 @@ enum AuditAction: string
     case SearchDeleted = 'search.deleted';
     case IndexUpdated = 'index.updated';
 
+    case WorkflowCreated = 'workflow.created';
+    case WorkflowUpdated = 'workflow.updated';
+    case WorkflowPublished = 'workflow.published';
+    case WorkflowArchived = 'workflow.archived';
+    case WorkflowValidated = 'workflow.validated';
+    case WorkflowCategoryCreated = 'workflow.category.created';
+    case WorkflowCategoryUpdated = 'workflow.category.updated';
+
     public function category(): AuditCategory
     {
         return match ($this) {
@@ -174,7 +182,14 @@ enum AuditAction: string
             self::SearchExecuted,
             self::SearchSaved,
             self::SearchDeleted,
-            self::IndexUpdated => AuditCategory::Application,
+            self::IndexUpdated,
+            self::WorkflowCreated,
+            self::WorkflowUpdated,
+            self::WorkflowPublished,
+            self::WorkflowArchived,
+            self::WorkflowValidated,
+            self::WorkflowCategoryCreated,
+            self::WorkflowCategoryUpdated => AuditCategory::Application,
 
             self::ApplicationInstalled,
             self::ApplicationEnabled,
@@ -313,7 +328,14 @@ enum AuditAction: string
             self::SearchExecuted,
             self::SearchSaved,
             self::SearchDeleted,
-            self::IndexUpdated => AuditRetentionClass::Ephemeral,
+            self::IndexUpdated,
+            self::WorkflowCreated,
+            self::WorkflowUpdated,
+            self::WorkflowPublished,
+            self::WorkflowArchived,
+            self::WorkflowValidated,
+            self::WorkflowCategoryCreated,
+            self::WorkflowCategoryUpdated => AuditRetentionClass::Ephemeral,
         };
     }
 

@@ -87,6 +87,7 @@ class ModuleDoctorService
                     'jobs' => app(\App\Services\Enterprise\Jobs\PlatformJobHealthService::class)->assess(),
                     'scheduler' => app(\App\Services\Enterprise\Scheduler\SchedulerHealthService::class)->assess(),
                     'search' => app(\App\Services\Enterprise\Search\SearchHealthService::class)->assess(),
+                    'workflow' => app(\App\Services\Enterprise\Workflow\WorkflowHealthService::class)->assess(),
                 ],
             ],
             modules: array_map(

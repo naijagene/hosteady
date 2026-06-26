@@ -26,7 +26,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
     public const SCHEMA_VERSION = 1;
 
     /**
-     * @return array{audit: bool, settings: bool, workspace: bool, notifications: bool, events: bool, reference_data: bool, storage: bool, media: bool, jobs: bool, scheduler: bool, search: bool, indexing: bool, automation: bool}
+     * @return array{audit: bool, settings: bool, workspace: bool, notifications: bool, events: bool, reference_data: bool, storage: bool, media: bool, jobs: bool, scheduler: bool, search: bool, indexing: bool, workflow: bool, approval: bool, automation: bool}
      */
     private function platformCapabilities(): array
     {
@@ -43,6 +43,8 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
             'scheduler' => (bool) config('heos.enterprise.scheduler.enabled', true),
             'search' => (bool) config('heos.enterprise.search.enabled', true),
             'indexing' => (bool) config('heos.enterprise.search.enabled', true),
+            'workflow' => (bool) config('heos.enterprise.workflow.enabled', true),
+            'approval' => false,
             'automation' => false,
         ];
     }
@@ -59,6 +61,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
         private readonly \App\Services\Enterprise\Jobs\PlatformJobHealthService $jobHealthService,
         private readonly \App\Services\Enterprise\Scheduler\SchedulerHealthService $schedulerHealthService,
         private readonly \App\Services\Enterprise\Search\SearchHealthService $searchHealthService,
+        private readonly \App\Services\Enterprise\Workflow\WorkflowHealthService $workflowHealthService,
     ) {
     }
 
@@ -300,6 +303,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
                 'jobs' => $this->jobHealthService->runtimeContribution($context),
                 'scheduler' => $this->schedulerHealthService->runtimeContribution($context),
                 'search' => $this->searchHealthService->runtimeContribution($context),
+                'workflow' => $this->workflowHealthService->runtimeContribution($context),
             ],
         ];
     }

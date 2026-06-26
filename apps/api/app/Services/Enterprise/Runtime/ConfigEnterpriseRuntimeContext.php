@@ -23,6 +23,8 @@ readonly class ConfigEnterpriseRuntimeContext implements EnterpriseRuntimeContex
             'scheduler' => (bool) config('heos.enterprise.scheduler.enabled', true),
             'search' => (bool) config('heos.enterprise.search.enabled', true),
             'indexing' => (bool) config('heos.enterprise.search.enabled', true),
+            'workflow' => (bool) config('heos.enterprise.workflow.enabled', true),
+            'approval' => false,
             default => false,
         };
     }

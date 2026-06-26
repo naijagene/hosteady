@@ -47,6 +47,9 @@ class PermissionCatalogSeeder extends Seeder
         ['key' => 'scheduler.manage', 'name' => 'Manage Scheduled Tasks', 'description' => null, 'domain' => 'scheduler'],
         ['key' => 'search.read', 'name' => 'Read Search', 'description' => null, 'domain' => 'search'],
         ['key' => 'search.manage', 'name' => 'Manage Search', 'description' => null, 'domain' => 'search'],
+        ['key' => 'workflow.read', 'name' => 'Read Workflows', 'description' => null, 'domain' => 'workflow'],
+        ['key' => 'workflow.manage', 'name' => 'Manage Workflows', 'description' => null, 'domain' => 'workflow'],
+        ['key' => 'workflow.publish', 'name' => 'Publish Workflows', 'description' => null, 'domain' => 'workflow'],
     ];
 
     public function run(): void

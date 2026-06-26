@@ -11,6 +11,8 @@ use App\Modules\Sdk\Enterprise\Contracts\ReferenceDataPort;
 use App\Modules\Sdk\Enterprise\Contracts\SchedulerPort;
 use App\Modules\Sdk\Enterprise\Contracts\SearchPort;
 use App\Modules\Sdk\Enterprise\Contracts\StoragePort;
+use App\Modules\Sdk\Workflow\Contracts\WorkflowPort;
+use App\Modules\Sdk\Workflow\Contracts\WorkflowValidator;
 use App\Services\Enterprise\Audit\EnterprisePlatformJobAuditRecorder;
 use App\Services\Enterprise\Audit\EnterpriseSchedulerAuditRecorder;
 use App\Services\Enterprise\Audit\EnterpriseSearchAuditRecorder;
@@ -52,6 +54,15 @@ use App\Services\Enterprise\Search\SearchIndexService;
 use App\Services\Enterprise\Search\SearchModuleRegistry;
 use App\Services\Enterprise\Search\SearchService;
 use App\Services\Enterprise\Search\SearchVisibilityResolver;
+use App\Services\Enterprise\Workflow\LaravelWorkflowAdapter;
+use App\Services\Enterprise\Workflow\WorkflowAuditRecorder;
+use App\Services\Enterprise\Workflow\WorkflowCategoryService;
+use App\Services\Enterprise\Workflow\WorkflowDefinitionService;
+use App\Services\Enterprise\Workflow\WorkflowHealthService;
+use App\Services\Enterprise\Workflow\WorkflowSearchIndexer;
+use App\Services\Enterprise\Workflow\WorkflowStatisticsService;
+use App\Services\Enterprise\Workflow\WorkflowValidationService;
+use App\Services\Enterprise\Workflow\WorkflowVersionService;
 use Illuminate\Support\ServiceProvider;
 
 class EnterpriseServiceProvider extends ServiceProvider
@@ -118,6 +129,18 @@ class EnterpriseServiceProvider extends ServiceProvider
         $this->app->singleton(IndexPort::class, LaravelSearchAdapter::class);
         $this->app->singleton(SearchService::class);
         $this->app->singleton(SearchIndexService::class);
+
+        $this->app->singleton(WorkflowValidationService::class);
+        $this->app->singleton(WorkflowValidator::class, WorkflowValidationService::class);
+        $this->app->singleton(WorkflowVersionService::class);
+        $this->app->singleton(WorkflowStatisticsService::class);
+        $this->app->singleton(WorkflowHealthService::class);
+        $this->app->singleton(WorkflowAuditRecorder::class);
+        $this->app->singleton(WorkflowSearchIndexer::class);
+        $this->app->singleton(LaravelWorkflowAdapter::class);
+        $this->app->singleton(WorkflowPort::class, LaravelWorkflowAdapter::class);
+        $this->app->singleton(WorkflowDefinitionService::class);
+        $this->app->singleton(WorkflowCategoryService::class);
 
         $this->app->singleton(\App\Services\Enterprise\Audit\EnterpriseFileAuditRecorder::class);
         $this->app->singleton(EnterprisePlatformJobAuditRecorder::class);
