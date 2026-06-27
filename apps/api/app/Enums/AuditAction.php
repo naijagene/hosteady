@@ -190,6 +190,14 @@ enum AuditAction: string
     case FormDraftDeleted = 'form.draft.deleted';
     case FormActivityLogged = 'form.activity.logged';
 
+    case TableDefinitionRegistered = 'table.definition.registered';
+    case TableDefinitionUpdated = 'table.definition.updated';
+    case TableRendered = 'table.rendered';
+    case TableQueried = 'table.queried';
+    case TableViewSaved = 'table.view.saved';
+    case TableViewDeleted = 'table.view.deleted';
+    case TableActivityLogged = 'table.activity.logged';
+
     public function category(): AuditCategory
     {
         return match ($this) {
@@ -345,6 +353,14 @@ enum AuditAction: string
             self::FormDraftSaved,
             self::FormDraftDeleted,
             self::FormActivityLogged => AuditCategory::Application,
+
+            self::TableDefinitionRegistered,
+            self::TableDefinitionUpdated,
+            self::TableRendered,
+            self::TableQueried,
+            self::TableViewSaved,
+            self::TableViewDeleted,
+            self::TableActivityLogged => AuditCategory::Application,
 
             self::ApplicationInstalled,
             self::ApplicationEnabled,

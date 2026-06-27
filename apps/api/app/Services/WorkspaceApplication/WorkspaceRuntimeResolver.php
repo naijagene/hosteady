@@ -26,7 +26,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
     public const SCHEMA_VERSION = 1;
 
     /**
-     * @return array{audit: bool, settings: bool, workspace: bool, notifications: bool, events: bool, reference_data: bool, storage: bool, media: bool, jobs: bool, scheduler: bool, search: bool, indexing: bool, workflow: bool, human_tasks: bool, approvals: bool, approval: bool, automation: bool, workflow_designer: bool, workflow_marketplace: bool, business_modules: bool, entities: bool, forms: bool}
+     * @return array{audit: bool, settings: bool, workspace: bool, notifications: bool, events: bool, reference_data: bool, storage: bool, media: bool, jobs: bool, scheduler: bool, search: bool, indexing: bool, workflow: bool, human_tasks: bool, approvals: bool, approval: bool, automation: bool, workflow_designer: bool, workflow_marketplace: bool, business_modules: bool, entities: bool, forms: bool, tables: bool}
      */
     private function platformCapabilities(): array
     {
@@ -53,6 +53,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
             'business_modules' => (bool) config('heos.enterprise.business_modules.enabled', true),
             'entities' => (bool) config('heos.enterprise.entities.enabled', true),
             'forms' => (bool) config('heos.enterprise.forms.enabled', true),
+            'tables' => (bool) config('heos.enterprise.tables.enabled', true),
         ];
     }
 
@@ -72,6 +73,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
         private readonly \App\Services\Module\Development\BusinessModuleHealthService $businessModuleHealthService,
         private readonly \App\Services\Entity\EnterpriseEntityHealthService $entityHealthService,
         private readonly \App\Services\Form\DynamicFormHealthService $formHealthService,
+        private readonly \App\Services\Table\DynamicTableHealthService $tableHealthService,
     ) {
     }
 
@@ -317,6 +319,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
                 'business_modules' => $this->businessModuleHealthService->runtimeContribution($context),
                 'entities' => $this->entityHealthService->runtimeContribution($context),
                 'forms' => $this->formHealthService->runtimeContribution($context),
+                'tables' => $this->tableHealthService->runtimeContribution($context),
             ],
         ];
     }

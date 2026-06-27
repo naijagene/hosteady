@@ -37,5 +37,7 @@ enum AuditEntityType: string
     case FormDefinition = 'form_definition';
     case FormSubmission = 'form_submission';
     case FormDraft = 'form_draft';
+    case TableDefinition = 'table_definition';
+    case TableView = 'table_view';
     case User = 'user';
 }

@@ -100,5 +100,8 @@ return [
         'forms' => [
             'enabled' => env('HEOS_FORMS_ENABLED', true),
         ],
+        'tables' => [
+            'enabled' => env('HEOS_TABLES_ENABLED', true),
+        ],
     ],
 ];

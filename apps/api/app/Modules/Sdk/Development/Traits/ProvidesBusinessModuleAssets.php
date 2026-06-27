@@ -55,6 +55,14 @@ trait ProvidesBusinessModuleAssets
     /**
      * @return list<array<string, mixed>>
      */
+    public function tables(): array
+    {
+        return $this->manifest()->tables;
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
     public function workflows(): array
     {
         return $this->manifest()->workflows;

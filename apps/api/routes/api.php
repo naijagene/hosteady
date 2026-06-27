@@ -22,6 +22,7 @@ use App\Http\Controllers\Api\V1\Tenant\WorkflowAutomationController;
 use App\Http\Controllers\Api\V1\Tenant\WorkflowDesignerController;
 use App\Http\Controllers\Api\V1\Tenant\BusinessModuleController;
 use App\Http\Controllers\Api\V1\Tenant\DynamicFormController;
+use App\Http\Controllers\Api\V1\Tenant\DynamicTableController;
 use App\Http\Controllers\Api\V1\Tenant\EnterpriseEntityController;
 use App\Http\Controllers\Api\V1\Tenant\WorkflowMarketplaceController;
 use App\Http\Controllers\Api\V1\Tenant\WorkflowCategoryController;
@@ -171,6 +172,14 @@ Route::prefix('v1')->group(function () {
             Route::post('tenant/forms/{moduleKey}/{formKey}/drafts', [DynamicFormController::class, 'storeDraft']);
             Route::get('tenant/forms/{moduleKey}/{formKey}/drafts/latest', [DynamicFormController::class, 'latestDraft']);
             Route::get('tenant/forms/{moduleKey}/{formKey}/submissions', [DynamicFormController::class, 'submissions']);
+
+            Route::delete('tenant/tables/views/{viewPublicId}', [DynamicTableController::class, 'destroyView']);
+            Route::get('tenant/tables', [DynamicTableController::class, 'index']);
+            Route::get('tenant/tables/{moduleKey}/{tableKey}', [DynamicTableController::class, 'show']);
+            Route::get('tenant/tables/{moduleKey}/{tableKey}/render', [DynamicTableController::class, 'render']);
+            Route::post('tenant/tables/{moduleKey}/{tableKey}/query', [DynamicTableController::class, 'query']);
+            Route::get('tenant/tables/{moduleKey}/{tableKey}/views', [DynamicTableController::class, 'views']);
+            Route::post('tenant/tables/{moduleKey}/{tableKey}/views', [DynamicTableController::class, 'storeView']);
 
             Route::get('tenant/entities/tags', [EnterpriseEntityController::class, 'tags']);
             Route::post('tenant/entities/tags', [EnterpriseEntityController::class, 'storeTag']);

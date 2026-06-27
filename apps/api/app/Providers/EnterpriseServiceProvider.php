@@ -331,6 +331,32 @@ class EnterpriseServiceProvider extends ServiceProvider
         $this->app->singleton(\App\Services\Form\DynamicFormStatisticsService::class);
         $this->app->singleton(\App\Services\Form\DynamicFormAuditRecorder::class);
         $this->app->singleton(\App\Services\Form\DynamicFormDevelopmentService::class);
+
+        $this->app->singleton(\App\Services\Table\DynamicTableColumnResolver::class);
+        $this->app->singleton(\App\Modules\Sdk\Table\Contracts\TableColumnResolver::class, \App\Services\Table\DynamicTableColumnResolver::class);
+        $this->app->singleton(\App\Services\Table\DynamicTableFilterEvaluator::class);
+        $this->app->singleton(\App\Modules\Sdk\Table\Contracts\TableFilterEvaluator::class, \App\Services\Table\DynamicTableFilterEvaluator::class);
+        $this->app->singleton(\App\Services\Table\DynamicTableSortService::class);
+        $this->app->singleton(\App\Modules\Sdk\Table\Contracts\TableSortResolver::class, \App\Services\Table\DynamicTableSortService::class);
+        $this->app->singleton(\App\Services\Table\DynamicTableValidationService::class);
+        $this->app->singleton(\App\Services\Table\DynamicTableRegistryService::class);
+        $this->app->singleton(\App\Modules\Sdk\Table\Contracts\TableRegistry::class, \App\Services\Table\DynamicTableRegistryService::class);
+        $this->app->singleton(\App\Services\Table\DynamicTableDefinitionService::class);
+        $this->app->singleton(\App\Services\Table\DynamicTableGeneratorService::class);
+        $this->app->singleton(\App\Services\Table\DynamicTableRendererService::class);
+        $this->app->singleton(\App\Modules\Sdk\Table\Contracts\TableRenderer::class, \App\Services\Table\DynamicTableRendererService::class);
+        $this->app->singleton(\App\Services\Table\DynamicTableQueryService::class);
+        $this->app->singleton(\App\Modules\Sdk\Table\Contracts\TableQueryExecutor::class, \App\Services\Table\DynamicTableQueryService::class);
+        $this->app->singleton(\App\Services\Table\DynamicTableViewService::class);
+        $this->app->singleton(\App\Modules\Sdk\Table\Contracts\TableViewProvider::class, \App\Services\Table\DynamicTableViewService::class);
+        $this->app->singleton(\App\Services\Table\DynamicTableActionService::class);
+        $this->app->singleton(\App\Services\Table\DynamicTableActivityService::class);
+        $this->app->singleton(\App\Services\Table\DynamicTableSearchIndexer::class);
+        $this->app->singleton(\App\Services\Table\DynamicTableWorkflowBridge::class);
+        $this->app->singleton(\App\Services\Table\DynamicTableHealthService::class);
+        $this->app->singleton(\App\Services\Table\DynamicTableStatisticsService::class);
+        $this->app->singleton(\App\Services\Table\DynamicTableAuditRecorder::class);
+        $this->app->singleton(\App\Services\Table\DynamicTableDevelopmentService::class);
     }
 
     public function boot(): void

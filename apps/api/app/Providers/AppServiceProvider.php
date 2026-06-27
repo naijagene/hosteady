@@ -9,6 +9,7 @@ use App\Models\WorkflowCanvasSnapshot;
 use App\Models\BusinessModule;
 use App\Models\EntityDefinition;
 use App\Models\FormDefinition;
+use App\Models\TableDefinition;
 use App\Models\WorkflowPackage;
 use App\Models\WorkflowHumanTask;
 use App\Observers\ApplicationRuntimeCacheObserver;
@@ -19,6 +20,7 @@ use App\Policies\WorkflowDesignerPolicy;
 use App\Policies\BusinessModulePolicy;
 use App\Policies\EntityDefinitionPolicy;
 use App\Policies\FormDefinitionPolicy;
+use App\Policies\TableDefinitionPolicy;
 use App\Policies\WorkflowMarketplacePolicy;
 use App\Services\Runtime\AuditedWorkspaceRuntimeProvider;
 use App\Services\Runtime\CachedWorkspaceRuntimeProvider;
@@ -83,6 +85,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(BusinessModule::class, BusinessModulePolicy::class);
         Gate::policy(EntityDefinition::class, EntityDefinitionPolicy::class);
         Gate::policy(FormDefinition::class, FormDefinitionPolicy::class);
+        Gate::policy(TableDefinition::class, TableDefinitionPolicy::class);
 
         Application::observe(ApplicationRuntimeCacheObserver::class);
         ApplicationSettingDefinition::observe(ApplicationSettingDefinitionRuntimeCacheObserver::class);

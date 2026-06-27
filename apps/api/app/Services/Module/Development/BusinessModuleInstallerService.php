@@ -28,6 +28,7 @@ class BusinessModuleInstallerService implements BusinessModuleInstaller
         private readonly BusinessModuleSearchIndexer $searchIndexer,
         private readonly \App\Services\Entity\EnterpriseEntityRegistryService $entityRegistryService,
         private readonly \App\Services\Form\DynamicFormRegistryService $formRegistryService,
+        private readonly \App\Services\Table\DynamicTableRegistryService $tableRegistryService,
     ) {
     }
 
@@ -90,6 +91,7 @@ class BusinessModuleInstallerService implements BusinessModuleInstaller
             $this->seedPermissions($manifest);
             $this->registerManifestEntities($manifest);
             $this->registerManifestForms($manifest);
+            $this->registerManifestTables($manifest);
 
             $installation = BusinessModuleInstallation::query()->create([
                 'organization_id' => $organization->id,
@@ -334,6 +336,26 @@ class BusinessModuleInstallerService implements BusinessModuleInstaller
             );
         } catch (\Throwable) {
             // Form registration must not block module installation.
+        }
+    }
+
+    private function registerManifestTables(\App\Modules\Sdk\Development\Data\BusinessModuleManifest $manifest): void
+    {
+        if ($manifest->tables === []) {
+            return;
+        }
+
+        if (! (bool) config('heos.enterprise.tables.enabled', true)) {
+            return;
+        }
+
+        try {
+            $this->tableRegistryService->registerFromManifestTables(
+                $manifest->tables,
+                $manifest->moduleKey,
+            );
+        } catch (\Throwable) {
+            // Table registration must not block module installation.
         }
     }
 
