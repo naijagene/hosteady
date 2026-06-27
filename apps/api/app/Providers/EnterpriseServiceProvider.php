@@ -288,6 +288,49 @@ class EnterpriseServiceProvider extends ServiceProvider
         $this->app->singleton(\App\Services\Enterprise\Audit\EnterpriseReferenceAuditRecorder::class);
         $this->app->singleton(InAppNotificationChannel::class);
         $this->app->singleton(LogEmailNotificationChannel::class);
+
+        $this->app->singleton(\App\Services\Entity\EnterpriseEntityValidationService::class);
+        $this->app->singleton(\App\Modules\Sdk\Entity\Contracts\EntityValidator::class, \App\Services\Entity\EnterpriseEntityValidationService::class);
+        $this->app->singleton(\App\Services\Entity\EnterpriseEntityRegistryService::class);
+        $this->app->singleton(\App\Modules\Sdk\Entity\Contracts\EntityRegistry::class, \App\Services\Entity\EnterpriseEntityRegistryService::class);
+        $this->app->singleton(\App\Services\Entity\EnterpriseEntityRepositoryService::class);
+        $this->app->singleton(\App\Modules\Sdk\Entity\Contracts\EntityRepository::class, \App\Services\Entity\EnterpriseEntityRepositoryService::class);
+        $this->app->singleton(\App\Services\Entity\EnterpriseEntityLifecycleService::class);
+        $this->app->singleton(\App\Services\Entity\EnterpriseEntityRelationshipService::class);
+        $this->app->singleton(\App\Services\Entity\EnterpriseEntityActivityService::class);
+        $this->app->singleton(\App\Services\Entity\EnterpriseEntityCommentService::class);
+        $this->app->singleton(\App\Services\Entity\EnterpriseEntityTagService::class);
+        $this->app->singleton(\App\Services\Entity\EnterpriseEntitySearchIndexer::class);
+        $this->app->singleton(\App\Services\Entity\EnterpriseEntityWorkflowBridge::class);
+        $this->app->singleton(\App\Services\Entity\EnterpriseEntityAttachmentBridge::class);
+        $this->app->singleton(\App\Services\Entity\EnterpriseEntityHealthService::class);
+        $this->app->singleton(\App\Services\Entity\EnterpriseEntityStatisticsService::class);
+        $this->app->singleton(\App\Services\Entity\EnterpriseEntityAuditRecorder::class);
+        $this->app->singleton(\App\Services\Entity\EnterpriseEntityDevelopmentService::class);
+
+        $this->app->singleton(\App\Services\Form\DynamicFormConditionEvaluator::class);
+        $this->app->singleton(\App\Modules\Sdk\Form\Contracts\FormConditionEvaluator::class, \App\Services\Form\DynamicFormConditionEvaluator::class);
+        $this->app->singleton(\App\Services\Form\DynamicFormFieldResolver::class);
+        $this->app->singleton(\App\Modules\Sdk\Form\Contracts\FormFieldResolver::class, \App\Services\Form\DynamicFormFieldResolver::class);
+        $this->app->singleton(\App\Services\Form\DynamicFormActionService::class);
+        $this->app->singleton(\App\Services\Form\DynamicFormValidationService::class);
+        $this->app->singleton(\App\Modules\Sdk\Form\Contracts\FormValidator::class, \App\Services\Form\DynamicFormValidationService::class);
+        $this->app->singleton(\App\Services\Form\DynamicFormRegistryService::class);
+        $this->app->singleton(\App\Modules\Sdk\Form\Contracts\FormRegistry::class, \App\Services\Form\DynamicFormRegistryService::class);
+        $this->app->singleton(\App\Services\Form\DynamicFormDefinitionService::class);
+        $this->app->singleton(\App\Services\Form\DynamicFormGeneratorService::class);
+        $this->app->singleton(\App\Services\Form\DynamicFormRendererService::class);
+        $this->app->singleton(\App\Modules\Sdk\Form\Contracts\FormRenderer::class, \App\Services\Form\DynamicFormRendererService::class);
+        $this->app->singleton(\App\Services\Form\DynamicFormSubmissionService::class);
+        $this->app->singleton(\App\Modules\Sdk\Form\Contracts\FormSubmissionHandler::class, \App\Services\Form\DynamicFormSubmissionService::class);
+        $this->app->singleton(\App\Services\Form\DynamicFormDraftService::class);
+        $this->app->singleton(\App\Services\Form\DynamicFormActivityService::class);
+        $this->app->singleton(\App\Services\Form\DynamicFormSearchIndexer::class);
+        $this->app->singleton(\App\Services\Form\DynamicFormWorkflowBridge::class);
+        $this->app->singleton(\App\Services\Form\DynamicFormHealthService::class);
+        $this->app->singleton(\App\Services\Form\DynamicFormStatisticsService::class);
+        $this->app->singleton(\App\Services\Form\DynamicFormAuditRecorder::class);
+        $this->app->singleton(\App\Services\Form\DynamicFormDevelopmentService::class);
     }
 
     public function boot(): void

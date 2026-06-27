@@ -26,7 +26,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
     public const SCHEMA_VERSION = 1;
 
     /**
-     * @return array{audit: bool, settings: bool, workspace: bool, notifications: bool, events: bool, reference_data: bool, storage: bool, media: bool, jobs: bool, scheduler: bool, search: bool, indexing: bool, workflow: bool, human_tasks: bool, approvals: bool, approval: bool, automation: bool, workflow_designer: bool, workflow_marketplace: bool, business_modules: bool}
+     * @return array{audit: bool, settings: bool, workspace: bool, notifications: bool, events: bool, reference_data: bool, storage: bool, media: bool, jobs: bool, scheduler: bool, search: bool, indexing: bool, workflow: bool, human_tasks: bool, approvals: bool, approval: bool, automation: bool, workflow_designer: bool, workflow_marketplace: bool, business_modules: bool, entities: bool, forms: bool}
      */
     private function platformCapabilities(): array
     {
@@ -51,6 +51,8 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
             'workflow_designer' => (bool) config('heos.enterprise.workflow_designer.enabled', true),
             'workflow_marketplace' => (bool) config('heos.enterprise.workflow_marketplace.enabled', true),
             'business_modules' => (bool) config('heos.enterprise.business_modules.enabled', true),
+            'entities' => (bool) config('heos.enterprise.entities.enabled', true),
+            'forms' => (bool) config('heos.enterprise.forms.enabled', true),
         ];
     }
 
@@ -68,6 +70,8 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
         private readonly \App\Services\Enterprise\Search\SearchHealthService $searchHealthService,
         private readonly \App\Services\Enterprise\Workflow\WorkflowHealthService $workflowHealthService,
         private readonly \App\Services\Module\Development\BusinessModuleHealthService $businessModuleHealthService,
+        private readonly \App\Services\Entity\EnterpriseEntityHealthService $entityHealthService,
+        private readonly \App\Services\Form\DynamicFormHealthService $formHealthService,
     ) {
     }
 
@@ -311,6 +315,8 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
                 'search' => $this->searchHealthService->runtimeContribution($context),
                 'workflow' => $this->workflowHealthService->runtimeContribution($context),
                 'business_modules' => $this->businessModuleHealthService->runtimeContribution($context),
+                'entities' => $this->entityHealthService->runtimeContribution($context),
+                'forms' => $this->formHealthService->runtimeContribution($context),
             ],
         ];
     }

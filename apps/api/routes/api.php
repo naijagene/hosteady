@@ -21,6 +21,8 @@ use App\Http\Controllers\Api\V1\Tenant\HumanTaskController;
 use App\Http\Controllers\Api\V1\Tenant\WorkflowAutomationController;
 use App\Http\Controllers\Api\V1\Tenant\WorkflowDesignerController;
 use App\Http\Controllers\Api\V1\Tenant\BusinessModuleController;
+use App\Http\Controllers\Api\V1\Tenant\DynamicFormController;
+use App\Http\Controllers\Api\V1\Tenant\EnterpriseEntityController;
 use App\Http\Controllers\Api\V1\Tenant\WorkflowMarketplaceController;
 use App\Http\Controllers\Api\V1\Tenant\WorkflowCategoryController;
 use App\Http\Controllers\Api\V1\Tenant\WorkflowDefinitionController;
@@ -158,6 +160,30 @@ Route::prefix('v1')->group(function () {
             Route::post('tenant/workflows/marketplace/installs/{installPublicId}/upgrade', [WorkflowMarketplaceController::class, 'upgrade']);
             Route::post('tenant/workflows/marketplace/installs/{installPublicId}/rollback', [WorkflowMarketplaceController::class, 'rollback']);
             Route::delete('tenant/workflows/marketplace/installs/{installPublicId}', [WorkflowMarketplaceController::class, 'destroy']);
+
+            Route::get('tenant/forms/submissions/{submissionPublicId}', [DynamicFormController::class, 'showSubmission']);
+            Route::delete('tenant/forms/drafts/{draftPublicId}', [DynamicFormController::class, 'destroyDraft']);
+            Route::get('tenant/forms', [DynamicFormController::class, 'index']);
+            Route::get('tenant/forms/{moduleKey}/{formKey}', [DynamicFormController::class, 'show']);
+            Route::get('tenant/forms/{moduleKey}/{formKey}/render', [DynamicFormController::class, 'render']);
+            Route::post('tenant/forms/{moduleKey}/{formKey}/validate', [DynamicFormController::class, 'validateSubmission']);
+            Route::post('tenant/forms/{moduleKey}/{formKey}/submit', [DynamicFormController::class, 'submit']);
+            Route::post('tenant/forms/{moduleKey}/{formKey}/drafts', [DynamicFormController::class, 'storeDraft']);
+            Route::get('tenant/forms/{moduleKey}/{formKey}/drafts/latest', [DynamicFormController::class, 'latestDraft']);
+            Route::get('tenant/forms/{moduleKey}/{formKey}/submissions', [DynamicFormController::class, 'submissions']);
+
+            Route::get('tenant/entities/tags', [EnterpriseEntityController::class, 'tags']);
+            Route::post('tenant/entities/tags', [EnterpriseEntityController::class, 'storeTag']);
+            Route::delete('tenant/entities/comments/{commentPublicId}', [EnterpriseEntityController::class, 'destroyComment']);
+            Route::get('tenant/entities', [EnterpriseEntityController::class, 'index']);
+            Route::get('tenant/entities/{moduleKey}/{entityKey}', [EnterpriseEntityController::class, 'show']);
+            Route::get('tenant/entities/{moduleKey}/{entityKey}/relationships', [EnterpriseEntityController::class, 'relationships']);
+            Route::post('tenant/entities/{moduleKey}/{entityKey}/relationships', [EnterpriseEntityController::class, 'storeRelationship']);
+            Route::get('tenant/entities/{moduleKey}/{entityKey}/{entityPublicId}/activity', [EnterpriseEntityController::class, 'activity']);
+            Route::get('tenant/entities/{moduleKey}/{entityKey}/{entityPublicId}/comments', [EnterpriseEntityController::class, 'comments']);
+            Route::post('tenant/entities/{moduleKey}/{entityKey}/{entityPublicId}/comments', [EnterpriseEntityController::class, 'storeComment']);
+            Route::post('tenant/entities/{moduleKey}/{entityKey}/{entityPublicId}/tags/{tagPublicId}', [EnterpriseEntityController::class, 'attachTag']);
+            Route::delete('tenant/entities/{moduleKey}/{entityKey}/{entityPublicId}/tags/{tagPublicId}', [EnterpriseEntityController::class, 'detachTag']);
 
             Route::get('tenant/business-modules/installed', [BusinessModuleController::class, 'installed']);
             Route::get('tenant/business-modules', [BusinessModuleController::class, 'index']);

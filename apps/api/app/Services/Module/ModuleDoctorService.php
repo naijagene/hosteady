@@ -71,6 +71,8 @@ class ModuleDoctorService
             'search' => app(\App\Services\Enterprise\Search\SearchHealthService::class)->assess(),
             'workflow' => app(\App\Services\Enterprise\Workflow\WorkflowHealthService::class)->assess(),
             'business_modules' => app(\App\Services\Module\Development\BusinessModuleHealthService::class)->assess(),
+            'entities' => app(\App\Services\Entity\EnterpriseEntityHealthService::class)->assess(),
+            'forms' => app(\App\Services\Form\DynamicFormHealthService::class)->assess(),
         ];
 
         $this->collectEnterpriseHealthWarnings($enterpriseHealth, $warnings, $errors);

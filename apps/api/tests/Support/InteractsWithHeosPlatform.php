@@ -77,6 +77,14 @@ trait InteractsWithHeosPlatform
             'business.modules.install',
             'business.modules.manage',
             'business.modules.develop',
+            'entities.read',
+            'entities.manage',
+            'entities.comment',
+            'entities.tag',
+            'forms.read',
+            'forms.manage',
+            'forms.submit',
+            'forms.draft',
         ];
     }
 
@@ -98,7 +106,7 @@ trait InteractsWithHeosPlatform
 
     protected function assertPermissionCatalogComplete(): void
     {
-        $this->assertSame(59, Permission::query()->count());
+        $this->assertSame(67, Permission::query()->count());
     }
 
     /**

@@ -11,6 +11,7 @@ readonly class BusinessModuleManifest implements \JsonSerializable
      * @param  list<BusinessModulePermissionDefinition>  $permissions
      * @param  list<BusinessModuleRouteDefinition>  $routes
      * @param  list<array<string, mixed>>  $entities
+     * @param  list<array<string, mixed>>  $forms
      * @param  list<array<string, mixed>>  $workflows
      * @param  list<string>  $dependencies
      * @param  array<string, mixed>  $settings
@@ -26,6 +27,7 @@ readonly class BusinessModuleManifest implements \JsonSerializable
         public array $permissions = [],
         public array $routes = [],
         public array $entities = [],
+        public array $forms = [],
         public array $workflows = [],
         public array $dependencies = [],
         public array $settings = [],
@@ -69,6 +71,7 @@ readonly class BusinessModuleManifest implements \JsonSerializable
             permissions: $permissions,
             routes: $routes,
             entities: is_array($data['entities'] ?? null) ? $data['entities'] : [],
+            forms: is_array($data['forms'] ?? null) ? $data['forms'] : [],
             workflows: is_array($data['workflows'] ?? null) ? $data['workflows'] : [],
             dependencies: is_array($data['dependencies'] ?? null) ? array_values(array_map('strval', $data['dependencies'])) : [],
             settings: is_array($data['settings'] ?? null) ? $data['settings'] : [],
@@ -91,6 +94,7 @@ readonly class BusinessModuleManifest implements \JsonSerializable
             'permissions' => array_map(fn (BusinessModulePermissionDefinition $p) => $p->toArray(), $this->permissions),
             'routes' => array_map(fn (BusinessModuleRouteDefinition $r) => $r->toArray(), $this->routes),
             'entities' => $this->entities,
+            'forms' => $this->forms,
             'workflows' => $this->workflows,
             'dependencies' => $this->dependencies,
             'settings' => $this->settings,

@@ -170,6 +170,26 @@ enum AuditAction: string
     case BusinessModuleScaffolded = 'business.module.scaffolded';
     case BusinessModuleValidated = 'business.module.validated';
 
+    case EntityDefinitionRegistered = 'entity.definition.registered';
+    case EntityDefinitionUpdated = 'entity.definition.updated';
+    case EntityRelationshipRegistered = 'entity.relationship.registered';
+    case EntityActivityLogged = 'entity.activity.logged';
+    case EntityCommentCreated = 'entity.comment.created';
+    case EntityCommentDeleted = 'entity.comment.deleted';
+    case EntityTagCreated = 'entity.tag.created';
+    case EntityTagAttached = 'entity.tag.attached';
+    case EntityTagDetached = 'entity.tag.detached';
+    case EntityLifecycleEvent = 'entity.lifecycle.event';
+
+    case FormDefinitionRegistered = 'form.definition.registered';
+    case FormDefinitionUpdated = 'form.definition.updated';
+    case FormRendered = 'form.rendered';
+    case FormValidated = 'form.validated';
+    case FormSubmitted = 'form.submitted';
+    case FormDraftSaved = 'form.draft.saved';
+    case FormDraftDeleted = 'form.draft.deleted';
+    case FormActivityLogged = 'form.activity.logged';
+
     public function category(): AuditCategory
     {
         return match ($this) {
@@ -306,7 +326,25 @@ enum AuditAction: string
             self::BusinessModuleDisabled,
             self::BusinessModuleUninstalled,
             self::BusinessModuleScaffolded,
-            self::BusinessModuleValidated => AuditCategory::Application,
+            self::BusinessModuleValidated,
+            self::EntityDefinitionRegistered,
+            self::EntityDefinitionUpdated,
+            self::EntityRelationshipRegistered,
+            self::EntityActivityLogged,
+            self::EntityCommentCreated,
+            self::EntityCommentDeleted,
+            self::EntityTagCreated,
+            self::EntityTagAttached,
+            self::EntityTagDetached,
+            self::EntityLifecycleEvent,
+            self::FormDefinitionRegistered,
+            self::FormDefinitionUpdated,
+            self::FormRendered,
+            self::FormValidated,
+            self::FormSubmitted,
+            self::FormDraftSaved,
+            self::FormDraftDeleted,
+            self::FormActivityLogged => AuditCategory::Application,
 
             self::ApplicationInstalled,
             self::ApplicationEnabled,

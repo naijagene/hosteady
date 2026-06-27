@@ -94,5 +94,11 @@ return [
         'business_modules' => [
             'enabled' => env('HEOS_BUSINESS_MODULES_ENABLED', true),
         ],
+        'entities' => [
+            'enabled' => env('HEOS_ENTITIES_ENABLED', true),
+        ],
+        'forms' => [
+            'enabled' => env('HEOS_FORMS_ENABLED', true),
+        ],
     ],
 ];

@@ -71,6 +71,14 @@ class PermissionCatalogSeeder extends Seeder
         ['key' => 'business.modules.install', 'name' => 'Install Business Modules', 'description' => null, 'domain' => 'business'],
         ['key' => 'business.modules.manage', 'name' => 'Manage Business Modules', 'description' => null, 'domain' => 'business'],
         ['key' => 'business.modules.develop', 'name' => 'Develop Business Modules', 'description' => null, 'domain' => 'business'],
+        ['key' => 'entities.read', 'name' => 'Read Entities', 'description' => null, 'domain' => 'business'],
+        ['key' => 'entities.manage', 'name' => 'Manage Entities', 'description' => null, 'domain' => 'business'],
+        ['key' => 'entities.comment', 'name' => 'Comment on Entities', 'description' => null, 'domain' => 'business'],
+        ['key' => 'entities.tag', 'name' => 'Tag Entities', 'description' => null, 'domain' => 'business'],
+        ['key' => 'forms.read', 'name' => 'Read Forms', 'description' => null, 'domain' => 'business'],
+        ['key' => 'forms.manage', 'name' => 'Manage Forms', 'description' => null, 'domain' => 'business'],
+        ['key' => 'forms.submit', 'name' => 'Submit Forms', 'description' => null, 'domain' => 'business'],
+        ['key' => 'forms.draft', 'name' => 'Manage Form Drafts', 'description' => null, 'domain' => 'business'],
     ];
 
     public function run(): void

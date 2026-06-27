@@ -30,5 +30,12 @@ enum AuditEntityType: string
     case WorkflowPackageInstall = 'workflow_package_install';
     case BusinessModule = 'business_module';
     case BusinessModuleInstallation = 'business_module_installation';
+    case EntityDefinition = 'entity_definition';
+    case EntityRelationship = 'entity_relationship';
+    case EntityComment = 'entity_comment';
+    case EntityTag = 'entity_tag';
+    case FormDefinition = 'form_definition';
+    case FormSubmission = 'form_submission';
+    case FormDraft = 'form_draft';
     case User = 'user';
 }

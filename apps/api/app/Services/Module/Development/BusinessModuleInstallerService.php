@@ -26,6 +26,8 @@ class BusinessModuleInstallerService implements BusinessModuleInstaller
         private readonly BusinessModuleValidatorService $validator,
         private readonly BusinessModuleAuditRecorder $auditRecorder,
         private readonly BusinessModuleSearchIndexer $searchIndexer,
+        private readonly \App\Services\Entity\EnterpriseEntityRegistryService $entityRegistryService,
+        private readonly \App\Services\Form\DynamicFormRegistryService $formRegistryService,
     ) {
     }
 
@@ -86,6 +88,8 @@ class BusinessModuleInstallerService implements BusinessModuleInstaller
 
         return DB::transaction(function () use ($module, $manifest, $organization, $workspaceId, $request, $userId, $membershipId) {
             $this->seedPermissions($manifest);
+            $this->registerManifestEntities($manifest);
+            $this->registerManifestForms($manifest);
 
             $installation = BusinessModuleInstallation::query()->create([
                 'organization_id' => $organization->id,
@@ -290,6 +294,46 @@ class BusinessModuleInstallerService implements BusinessModuleInstaller
                 'description' => $permission->description,
                 'domain' => $permission->domain ?? 'business',
             ]);
+        }
+    }
+
+    private function registerManifestEntities(\App\Modules\Sdk\Development\Data\BusinessModuleManifest $manifest): void
+    {
+        if ($manifest->entities === []) {
+            return;
+        }
+
+        if (! (bool) config('heos.enterprise.entities.enabled', true)) {
+            return;
+        }
+
+        try {
+            $this->entityRegistryService->registerFromManifestEntities(
+                $manifest->entities,
+                $manifest->moduleKey,
+            );
+        } catch (\Throwable) {
+            // Entity registration must not block module installation.
+        }
+    }
+
+    private function registerManifestForms(\App\Modules\Sdk\Development\Data\BusinessModuleManifest $manifest): void
+    {
+        if ($manifest->forms === []) {
+            return;
+        }
+
+        if (! (bool) config('heos.enterprise.forms.enabled', true)) {
+            return;
+        }
+
+        try {
+            $this->formRegistryService->registerFromManifestForms(
+                $manifest->forms,
+                $manifest->moduleKey,
+            );
+        } catch (\Throwable) {
+            // Form registration must not block module installation.
         }
     }
 
