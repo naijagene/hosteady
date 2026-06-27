@@ -2,6 +2,8 @@
 
 namespace App\Services\Module\Development;
 
+use App\Modules\Sdk\Development\BusinessModuleBase;
+use App\Modules\Sdk\Development\Contracts\BusinessModule;
 use App\Modules\Sdk\Development\Contracts\BusinessModuleValidator;
 use App\Modules\Sdk\Development\Data\BusinessModuleManifest;
 use App\Modules\Sdk\Development\Data\BusinessModuleValidationIssue;
@@ -11,7 +13,70 @@ use App\Modules\Sdk\Development\Exceptions\BusinessModuleValidationException;
 
 class BusinessModuleValidatorService implements BusinessModuleValidator
 {
+    public function __construct(
+        private readonly BusinessModuleManifestLoader $manifestLoader,
+    ) {
+    }
+
     public function validate(BusinessModuleManifest $manifest): BusinessModuleValidationReport
+    {
+        return $this->validateManifest($manifest);
+    }
+
+    /**
+     * @param  BusinessModuleManifest|array<string, mixed>|BusinessModule|BusinessModuleBase|string  $source
+     */
+    public function validateModule(mixed $source): BusinessModuleValidationReport
+    {
+        return $this->validateManifest($this->resolveManifest($source));
+    }
+
+    /**
+     * @param  BusinessModuleManifest|array<string, mixed>|BusinessModule|BusinessModuleBase|string  $source
+     */
+    public function assertValidModule(mixed $source): BusinessModuleValidationReport
+    {
+        $report = $this->validateModule($source);
+
+        if (! $report->valid) {
+            $messages = array_map(fn (BusinessModuleValidationIssue $issue) => $issue->message, $report->issues);
+
+            throw new BusinessModuleValidationException(implode(' ', $messages));
+        }
+
+        return $report;
+    }
+
+    /**
+     * @param  BusinessModuleManifest|array<string, mixed>|BusinessModule|BusinessModuleBase|string  $source
+     */
+    public function resolveManifest(mixed $source): BusinessModuleManifest
+    {
+        if ($source instanceof BusinessModuleManifest) {
+            return $source;
+        }
+
+        if ($source instanceof BusinessModule || $source instanceof BusinessModuleBase) {
+            return $source->manifest();
+        }
+
+        if (is_array($source)) {
+            return BusinessModuleManifest::fromArray($source);
+        }
+
+        if (is_string($source)) {
+            return $this->manifestLoader->loadByKey($source);
+        }
+
+        throw new BusinessModuleValidationException('Unsupported business module manifest source.');
+    }
+
+    public function assertValid(BusinessModuleManifest $manifest): BusinessModuleValidationReport
+    {
+        return $this->assertValidModule($manifest);
+    }
+
+    private function validateManifest(BusinessModuleManifest $manifest): BusinessModuleValidationReport
     {
         $issues = [];
 
@@ -117,18 +182,5 @@ class BusinessModuleValidatorService implements BusinessModuleValidator
             valid: $errors === [],
             issues: $issues,
         );
-    }
-
-    public function assertValid(BusinessModuleManifest $manifest): BusinessModuleValidationReport
-    {
-        $report = $this->validate($manifest);
-
-        if (! $report->valid) {
-            $messages = array_map(fn (BusinessModuleValidationIssue $issue) => $issue->message, $report->issues);
-
-            throw new BusinessModuleValidationException(implode(' ', $messages));
-        }
-
-        return $report;
     }
 }

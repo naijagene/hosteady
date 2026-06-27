@@ -7,6 +7,8 @@ use App\Models\BusinessModuleHistory;
 use App\Models\BusinessModuleInstallation;
 use App\Models\Organization;
 use App\Models\Workspace;
+use App\Modules\Sdk\Development\BusinessModuleBase;
+use App\Modules\Sdk\Development\Contracts\BusinessModule as BusinessModuleContract;
 use App\Modules\Sdk\Development\Contracts\BusinessModuleInstaller;
 use App\Modules\Sdk\Development\Data\BusinessModuleInstallRequest;
 use App\Modules\Sdk\Development\Data\BusinessModuleInstallResult;
@@ -28,6 +30,36 @@ class BusinessModuleInstallerService implements BusinessModuleInstaller
     }
 
     public function install(
+        EnterpriseScope $scope,
+        BusinessModuleInstallRequest $request,
+        ?string $userId = null,
+        ?string $membershipId = null,
+    ): BusinessModuleInstallResult {
+        return $this->installFromManifest($scope, $request, $userId, $membershipId);
+    }
+
+    public function installModule(
+        EnterpriseScope $scope,
+        BusinessModuleContract|BusinessModuleBase $module,
+        BusinessModuleInstallRequest $request,
+        ?string $userId = null,
+        ?string $membershipId = null,
+    ): BusinessModuleInstallResult {
+        $reference = $this->registryService->register($module, $userId, $membershipId);
+
+        return $this->installFromManifest(
+            $scope,
+            new BusinessModuleInstallRequest(
+                modulePublicId: $reference->publicId,
+                settings: $request->settings,
+                metadata: $request->metadata,
+            ),
+            $userId,
+            $membershipId,
+        );
+    }
+
+    private function installFromManifest(
         EnterpriseScope $scope,
         BusinessModuleInstallRequest $request,
         ?string $userId = null,

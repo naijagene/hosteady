@@ -8,19 +8,24 @@ use App\Models\AuditLog;
 use App\Models\BusinessModule;
 use App\Models\BusinessModuleInstallation;
 use App\Models\Permission;
+use App\Modules\Sdk\Development\BusinessModuleBase;
 use App\Modules\Sdk\Development\Data\BusinessModuleHealthReport;
 use App\Modules\Sdk\Development\Data\BusinessModuleInstallRequest;
 use App\Modules\Sdk\Development\Data\BusinessModuleManifest;
 use App\Modules\Sdk\Development\Data\BusinessModuleReference;
 use App\Modules\Sdk\Development\Data\BusinessModuleScaffoldRequest;
 use App\Modules\Sdk\Development\Data\BusinessModuleValidationReport;
+use App\Modules\Sdk\Enterprise\Data\EnterpriseScope;
 use App\Modules\Sdk\Development\Enums\BusinessModuleInstallStatus;
 use App\Modules\Sdk\Development\Enums\BusinessModuleScaffoldTarget;
 use App\Modules\Sdk\Development\Exceptions\BusinessModuleScaffoldException;
 use App\Modules\Sdk\Development\Exceptions\BusinessModuleValidationException;
 use App\Services\Enterprise\Search\SearchIndexService;
+use App\Modules\Sdk\Development\Support\BusinessModuleConventionResolver;
+use App\Modules\Sdk\Development\Support\BusinessModulePathResolver;
 use App\Services\Module\Development\BusinessModuleDevelopmentService;
 use App\Services\Module\Development\BusinessModuleHealthService;
+use App\Services\Module\Development\BusinessModuleInstallerService;
 use App\Services\Module\Development\BusinessModuleRegistryService;
 use App\Services\Module\Development\BusinessModuleScaffolderService;
 use App\Services\Module\Development\BusinessModuleValidatorService;
@@ -42,11 +47,18 @@ class M5BusinessModuleFrameworkTest extends TestCase
 
     private ?string $scaffoldModulePath = null;
 
+    private ?string $scaffoldTestPath = null;
+
     protected function tearDown(): void
     {
         if ($this->scaffoldModulePath !== null) {
             $this->deleteDirectory($this->scaffoldModulePath);
             $this->scaffoldModulePath = null;
+        }
+
+        if ($this->scaffoldTestPath !== null) {
+            $this->deleteDirectory($this->scaffoldTestPath);
+            $this->scaffoldTestPath = null;
         }
 
         parent::tearDown();
@@ -238,7 +250,9 @@ class M5BusinessModuleFrameworkTest extends TestCase
     public function test_scaffold_command_generates_structure(): void
     {
         $moduleKey = 'scaffold-m5-'.preg_replace('/[^a-z0-9-]/', '', uniqid());
-        $this->scaffoldModulePath = app_path('Modules/'.str_replace(['.', '-'], '', ucwords($moduleKey, '.-')));
+        $studlyName = \Illuminate\Support\Str::studly(str_replace(['.', '-', '_'], ' ', $moduleKey));
+        $this->scaffoldModulePath = app_path('Modules/'.$studlyName);
+        $this->scaffoldTestPath = base_path('tests/Feature/Modules/'.$studlyName);
 
         $exitCode = Artisan::call('heos:make-business-module', [
             'key' => $moduleKey,
@@ -249,15 +263,17 @@ class M5BusinessModuleFrameworkTest extends TestCase
 
         $this->assertSame(0, $exitCode);
         $this->assertFileExists($this->scaffoldModulePath.'/Config/manifest.php');
-        $this->assertFileExists($this->scaffoldModulePath.'/Services/'.str_replace(['.', '-'], '', ucwords($moduleKey, '.-')).'Service.php');
-        $this->assertFileExists($this->scaffoldModulePath.'/Providers/'.str_replace(['.', '-'], '', ucwords($moduleKey, '.-')).'ServiceProvider.php');
+        $this->assertFileExists($this->scaffoldModulePath.'/'.$studlyName.'Module.php');
+        $this->assertFileExists($this->scaffoldModulePath.'/Services/'.$studlyName.'Service.php');
+        $this->assertFileExists($this->scaffoldModulePath.'/Providers/'.$studlyName.'ServiceProvider.php');
+        $this->assertTrue(is_subclass_of('App\\Modules\\'.$studlyName.'\\'.$studlyName.'Module', \App\Modules\Sdk\Development\BusinessModuleBase::class));
         $this->assertTrue(BusinessModule::query()->where('module_key', $moduleKey)->exists());
     }
 
     public function test_scaffold_rejects_existing_module_without_force(): void
     {
         $moduleKey = 'scaffold-dup-'.preg_replace('/[^a-z0-9-]/', '', uniqid());
-        $this->scaffoldModulePath = app_path('Modules/'.str_replace(['.', '-'], '', ucwords($moduleKey, '.-')));
+        $this->scaffoldModulePath = app_path('Modules/'.\Illuminate\Support\Str::studly(str_replace(['.', '-', '_'], ' ', $moduleKey)));
 
         Artisan::call('heos:make-business-module', ['key' => $moduleKey]);
         $exitCode = Artisan::call('heos:make-business-module', ['key' => $moduleKey]);
@@ -268,7 +284,7 @@ class M5BusinessModuleFrameworkTest extends TestCase
     public function test_scaffold_service_respects_force_flag(): void
     {
         $moduleKey = 'scaffold-force-'.preg_replace('/[^a-z0-9-]/', '', uniqid());
-        $this->scaffoldModulePath = app_path('Modules/'.str_replace(['.', '-'], '', ucwords($moduleKey, '.-')));
+        $this->scaffoldModulePath = app_path('Modules/'.\Illuminate\Support\Str::studly(str_replace(['.', '-', '_'], ' ', $moduleKey)));
 
         $scaffolder = app(BusinessModuleScaffolderService::class);
         $scaffolder->scaffold(new BusinessModuleScaffoldRequest(
@@ -293,7 +309,7 @@ class M5BusinessModuleFrameworkTest extends TestCase
     public function test_scaffold_service_throws_without_force_when_directory_exists(): void
     {
         $moduleKey = 'scaffold-block-'.preg_replace('/[^a-z0-9-]/', '', uniqid());
-        $this->scaffoldModulePath = app_path('Modules/'.str_replace(['.', '-'], '', ucwords($moduleKey, '.-')));
+        $this->scaffoldModulePath = app_path('Modules/'.\Illuminate\Support\Str::studly(str_replace(['.', '-', '_'], ' ', $moduleKey)));
 
         app(BusinessModuleScaffolderService::class)->scaffold(new BusinessModuleScaffoldRequest(
             moduleKey: $moduleKey,
@@ -628,6 +644,242 @@ class M5BusinessModuleFrameworkTest extends TestCase
         $this->assertTrue(Permission::query()->where('key', 'business.modules.manage')->exists());
         $this->assertTrue(Permission::query()->where('key', 'business.modules.develop')->exists());
         $this->assertPermissionCatalogComplete();
+    }
+
+    public function test_business_module_base_default_manifest_values(): void
+    {
+        $module = new class extends BusinessModuleBase
+        {
+            protected string $moduleKey = 'demo.base.defaults';
+
+            protected ?string $name = 'Demo Base Defaults';
+        };
+
+        $manifest = $module->manifest();
+
+        $this->assertSame('demo.base.defaults', $module->key());
+        $this->assertSame('Demo Base Defaults', $module->name());
+        $this->assertSame('0.1.0', $module->version());
+        $this->assertSame('business', $module->type());
+        $this->assertSame('demo.base.defaults', $manifest->moduleKey);
+    }
+
+    public function test_business_module_base_loads_manifest_file(): void
+    {
+        $moduleKey = 'manifest-load-'.preg_replace('/[^a-z0-9-]/', '', uniqid());
+        $studlyName = \Illuminate\Support\Str::studly(str_replace(['.', '-', '_'], ' ', $moduleKey));
+        $this->scaffoldModulePath = app_path('Modules/'.$studlyName);
+        $this->scaffoldTestPath = base_path('tests/Feature/Modules/'.$studlyName);
+        mkdir($this->scaffoldModulePath.'/Config', 0777, true);
+
+        file_put_contents($this->scaffoldModulePath.'/Config/manifest.php', <<<PHP
+<?php
+
+return [
+    'module_key' => '{$moduleKey}',
+    'name' => 'Manifest Loaded Name',
+    'version' => '2.0.0',
+    'permissions' => [[
+        'key' => '{$moduleKey}.records.read',
+        'name' => 'Read Records',
+        'domain' => 'business',
+    ]],
+    'routes' => [[
+        'name' => '{$moduleKey}.records.index',
+        'method' => 'GET',
+        'uri' => '/records',
+        'action' => 'index',
+    ]],
+];
+
+PHP);
+
+        file_put_contents($this->scaffoldModulePath.'/'.$studlyName.'Module.php', <<<PHP
+<?php
+
+namespace App\\Modules\\{$studlyName};
+
+use App\\Modules\\Sdk\\Development\\BusinessModuleBase;
+
+class {$studlyName}Module extends BusinessModuleBase
+{
+    protected string \$moduleKey = '{$moduleKey}';
+}
+
+PHP);
+
+        /** @var BusinessModuleBase $module */
+        $module = app("App\\Modules\\{$studlyName}\\{$studlyName}Module");
+
+        $this->assertSame('Manifest Loaded Name', $module->name());
+        $this->assertSame('2.0.0', $module->version());
+        $this->assertCount(1, $module->permissions());
+    }
+
+    public function test_business_module_base_class_property_overrides_manifest_value(): void
+    {
+        $moduleKey = 'override-test-'.preg_replace('/[^a-z0-9-]/', '', uniqid());
+        $studlyName = \Illuminate\Support\Str::studly(str_replace(['.', '-', '_'], ' ', $moduleKey));
+        $this->scaffoldModulePath = app_path('Modules/'.$studlyName);
+        $this->scaffoldTestPath = base_path('tests/Feature/Modules/'.$studlyName);
+        mkdir($this->scaffoldModulePath.'/Config', 0777, true);
+
+        file_put_contents($this->scaffoldModulePath.'/Config/manifest.php', <<<'PHP'
+<?php
+
+return [
+    'module_key' => 'override-test',
+    'name' => 'Manifest Name',
+    'version' => '3.0.0',
+];
+
+PHP);
+
+        file_put_contents($this->scaffoldModulePath.'/'.$studlyName.'Module.php', <<<PHP
+<?php
+
+namespace App\\Modules\\{$studlyName};
+
+use App\\Modules\\Sdk\\Development\\BusinessModuleBase;
+
+class {$studlyName}Module extends BusinessModuleBase
+{
+    protected string \$moduleKey = '{$moduleKey}';
+
+    protected ?string \$name = 'Class Name';
+
+    protected ?string \$version = '9.9.9';
+}
+
+PHP);
+
+        /** @var BusinessModuleBase $module */
+        $module = app("App\\Modules\\{$studlyName}\\{$studlyName}Module");
+
+        $this->assertSame('Class Name', $module->name());
+        $this->assertSame('9.9.9', $module->version());
+    }
+
+    public function test_convention_resolver_derives_paths_and_namespace(): void
+    {
+        $resolver = app(BusinessModuleConventionResolver::class);
+        $conventions = $resolver->resolveFromKey('bar.soft');
+
+        $this->assertSame('bar.soft', $conventions['module_key']);
+        $this->assertSame('BarSoft', $conventions['studly_name']);
+        $this->assertSame('App\\Modules\\BarSoft', $conventions['namespace']);
+        $this->assertSame(app_path('Modules/BarSoft'), $conventions['base_path']);
+        $this->assertSame(app_path('Modules/BarSoft/Config/manifest.php'), $conventions['manifest_path']);
+        $this->assertSame(app_path('Modules/BarSoft/Routes/api.php'), $conventions['routes_path']);
+        $this->assertSame('App\\Modules\\BarSoft\\BarSoftModule', $conventions['module_class']);
+    }
+
+    public function test_path_resolver_blocks_traversal(): void
+    {
+        $resolver = app(BusinessModulePathResolver::class);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $resolver->normalize('barsoft', '../outside.php');
+    }
+
+    public function test_validator_accepts_business_module_base_instance(): void
+    {
+        $module = $this->makeSampleBaseModule('validator.base.'.uniqid());
+
+        $report = app(BusinessModuleValidatorService::class)->validateModule($module);
+
+        $this->assertTrue($report->valid);
+        $this->assertSame($module->moduleKey(), $report->moduleKey);
+    }
+
+    public function test_registry_registers_business_module_base_instance(): void
+    {
+        $context = $this->tenantContext();
+        app()->instance(TenantContext::class, $context);
+        $module = $this->makeSampleBaseModule('registry.base.'.uniqid());
+
+        $reference = app(BusinessModuleRegistryService::class)->register(
+            $module,
+            $context->user->id,
+            $context->membership->id,
+        );
+
+        $this->assertSame($module->moduleKey(), $reference->moduleKey);
+        $this->assertTrue(BusinessModule::query()->where('module_key', $module->moduleKey())->exists());
+    }
+
+    public function test_installer_installs_business_module_base_instance(): void
+    {
+        $context = $this->tenantContext();
+        app()->instance(TenantContext::class, $context);
+        $module = $this->makeSampleBaseModule('installer.base.'.uniqid());
+
+        $result = app(BusinessModuleInstallerService::class)->installModule(
+            new EnterpriseScope(
+                organizationPublicId: $context->organizationPublicId,
+                workspacePublicId: $context->workspacePublicId,
+            ),
+            $module,
+            new BusinessModuleInstallRequest(modulePublicId: ''),
+        );
+
+        $this->assertSame(BusinessModuleInstallStatus::Installed->value, $result->status);
+        $this->assertSame($module->moduleKey(), $result->moduleKey);
+    }
+
+    public function test_scaffolder_generates_module_extending_business_module_base(): void
+    {
+        $moduleKey = 'scaffold-base-'.preg_replace('/[^a-z0-9-]/', '', uniqid());
+        $studlyName = \Illuminate\Support\Str::studly(str_replace(['.', '-', '_'], ' ', $moduleKey));
+        $this->scaffoldModulePath = app_path('Modules/'.$studlyName);
+        $this->scaffoldTestPath = base_path('tests/Feature/Modules/'.$studlyName);
+        $this->scaffoldTestPath = base_path('tests/Feature/Modules/'.$studlyName);
+
+        Artisan::call('heos:make-business-module', [
+            'key' => $moduleKey,
+            '--name' => 'Scaffold Base',
+            '--with-tests' => true,
+        ]);
+
+        $moduleClass = 'App\\Modules\\'.$studlyName.'\\'.$studlyName.'Module';
+        $this->assertTrue(is_subclass_of($moduleClass, BusinessModuleBase::class));
+
+        $testContents = file_get_contents($this->scaffoldTestPath.'/'.$studlyName.'ModuleTest.php');
+        $this->assertStringContainsString('BusinessModuleBase::class', $testContents);
+    }
+
+    private function makeSampleBaseModule(string $moduleKey): BusinessModuleBase
+    {
+        return new class($moduleKey) extends BusinessModuleBase
+        {
+            public function __construct(string $moduleKey)
+            {
+                $this->moduleKey = $moduleKey;
+            }
+
+            public function manifest(): BusinessModuleManifest
+            {
+                return BusinessModuleManifest::fromArray([
+                    'module_key' => $this->moduleKey(),
+                    'name' => ucwords(str_replace(['.', '-', '_'], ' ', $this->moduleKey())),
+                    'description' => 'Sample base module manifest.',
+                    'type' => 'business',
+                    'version' => '1.0.0',
+                    'permissions' => [[
+                        'key' => $this->moduleKey().'.records.read',
+                        'name' => 'Read Records',
+                        'domain' => 'business',
+                    ]],
+                    'routes' => [[
+                        'name' => $this->moduleKey().'.records.index',
+                        'method' => 'GET',
+                        'uri' => '/records',
+                        'action' => 'index',
+                    ]],
+                    'dependencies' => ['heos.core'],
+                ]);
+            }
+        };
     }
 
     private function tenantContext(): TenantContext

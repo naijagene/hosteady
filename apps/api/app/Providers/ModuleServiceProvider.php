@@ -40,6 +40,8 @@ class ModuleServiceProvider extends ServiceProvider
         $this->app->singleton(\App\Services\Module\Development\BusinessModuleStatisticsService::class);
         $this->app->singleton(\App\Services\Module\Development\BusinessModuleManifestLoader::class);
         $this->app->singleton(\App\Services\Module\Development\BusinessModuleFilesystemService::class);
+        $this->app->singleton(\App\Modules\Sdk\Development\Support\BusinessModuleConventionResolver::class);
+        $this->app->singleton(\App\Modules\Sdk\Development\Support\BusinessModulePathResolver::class);
         $this->app->singleton(\App\Services\Module\Development\BusinessModuleAuditRecorder::class);
         $this->app->singleton(\App\Services\Module\Development\BusinessModuleSearchIndexer::class);
         $this->app->singleton(\App\Services\Module\Development\BusinessModuleDevelopmentService::class);

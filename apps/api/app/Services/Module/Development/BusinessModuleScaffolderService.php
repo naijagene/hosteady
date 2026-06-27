@@ -86,6 +86,14 @@ class BusinessModuleScaffolderService implements BusinessModuleScaffolder
             $created[] = $readmePath;
         }
 
+        $moduleClassPath = $modulePath.'/'.$studlyName.'Module.php';
+        if (is_file($moduleClassPath) && ! $request->force) {
+            $skipped[] = $moduleClassPath;
+        } else {
+            file_put_contents($moduleClassPath, $this->moduleClassStub($studlyName, $moduleKey));
+            $created[] = $moduleClassPath;
+        }
+
         foreach ($request->targets as $target) {
             $targetEnum = BusinessModuleScaffoldTarget::tryFrom($target);
 
@@ -142,7 +150,7 @@ class BusinessModuleScaffolderService implements BusinessModuleScaffolder
             }
         }
 
-        $this->registryService->register($manifest);
+        $this->registryService->register($this->resolveScaffoldedModule($studlyName, $manifest));
         $this->auditRecorder->recordScaffolded($moduleKey);
 
         return new BusinessModuleScaffoldResult(
@@ -161,6 +169,23 @@ class BusinessModuleScaffolderService implements BusinessModuleScaffolder
 <?php
 
 return {$export};
+
+PHP;
+    }
+
+    private function moduleClassStub(string $studlyName, string $moduleKey): string
+    {
+        return <<<PHP
+<?php
+
+namespace App\\Modules\\{$studlyName};
+
+use App\\Modules\\Sdk\\Development\\BusinessModuleBase;
+
+class {$studlyName}Module extends BusinessModuleBase
+{
+    protected string \$moduleKey = '{$moduleKey}';
+}
 
 PHP;
     }
@@ -186,12 +211,14 @@ PHP;
 
 namespace App\\Modules\\{$studlyName}\\Providers;
 
+use App\\Modules\\{$studlyName}\\{$studlyName}Module;
 use Illuminate\\Support\\ServiceProvider;
 
 class {$studlyName}ServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        \$this->app->singleton({$studlyName}Module::class);
     }
 }
 
@@ -285,8 +312,10 @@ PHP;
 HEOS business module scaffold.
 
 - Module key: `{$moduleKey}`
+- Base class: `App\\Modules\\Sdk\\Development\\BusinessModuleBase`
+- Module class: `App\\Modules\\{$studlyName}\\{$studlyName}Module`
 - Manifest: `Config/manifest.php`
-- Register provider manually when ready.
+- Register the service provider manually when ready.
 
 MD;
     }
@@ -298,23 +327,44 @@ MD;
 
 namespace Tests\\Feature\\Modules\\{$studlyName};
 
+use App\\Modules\\{$studlyName}\\{$studlyName}Module;
+use App\\Modules\\Sdk\\Development\\BusinessModuleBase;
 use App\\Modules\\Sdk\\Development\\Data\\BusinessModuleManifest;
 use Tests\\TestCase;
 
 class {$studlyName}ModuleTest extends TestCase
 {
+    public function test_module_extends_business_module_base(): void
+    {
+        \$module = new {$studlyName}Module();
+
+        \$this->assertInstanceOf(BusinessModuleBase::class, \$module);
+        \$this->assertSame('{$moduleKey}', \$module->moduleKey());
+    }
+
     public function test_manifest_is_valid(): void
     {
-        \$manifest = BusinessModuleManifest::fromArray([
-            'module_key' => '{$moduleKey}',
-            'name' => '{$studlyName}',
-            'version' => '0.1.0',
-        ]);
+        \$manifest = (new {$studlyName}Module())->manifest();
 
+        \$this->assertInstanceOf(BusinessModuleManifest::class, \$manifest);
         \$this->assertSame('{$moduleKey}', \$manifest->moduleKey);
     }
 }
 
 PHP;
+    }
+
+    /**
+     * @param  array<string, mixed>  $fallbackManifest
+     */
+    private function resolveScaffoldedModule(string $studlyName, BusinessModuleManifest $fallbackManifest): BusinessModuleManifest|\App\Modules\Sdk\Development\BusinessModuleBase
+    {
+        $moduleClass = "App\\Modules\\{$studlyName}\\{$studlyName}Module";
+
+        if (class_exists($moduleClass)) {
+            return app($moduleClass);
+        }
+
+        return $fallbackManifest;
     }
 }

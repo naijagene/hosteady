@@ -3,6 +3,7 @@
 namespace App\Services\Module\Development;
 
 use App\Models\BusinessModule;
+use App\Modules\Sdk\Development\BusinessModuleBase;
 use App\Modules\Sdk\Development\Contracts\BusinessModuleProvider;
 use App\Modules\Sdk\Development\Data\BusinessModuleManifest;
 use App\Modules\Sdk\Development\Data\BusinessModuleReference;
@@ -60,10 +61,11 @@ class BusinessModuleRegistryService implements BusinessModuleProvider
     }
 
     public function register(
-        BusinessModuleManifest $manifest,
+        BusinessModuleManifest|array|\App\Modules\Sdk\Development\Contracts\BusinessModule|BusinessModuleBase|string $manifest,
         ?string $userId = null,
         ?string $membershipId = null,
     ): BusinessModuleReference {
+        $manifest = $this->validator->resolveManifest($manifest);
         $manifest = $this->normalizeManifest($manifest);
         $this->validator->assertValid($manifest);
 
