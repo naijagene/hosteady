@@ -32,6 +32,17 @@ class ModuleServiceProvider extends ServiceProvider
         $this->app->singleton(\App\Services\Module\ModuleDocumentationService::class);
         $this->app->singleton(\App\Services\Module\ModuleDoctorService::class);
         $this->app->singleton(\App\Services\Module\ModuleDeveloperAuditRecorder::class);
+        $this->app->singleton(\App\Services\Module\Development\BusinessModuleValidatorService::class);
+        $this->app->singleton(\App\Services\Module\Development\BusinessModuleRegistryService::class);
+        $this->app->singleton(\App\Services\Module\Development\BusinessModuleInstallerService::class);
+        $this->app->singleton(\App\Services\Module\Development\BusinessModuleScaffolderService::class);
+        $this->app->singleton(\App\Services\Module\Development\BusinessModuleHealthService::class);
+        $this->app->singleton(\App\Services\Module\Development\BusinessModuleStatisticsService::class);
+        $this->app->singleton(\App\Services\Module\Development\BusinessModuleManifestLoader::class);
+        $this->app->singleton(\App\Services\Module\Development\BusinessModuleFilesystemService::class);
+        $this->app->singleton(\App\Services\Module\Development\BusinessModuleAuditRecorder::class);
+        $this->app->singleton(\App\Services\Module\Development\BusinessModuleSearchIndexer::class);
+        $this->app->singleton(\App\Services\Module\Development\BusinessModuleDevelopmentService::class);
         $this->app->singleton(ModuleRegistry::class, function ($app) {
             return new ModuleRegistry(
                 $app->make(ModuleManifestValidator::class),

@@ -6,6 +6,7 @@ use App\Models\Application;
 use App\Models\ApplicationSettingDefinition;
 use App\Models\WorkflowAutomationRule;
 use App\Models\WorkflowCanvasSnapshot;
+use App\Models\BusinessModule;
 use App\Models\WorkflowPackage;
 use App\Models\WorkflowHumanTask;
 use App\Observers\ApplicationRuntimeCacheObserver;
@@ -13,6 +14,7 @@ use App\Observers\ApplicationSettingDefinitionRuntimeCacheObserver;
 use App\Policies\HumanTaskPolicy;
 use App\Policies\WorkflowAutomationPolicy;
 use App\Policies\WorkflowDesignerPolicy;
+use App\Policies\BusinessModulePolicy;
 use App\Policies\WorkflowMarketplacePolicy;
 use App\Services\Runtime\AuditedWorkspaceRuntimeProvider;
 use App\Services\Runtime\CachedWorkspaceRuntimeProvider;
@@ -74,6 +76,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(WorkflowAutomationRule::class, WorkflowAutomationPolicy::class);
         Gate::policy(WorkflowCanvasSnapshot::class, WorkflowDesignerPolicy::class);
         Gate::policy(WorkflowPackage::class, WorkflowMarketplacePolicy::class);
+        Gate::policy(BusinessModule::class, BusinessModulePolicy::class);
 
         Application::observe(ApplicationRuntimeCacheObserver::class);
         ApplicationSettingDefinition::observe(ApplicationSettingDefinitionRuntimeCacheObserver::class);

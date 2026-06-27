@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\V1\Tenant\ApprovalController;
 use App\Http\Controllers\Api\V1\Tenant\HumanTaskController;
 use App\Http\Controllers\Api\V1\Tenant\WorkflowAutomationController;
 use App\Http\Controllers\Api\V1\Tenant\WorkflowDesignerController;
+use App\Http\Controllers\Api\V1\Tenant\BusinessModuleController;
 use App\Http\Controllers\Api\V1\Tenant\WorkflowMarketplaceController;
 use App\Http\Controllers\Api\V1\Tenant\WorkflowCategoryController;
 use App\Http\Controllers\Api\V1\Tenant\WorkflowDefinitionController;
@@ -157,6 +158,14 @@ Route::prefix('v1')->group(function () {
             Route::post('tenant/workflows/marketplace/installs/{installPublicId}/upgrade', [WorkflowMarketplaceController::class, 'upgrade']);
             Route::post('tenant/workflows/marketplace/installs/{installPublicId}/rollback', [WorkflowMarketplaceController::class, 'rollback']);
             Route::delete('tenant/workflows/marketplace/installs/{installPublicId}', [WorkflowMarketplaceController::class, 'destroy']);
+
+            Route::get('tenant/business-modules/installed', [BusinessModuleController::class, 'installed']);
+            Route::get('tenant/business-modules', [BusinessModuleController::class, 'index']);
+            Route::get('tenant/business-modules/{modulePublicId}', [BusinessModuleController::class, 'show']);
+            Route::post('tenant/business-modules/{modulePublicId}/install', [BusinessModuleController::class, 'install']);
+            Route::post('tenant/business-modules/installations/{installationPublicId}/enable', [BusinessModuleController::class, 'enable']);
+            Route::post('tenant/business-modules/installations/{installationPublicId}/disable', [BusinessModuleController::class, 'disable']);
+            Route::delete('tenant/business-modules/installations/{installationPublicId}', [BusinessModuleController::class, 'destroy']);
         });
     });
 });

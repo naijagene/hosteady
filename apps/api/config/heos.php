@@ -91,5 +91,8 @@ return [
         'workflow_marketplace' => [
             'enabled' => env('HEOS_WORKFLOW_MARKETPLACE_ENABLED', true),
         ],
+        'business_modules' => [
+            'enabled' => env('HEOS_BUSINESS_MODULES_ENABLED', true),
+        ],
     ],
 ];

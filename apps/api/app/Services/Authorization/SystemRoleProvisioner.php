@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class SystemRoleProvisioner
 {
-    private const EXPECTED_PERMISSION_COUNT = 55;
+    private const EXPECTED_PERMISSION_COUNT = 59;
 
     /**
      * @var array<string, string>
@@ -49,6 +49,7 @@ class SystemRoleProvisioner
         'workflow.marketplace.read',
         'workflow.marketplace.install',
         'workflow.marketplace.export',
+        'business.modules.read',
     ];
 
     /**
@@ -73,6 +74,7 @@ class SystemRoleProvisioner
         'workflow.automation.read',
         'workflow.designer.read',
         'workflow.marketplace.read',
+        'business.modules.read',
     ];
 
     /**
@@ -85,6 +87,8 @@ class SystemRoleProvisioner
         'jobs.manage',
         'scheduler.manage',
         'workflow.publish',
+        'business.modules.manage',
+        'business.modules.develop',
     ];
 
     /**

@@ -28,5 +28,7 @@ enum AuditEntityType: string
     case WorkflowNodeTemplate = 'workflow_node_template';
     case WorkflowPackage = 'workflow_package';
     case WorkflowPackageInstall = 'workflow_package_install';
+    case BusinessModule = 'business_module';
+    case BusinessModuleInstallation = 'business_module_installation';
     case User = 'user';
 }

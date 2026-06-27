@@ -70,6 +70,7 @@ class ModuleDoctorService
             'scheduler' => app(\App\Services\Enterprise\Scheduler\SchedulerHealthService::class)->assess(),
             'search' => app(\App\Services\Enterprise\Search\SearchHealthService::class)->assess(),
             'workflow' => app(\App\Services\Enterprise\Workflow\WorkflowHealthService::class)->assess(),
+            'business_modules' => app(\App\Services\Module\Development\BusinessModuleHealthService::class)->assess(),
         ];
 
         $this->collectEnterpriseHealthWarnings($enterpriseHealth, $warnings, $errors);

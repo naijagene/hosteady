@@ -162,6 +162,14 @@ enum AuditAction: string
     case WorkflowMarketplaceImported = 'workflow.marketplace.imported';
     case WorkflowMarketplaceCompatibilityChecked = 'workflow.marketplace.compatibility.checked';
 
+    case BusinessModuleRegistered = 'business.module.registered';
+    case BusinessModuleInstalled = 'business.module.installed';
+    case BusinessModuleEnabled = 'business.module.enabled';
+    case BusinessModuleDisabled = 'business.module.disabled';
+    case BusinessModuleUninstalled = 'business.module.uninstalled';
+    case BusinessModuleScaffolded = 'business.module.scaffolded';
+    case BusinessModuleValidated = 'business.module.validated';
+
     public function category(): AuditCategory
     {
         return match ($this) {
@@ -291,7 +299,14 @@ enum AuditAction: string
             self::WorkflowMarketplaceUninstalled,
             self::WorkflowMarketplaceExported,
             self::WorkflowMarketplaceImported,
-            self::WorkflowMarketplaceCompatibilityChecked => AuditCategory::Application,
+            self::WorkflowMarketplaceCompatibilityChecked,
+            self::BusinessModuleRegistered,
+            self::BusinessModuleInstalled,
+            self::BusinessModuleEnabled,
+            self::BusinessModuleDisabled,
+            self::BusinessModuleUninstalled,
+            self::BusinessModuleScaffolded,
+            self::BusinessModuleValidated => AuditCategory::Application,
 
             self::ApplicationInstalled,
             self::ApplicationEnabled,
