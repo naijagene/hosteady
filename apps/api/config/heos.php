@@ -88,5 +88,8 @@ return [
         'workflow_designer' => [
             'enabled' => env('HEOS_WORKFLOW_DESIGNER_ENABLED', true),
         ],
+        'workflow_marketplace' => [
+            'enabled' => env('HEOS_WORKFLOW_MARKETPLACE_ENABLED', true),
+        ],
     ],
 ];

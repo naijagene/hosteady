@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\DB;
 
 class OrganizationProvisioningService
 {
-    private const EXPECTED_PERMISSION_COUNT = 50;
+    private const EXPECTED_PERMISSION_COUNT = 55;
 
     /**
      * @var list<string>

@@ -62,6 +62,11 @@ class PermissionCatalogSeeder extends Seeder
         ['key' => 'workflow.designer.manage', 'name' => 'Manage Workflow Designer', 'description' => null, 'domain' => 'workflow'],
         ['key' => 'workflow.designer.import', 'name' => 'Import Workflows', 'description' => null, 'domain' => 'workflow'],
         ['key' => 'workflow.designer.export', 'name' => 'Export Workflows', 'description' => null, 'domain' => 'workflow'],
+        ['key' => 'workflow.marketplace.read', 'name' => 'Read Workflow Marketplace', 'description' => null, 'domain' => 'workflow'],
+        ['key' => 'workflow.marketplace.install', 'name' => 'Install Workflow Marketplace Packages', 'description' => null, 'domain' => 'workflow'],
+        ['key' => 'workflow.marketplace.publish', 'name' => 'Publish Workflow Marketplace Packages', 'description' => null, 'domain' => 'workflow'],
+        ['key' => 'workflow.marketplace.manage', 'name' => 'Manage Workflow Marketplace Packages', 'description' => null, 'domain' => 'workflow'],
+        ['key' => 'workflow.marketplace.export', 'name' => 'Export Workflow Marketplace Packages', 'description' => null, 'domain' => 'workflow'],
     ];
 
     public function run(): void

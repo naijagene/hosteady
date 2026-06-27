@@ -68,6 +68,11 @@ trait InteractsWithHeosPlatform
             'workflow.designer.manage',
             'workflow.designer.import',
             'workflow.designer.export',
+            'workflow.marketplace.read',
+            'workflow.marketplace.install',
+            'workflow.marketplace.publish',
+            'workflow.marketplace.manage',
+            'workflow.marketplace.export',
         ];
     }
 
@@ -89,7 +94,7 @@ trait InteractsWithHeosPlatform
 
     protected function assertPermissionCatalogComplete(): void
     {
-        $this->assertSame(50, Permission::query()->count());
+        $this->assertSame(55, Permission::query()->count());
     }
 
     /**

@@ -6,12 +6,14 @@ use App\Models\Application;
 use App\Models\ApplicationSettingDefinition;
 use App\Models\WorkflowAutomationRule;
 use App\Models\WorkflowCanvasSnapshot;
+use App\Models\WorkflowPackage;
 use App\Models\WorkflowHumanTask;
 use App\Observers\ApplicationRuntimeCacheObserver;
 use App\Observers\ApplicationSettingDefinitionRuntimeCacheObserver;
 use App\Policies\HumanTaskPolicy;
 use App\Policies\WorkflowAutomationPolicy;
 use App\Policies\WorkflowDesignerPolicy;
+use App\Policies\WorkflowMarketplacePolicy;
 use App\Services\Runtime\AuditedWorkspaceRuntimeProvider;
 use App\Services\Runtime\CachedWorkspaceRuntimeProvider;
 use App\Services\Runtime\LaravelRuntimeCacheStore;
@@ -71,6 +73,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(WorkflowHumanTask::class, HumanTaskPolicy::class);
         Gate::policy(WorkflowAutomationRule::class, WorkflowAutomationPolicy::class);
         Gate::policy(WorkflowCanvasSnapshot::class, WorkflowDesignerPolicy::class);
+        Gate::policy(WorkflowPackage::class, WorkflowMarketplacePolicy::class);
 
         Application::observe(ApplicationRuntimeCacheObserver::class);
         ApplicationSettingDefinition::observe(ApplicationSettingDefinitionRuntimeCacheObserver::class);

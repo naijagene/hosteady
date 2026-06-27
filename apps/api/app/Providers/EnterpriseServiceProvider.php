@@ -250,6 +250,26 @@ class EnterpriseServiceProvider extends ServiceProvider
         $this->app->singleton(\App\Modules\Sdk\Workflow\Designer\Contracts\WorkflowDesignerPort::class, \App\Services\Enterprise\Workflow\Designer\LaravelWorkflowDesignerAdapter::class);
         $this->app->singleton(\App\Services\Enterprise\Workflow\Designer\WorkflowDesignerService::class);
 
+        $this->app->singleton(\App\Services\Enterprise\Workflow\Marketplace\WorkflowPackageValidatorService::class);
+        $this->app->singleton(\App\Modules\Sdk\Workflow\Marketplace\Contracts\WorkflowPackageValidator::class, \App\Services\Enterprise\Workflow\Marketplace\WorkflowPackageValidatorService::class);
+        $this->app->singleton(\App\Services\Enterprise\Workflow\Marketplace\WorkflowPackageProviderService::class);
+        $this->app->singleton(\App\Modules\Sdk\Workflow\Marketplace\Contracts\WorkflowPackageProvider::class, \App\Services\Enterprise\Workflow\Marketplace\WorkflowPackageProviderService::class);
+        $this->app->singleton(\App\Services\Enterprise\Workflow\Marketplace\WorkflowCompatibilityService::class);
+        $this->app->singleton(\App\Services\Enterprise\Workflow\Marketplace\WorkflowDependencyResolverService::class);
+        $this->app->singleton(\App\Modules\Sdk\Workflow\Marketplace\Contracts\WorkflowDependencyResolver::class, \App\Services\Enterprise\Workflow\Marketplace\WorkflowDependencyResolverService::class);
+        $this->app->singleton(\App\Services\Enterprise\Workflow\Marketplace\WorkflowMarketplaceAuditRecorder::class);
+        $this->app->singleton(\App\Services\Enterprise\Workflow\Marketplace\WorkflowMarketplaceSearchIndexer::class);
+        $this->app->singleton(\App\Services\Enterprise\Workflow\Marketplace\WorkflowPackageStatisticsService::class);
+        $this->app->singleton(\App\Services\Enterprise\Workflow\Marketplace\WorkflowPackageHealthService::class);
+        $this->app->singleton(\App\Services\Enterprise\Workflow\Marketplace\WorkflowPackageService::class);
+        $this->app->singleton(\App\Services\Enterprise\Workflow\Marketplace\WorkflowPackageExporterService::class);
+        $this->app->singleton(\App\Modules\Sdk\Workflow\Marketplace\Contracts\WorkflowPackageExporter::class, \App\Services\Enterprise\Workflow\Marketplace\WorkflowPackageExporterService::class);
+        $this->app->singleton(\App\Services\Enterprise\Workflow\Marketplace\WorkflowPackageInstallerService::class);
+        $this->app->singleton(\App\Modules\Sdk\Workflow\Marketplace\Contracts\WorkflowPackageInstaller::class, \App\Services\Enterprise\Workflow\Marketplace\WorkflowPackageInstallerService::class);
+        $this->app->singleton(\App\Services\Enterprise\Workflow\Marketplace\LaravelWorkflowMarketplaceAdapter::class);
+        $this->app->singleton(\App\Modules\Sdk\Workflow\Marketplace\Contracts\WorkflowMarketplacePort::class, \App\Services\Enterprise\Workflow\Marketplace\LaravelWorkflowMarketplaceAdapter::class);
+        $this->app->singleton(\App\Services\Enterprise\Workflow\Marketplace\WorkflowMarketplaceService::class);
+
         $this->app->singleton(\App\Services\Enterprise\Audit\EnterpriseFileAuditRecorder::class);
         $this->app->singleton(EnterprisePlatformJobAuditRecorder::class);
         $this->app->singleton(EnterpriseSchedulerAuditRecorder::class);

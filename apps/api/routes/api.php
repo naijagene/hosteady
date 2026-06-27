@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\V1\Tenant\ApprovalController;
 use App\Http\Controllers\Api\V1\Tenant\HumanTaskController;
 use App\Http\Controllers\Api\V1\Tenant\WorkflowAutomationController;
 use App\Http\Controllers\Api\V1\Tenant\WorkflowDesignerController;
+use App\Http\Controllers\Api\V1\Tenant\WorkflowMarketplaceController;
 use App\Http\Controllers\Api\V1\Tenant\WorkflowCategoryController;
 use App\Http\Controllers\Api\V1\Tenant\WorkflowDefinitionController;
 use App\Http\Controllers\Api\V1\Tenant\WorkflowInstanceController;
@@ -142,6 +143,20 @@ Route::prefix('v1')->group(function () {
             Route::get('tenant/workflows/designer/definitions/{definitionPublicId}/export', [WorkflowDesignerController::class, 'export']);
             Route::post('tenant/workflows/designer/import', [WorkflowDesignerController::class, 'import']);
             Route::get('tenant/workflows/designer/node-templates', [WorkflowDesignerController::class, 'indexNodeTemplates']);
+
+            Route::get('tenant/workflows/marketplace/installed', [WorkflowMarketplaceController::class, 'installed']);
+            Route::get('tenant/workflows/marketplace/updates', [WorkflowMarketplaceController::class, 'updates']);
+            Route::post('tenant/workflows/marketplace/import', [WorkflowMarketplaceController::class, 'import']);
+            Route::get('tenant/workflows/marketplace', [WorkflowMarketplaceController::class, 'index']);
+            Route::post('tenant/workflows/marketplace', [WorkflowMarketplaceController::class, 'store']);
+            Route::get('tenant/workflows/marketplace/{packagePublicId}', [WorkflowMarketplaceController::class, 'show']);
+            Route::post('tenant/workflows/marketplace/{packagePublicId}/versions', [WorkflowMarketplaceController::class, 'publishVersion']);
+            Route::get('tenant/workflows/marketplace/{packagePublicId}/export', [WorkflowMarketplaceController::class, 'export']);
+            Route::post('tenant/workflows/marketplace/{packagePublicId}/install', [WorkflowMarketplaceController::class, 'install']);
+            Route::get('tenant/workflows/marketplace/{packagePublicId}/compatibility', [WorkflowMarketplaceController::class, 'compatibility']);
+            Route::post('tenant/workflows/marketplace/installs/{installPublicId}/upgrade', [WorkflowMarketplaceController::class, 'upgrade']);
+            Route::post('tenant/workflows/marketplace/installs/{installPublicId}/rollback', [WorkflowMarketplaceController::class, 'rollback']);
+            Route::delete('tenant/workflows/marketplace/installs/{installPublicId}', [WorkflowMarketplaceController::class, 'destroy']);
         });
     });
 });

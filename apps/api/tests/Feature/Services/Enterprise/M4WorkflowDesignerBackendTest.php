@@ -487,7 +487,7 @@ class M4WorkflowDesignerBackendTest extends TestCase
         $response->assertCreated();
     }
 
-    public function test_permission_catalog_has_fifty_permissions(): void
+    public function test_permission_catalog_has_fifty_five_permissions(): void
     {
         $this->seedHeosPermissions();
         $this->assertPermissionCatalogComplete();

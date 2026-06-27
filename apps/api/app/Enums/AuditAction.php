@@ -150,6 +150,18 @@ enum AuditAction: string
     case WorkflowDesignerTemplateCreated = 'workflow.designer.template.created';
     case WorkflowDesignerPreviewGenerated = 'workflow.designer.preview.generated';
 
+    case WorkflowMarketplacePackageCreated = 'workflow.marketplace.package.created';
+    case WorkflowMarketplacePackageUpdated = 'workflow.marketplace.package.updated';
+    case WorkflowMarketplacePackageDeleted = 'workflow.marketplace.package.deleted';
+    case WorkflowMarketplacePackageVersionPublished = 'workflow.marketplace.package.version.published';
+    case WorkflowMarketplaceInstalled = 'workflow.marketplace.installed';
+    case WorkflowMarketplaceUpgraded = 'workflow.marketplace.upgraded';
+    case WorkflowMarketplaceRollback = 'workflow.marketplace.rollback';
+    case WorkflowMarketplaceUninstalled = 'workflow.marketplace.uninstalled';
+    case WorkflowMarketplaceExported = 'workflow.marketplace.exported';
+    case WorkflowMarketplaceImported = 'workflow.marketplace.imported';
+    case WorkflowMarketplaceCompatibilityChecked = 'workflow.marketplace.compatibility.checked';
+
     public function category(): AuditCategory
     {
         return match ($this) {
@@ -268,7 +280,18 @@ enum AuditAction: string
             self::WorkflowImported,
             self::WorkflowExported,
             self::WorkflowDesignerTemplateCreated,
-            self::WorkflowDesignerPreviewGenerated => AuditCategory::Application,
+            self::WorkflowDesignerPreviewGenerated,
+            self::WorkflowMarketplacePackageCreated,
+            self::WorkflowMarketplacePackageUpdated,
+            self::WorkflowMarketplacePackageDeleted,
+            self::WorkflowMarketplacePackageVersionPublished,
+            self::WorkflowMarketplaceInstalled,
+            self::WorkflowMarketplaceUpgraded,
+            self::WorkflowMarketplaceRollback,
+            self::WorkflowMarketplaceUninstalled,
+            self::WorkflowMarketplaceExported,
+            self::WorkflowMarketplaceImported,
+            self::WorkflowMarketplaceCompatibilityChecked => AuditCategory::Application,
 
             self::ApplicationInstalled,
             self::ApplicationEnabled,

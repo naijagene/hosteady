@@ -26,5 +26,7 @@ enum AuditEntityType: string
     case WorkflowTimer = 'workflow_timer';
     case WorkflowCanvasSnapshot = 'workflow_canvas_snapshot';
     case WorkflowNodeTemplate = 'workflow_node_template';
+    case WorkflowPackage = 'workflow_package';
+    case WorkflowPackageInstall = 'workflow_package_install';
     case User = 'user';
 }

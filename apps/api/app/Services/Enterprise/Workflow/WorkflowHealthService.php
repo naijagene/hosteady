@@ -17,6 +17,7 @@ class WorkflowHealthService
         private readonly HumanTaskHealthService $humanTaskHealthService,
         private readonly WorkflowAutomationHealthService $automationHealthService,
         private readonly WorkflowDesignerHealthService $designerHealthService,
+        private readonly \App\Services\Enterprise\Workflow\Marketplace\WorkflowPackageHealthService $marketplaceHealthService,
         private readonly EnterpriseTableHealthGuard $tableGuard,
     ) {
     }
@@ -36,6 +37,7 @@ class WorkflowHealthService
                 'human' => $this->humanTaskHealthService->assess($context),
                 'automation' => $this->automationHealthService->assess($context),
                 'designer' => $this->designerHealthService->assess($context),
+                'marketplace' => $this->marketplaceHealthService->assess($context),
             ]),
         );
     }
@@ -92,6 +94,7 @@ class WorkflowHealthService
             'human' => $this->humanTaskHealthService->assess($context),
             'automation' => $this->automationHealthService->assess($context),
             'designer' => $this->designerHealthService->assess($context),
+            'marketplace' => $this->marketplaceHealthService->assess($context),
             'warnings' => $warnings,
             'status' => $status,
         ];
@@ -132,6 +135,7 @@ class WorkflowHealthService
             'human' => $this->humanTaskHealthService->runtimeContribution($context),
             'automation' => $this->automationHealthService->runtimeContribution($context),
             'designer' => $this->designerHealthService->runtimeContribution($context),
+            'marketplace' => $this->marketplaceHealthService->runtimeContribution($context),
         ];
     }
 }
