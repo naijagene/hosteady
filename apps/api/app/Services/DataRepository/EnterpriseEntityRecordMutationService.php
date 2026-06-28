@@ -22,6 +22,7 @@ class EnterpriseEntityRecordMutationService implements EntityRecordMutationHandl
         private readonly EntityRecordValidator $validator,
         private readonly EnterpriseEntityRecordLifecycleService $lifecycleService,
         private readonly EnterpriseEntityRecordVersionService $versionService,
+        private readonly \App\Services\Rules\RuleDataRepositoryBridge $ruleDataRepositoryBridge,
     ) {
     }
 
@@ -31,11 +32,25 @@ class EnterpriseEntityRecordMutationService implements EntityRecordMutationHandl
         $report = $this->validator->validateCreate($request, $definition);
         $this->validator->assertValid($report);
 
+        $this->dispatchIfBound(fn (TenantContext $context) => $this->ruleDataRepositoryBridge->assertAllowedBeforeMutation(
+            $context,
+            'entity_creating',
+            $request->moduleKey,
+            $request->entityKey,
+            null,
+            $request->values,
+        ));
+
         return DB::transaction(function () use ($organizationId, $workspaceId, $request) {
             $record = $this->repository->create($organizationId, $workspaceId, $request);
             $this->versionService->snapshot($record, 'create');
             $this->dispatchIfBound(fn (TenantContext $context) => $this->lifecycleService->dispatchCreated(
                 $context,
+                $record,
+            ));
+            $this->dispatchIfBound(fn (TenantContext $context) => $this->ruleDataRepositoryBridge->dispatchAfterMutationBestEffort(
+                $context,
+                'entity_created',
                 $record,
             ));
 
@@ -63,6 +78,15 @@ class EnterpriseEntityRecordMutationService implements EntityRecordMutationHandl
         $report = $this->validator->validateUpdate($request, $definition, $beforeState);
         $this->validator->assertValid($report);
 
+        $this->dispatchIfBound(fn (TenantContext $context) => $this->ruleDataRepositoryBridge->assertAllowedBeforeMutation(
+            $context,
+            'entity_updating',
+            $request->moduleKey,
+            $request->entityKey,
+            $request->recordPublicId,
+            $request->values,
+        ));
+
         return DB::transaction(function () use ($organizationId, $workspaceId, $request, $beforeState) {
             $record = $this->repository->update($organizationId, $workspaceId, $request);
             $this->versionService->snapshot($record, 'update');
@@ -71,6 +95,11 @@ class EnterpriseEntityRecordMutationService implements EntityRecordMutationHandl
                 $record,
                 $beforeState,
                 $record->recordData->values,
+            ));
+            $this->dispatchIfBound(fn (TenantContext $context) => $this->ruleDataRepositoryBridge->dispatchAfterMutationBestEffort(
+                $context,
+                'entity_updated',
+                $record,
             ));
 
             return new EntityRecordMutationResult(
@@ -94,12 +123,26 @@ class EnterpriseEntityRecordMutationService implements EntityRecordMutationHandl
 
         $beforeState = $existing->recordData->values;
 
+        $this->dispatchIfBound(fn (TenantContext $context) => $this->ruleDataRepositoryBridge->assertAllowedBeforeMutation(
+            $context,
+            'entity_deleting',
+            $request->moduleKey,
+            $request->entityKey,
+            $request->recordPublicId,
+            $beforeState,
+        ));
+
         return DB::transaction(function () use ($organizationId, $workspaceId, $request, $beforeState) {
             $record = $this->repository->delete($organizationId, $workspaceId, $request);
             $this->dispatchIfBound(fn (TenantContext $context) => $this->lifecycleService->dispatchDeleted(
                 $context,
                 $record,
                 $beforeState,
+            ));
+            $this->dispatchIfBound(fn (TenantContext $context) => $this->ruleDataRepositoryBridge->dispatchAfterMutationBestEffort(
+                $context,
+                'entity_deleted',
+                $record,
             ));
 
             return new EntityRecordMutationResult(

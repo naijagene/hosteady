@@ -26,7 +26,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
     public const SCHEMA_VERSION = 1;
 
     /**
-     * @return array{audit: bool, settings: bool, workspace: bool, notifications: bool, events: bool, reference_data: bool, storage: bool, media: bool, jobs: bool, scheduler: bool, search: bool, indexing: bool, workflow: bool, human_tasks: bool, approvals: bool, approval: bool, automation: bool, workflow_designer: bool, workflow_marketplace: bool, business_modules: bool, entities: bool, forms: bool, tables: bool, dashboards: bool, reports: bool}
+     * @return array{audit: bool, settings: bool, workspace: bool, notifications: bool, events: bool, reference_data: bool, storage: bool, media: bool, jobs: bool, scheduler: bool, search: bool, indexing: bool, workflow: bool, human_tasks: bool, approvals: bool, approval: bool, automation: bool, workflow_designer: bool, workflow_marketplace: bool, business_modules: bool, entities: bool, forms: bool, tables: bool, dashboards: bool, reports: bool, data_repository: bool, documents: bool}
      */
     private function platformCapabilities(): array
     {
@@ -57,6 +57,8 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
             'dashboards' => (bool) config('heos.enterprise.dashboards.enabled', true),
             'reports' => (bool) config('heos.enterprise.reports.enabled', true),
             'data_repository' => (bool) config('heos.enterprise.data_repository.enabled', true),
+            'documents' => (bool) config('heos.enterprise.documents.enabled', true),
+            'business_rules' => (bool) config('heos.enterprise.business_rules.enabled', true),
         ];
     }
 
@@ -80,6 +82,9 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
         private readonly \App\Services\Dashboard\DynamicDashboardHealthService $dashboardHealthService,
         private readonly \App\Services\Report\DynamicReportHealthService $reportHealthService,
         private readonly \App\Services\DataRepository\EnterpriseEntityRecordHealthService $dataRepositoryHealthService,
+        private readonly \App\Services\Document\EnterpriseDocumentHealthService $documentHealthService,
+        private readonly \App\Services\Notification\NotificationHealthService $notificationHealthService,
+        private readonly \App\Services\Rules\RuleHealthService $ruleHealthService,
     ) {
     }
 
@@ -329,6 +334,9 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
                 'dashboards' => $this->dashboardHealthService->runtimeContribution($context),
                 'reports' => $this->reportHealthService->runtimeContribution($context),
                 'data_repository' => $this->dataRepositoryHealthService->runtimeContribution($context),
+                'documents' => $this->documentHealthService->runtimeContribution($context),
+                'notifications' => $this->notificationHealthService->runtimeContribution($context),
+                'business_rules' => $this->ruleHealthService->runtimeContribution($context),
             ],
         ];
     }

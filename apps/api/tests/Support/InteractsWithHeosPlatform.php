@@ -41,7 +41,13 @@ trait InteractsWithHeosPlatform
             'applications.uninstall',
             'audit.read',
             'notifications.read',
+            'notifications.send',
             'notifications.manage',
+            'notifications.templates',
+            'notifications.preferences',
+            'notifications.broadcast',
+            'notifications.schedule',
+            'notifications.digest',
             'reference.read',
             'files.read',
             'files.upload',
@@ -105,6 +111,18 @@ trait InteractsWithHeosPlatform
             'data.records.restore',
             'data.records.link',
             'data.records.manage',
+            'documents.read',
+            'documents.upload',
+            'documents.update',
+            'documents.delete',
+            'documents.version',
+            'documents.attach',
+            'documents.manage',
+            'rules.read',
+            'rules.manage',
+            'rules.evaluate',
+            'rules.execute',
+            'rules.admin',
         ];
     }
 
@@ -126,7 +144,7 @@ trait InteractsWithHeosPlatform
 
     protected function assertPermissionCatalogComplete(): void
     {
-        $this->assertSame(87, Permission::query()->count());
+        $this->assertSame(105, Permission::query()->count());
     }
 
     /**

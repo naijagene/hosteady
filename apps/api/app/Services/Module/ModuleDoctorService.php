@@ -77,6 +77,9 @@ class ModuleDoctorService
             'tables' => app(\App\Services\Table\DynamicTableHealthService::class)->assess(),
             'dashboards' => app(\App\Services\Dashboard\DynamicDashboardHealthService::class)->assess(),
             'reports' => app(\App\Services\Report\DynamicReportHealthService::class)->assess(),
+            'documents' => app(\App\Services\Document\EnterpriseDocumentHealthService::class)->assess(),
+            'notification_platform' => app(\App\Services\Notification\NotificationHealthService::class)->assess(),
+            'business_rules' => app(\App\Services\Rules\RuleHealthService::class)->assess(),
         ];
 
         $this->collectEnterpriseHealthWarnings($enterpriseHealth, $warnings, $errors);
@@ -97,6 +100,7 @@ class ModuleDoctorService
                 'enterprise' => [
                     'event_bus' => (bool) config('heos.enterprise.event_bus.enabled', true),
                     'notifications' => (bool) config('heos.enterprise.notifications.enabled', true),
+                    'business_rules' => (bool) config('heos.enterprise.business_rules.enabled', true),
                     'reference_data' => (bool) config('heos.enterprise.reference_data.enabled', true),
                     'files' => (bool) config('heos.enterprise.files.enabled', true),
                     'runtime_aware' => (bool) config('heos.enterprise.runtime_aware', true),

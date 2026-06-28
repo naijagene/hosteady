@@ -47,5 +47,8 @@ enum AuditEntityType: string
     case ReportRun = 'report_run';
     case ReportExport = 'report_export';
     case ReportSchedule = 'report_schedule';
+    case EnterpriseDocument = 'enterprise_document';
+    case EnterpriseNotification = 'enterprise_notification';
+    case EnterpriseRule = 'enterprise_rule';
     case User = 'user';
 }

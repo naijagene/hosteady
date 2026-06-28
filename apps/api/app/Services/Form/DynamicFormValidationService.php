@@ -12,11 +12,13 @@ use App\Modules\Sdk\Form\Data\FormValidationIssue;
 use App\Modules\Sdk\Form\Data\FormValidationReport;
 use App\Modules\Sdk\Form\Enums\FormValidationSeverity;
 use App\Modules\Sdk\Form\Exceptions\FormValidationException;
+use App\Support\Tenant\TenantContext;
 
 class DynamicFormValidationService implements FormValidator
 {
     public function __construct(
         private readonly FormConditionEvaluator $conditionEvaluator,
+        private readonly \App\Services\Rules\RuleFormBridge $ruleFormBridge,
     ) {
     }
 
@@ -105,6 +107,12 @@ class DynamicFormValidationService implements FormValidator
             $issues = array_merge($issues, $this->validateFieldRules($field, $value));
         }
 
+        if (app()->bound(TenantContext::class)) {
+            $this->ruleFormBridge->validateFormBestEffort($request, $definition, $issues);
+        }
+
+        $this->dispatchIfBound(fn () => $this->ruleFormBridge->validateFormBestEffort($request, $definition, $issues));
+
         foreach ($definition->validationRules as $rule) {
             $field = $fieldMap[$rule->field] ?? null;
             $value = $values[$rule->field] ?? null;
@@ -134,6 +142,17 @@ class DynamicFormValidationService implements FormValidator
                 $definition->moduleKey,
                 $definition->formKey,
             ));
+        }
+    }
+
+    /**
+     * @param  list<FormField>  $fields
+     * @return array<string, FormField>
+     */
+    private function dispatchIfBound(callable $callback): void
+    {
+        if (app()->bound(TenantContext::class)) {
+            $callback();
         }
     }
 
@@ -190,7 +209,7 @@ class DynamicFormValidationService implements FormValidator
             'select', 'enum', 'radio' => $this->isValidEnumValue($field, $value),
             'multiselect' => is_array($value),
             'entity_selector', 'reference' => $this->isValidReference($value),
-            'file' => $this->isValidFileShape($value),
+            'file', 'document', 'attachment' => $this->isValidFileShape($value),
             'json' => is_array($value) || is_string($value),
             default => true,
         };
@@ -353,7 +372,10 @@ class DynamicFormValidationService implements FormValidator
             return false;
         }
 
-        return isset($value['public_id']) || isset($value['file_public_id']) || isset($value['name']);
+        return isset($value['public_id'])
+            || isset($value['file_public_id'])
+            || isset($value['document_public_id'])
+            || isset($value['name']);
     }
 
     private function isEmpty(mixed $value): bool

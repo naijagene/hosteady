@@ -10,6 +10,7 @@ use App\Modules\Sdk\Report\Data\ReportExportResult;
 use App\Modules\Sdk\Report\Enums\ReportExportFormat;
 use App\Modules\Sdk\Report\Exceptions\ReportExportException;
 use App\Modules\Sdk\Report\Exceptions\ReportNotFoundException;
+use App\Services\Document\EnterpriseDocumentDevelopmentService;
 use App\Support\Tenant\TenantContext;
 use Illuminate\Support\Facades\DB;
 
@@ -18,6 +19,7 @@ class DynamicReportExportService implements ReportExporter
     public function __construct(
         private readonly DynamicReportRegistryService $registryService,
         private readonly DynamicReportAuditRecorder $auditRecorder,
+        private readonly EnterpriseDocumentDevelopmentService $documentDevelopmentService,
     ) {
     }
 
@@ -53,9 +55,46 @@ class DynamicReportExportService implements ReportExporter
                 ],
                 'metadata' => array_merge($exportDefinition->metadata, ['placeholder' => true]),
             ]);
+
+            if (
+                $context !== null
+                && filter_var($exportDefinition->metadata['store_as_document'] ?? false, FILTER_VALIDATE_BOOL)
+            ) {
+                $document = $this->documentDevelopmentService->createPlaceholder(
+                    $context,
+                    sprintf('%s.%s export', $definition->moduleKey, $definition->reportKey),
+                    $definition->moduleKey,
+                    [
+                        'report_key' => $definition->reportKey,
+                        'export_format' => $exportDefinition->exportFormat,
+                        'source' => 'report_export',
+                    ],
+                );
+
+                $export->file_reference = array_merge($export->file_reference ?? [], [
+                    'document_public_id' => $document->publicId,
+                    'placeholder' => true,
+                ]);
+                $export->metadata = array_merge($export->metadata ?? [], [
+                    'document_public_id' => $document->publicId,
+                ]);
+            }
+
             $export->save();
 
             $this->auditRecorder->recordExportCompleted($definition, $export->public_id);
+
+            try {
+                if (app()->bound(\App\Support\Tenant\TenantContext::class)) {
+                    app(\App\Services\Notification\NotificationReportBridge::class)->notifyExportReadyBestEffort(
+                        app(\App\Support\Tenant\TenantContext::class),
+                        $definition->moduleKey,
+                        $definition->reportKey,
+                        $export->public_id,
+                    );
+                }
+            } catch (\Throwable) {
+            }
 
             return DynamicReportMapper::toExportResult($export->fresh());
         });

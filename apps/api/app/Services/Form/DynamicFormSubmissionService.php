@@ -12,7 +12,11 @@ use App\Modules\Sdk\Form\Data\FormValidationReport;
 use App\Modules\Sdk\Form\Enums\FormSubmissionStatus;
 use App\Modules\Sdk\Form\Enums\FormType;
 use App\Modules\Sdk\Form\Exceptions\FormNotFoundException;
+use App\Modules\Sdk\Document\Data\AttachmentRequest;
+use App\Modules\Sdk\Document\Enums\AttachmentSubjectType;
 use App\Services\DataRepository\EnterpriseEntityRecordFormBridge;
+use App\Services\Document\EnterpriseAttachmentService;
+use App\Services\Enterprise\Runtime\EnterpriseRuntimeBridge;
 use App\Support\Tenant\TenantContext;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -27,6 +31,9 @@ class DynamicFormSubmissionService implements FormSubmissionHandler
         private readonly DynamicFormAuditRecorder $auditRecorder,
         private readonly DynamicFormDraftService $draftService,
         private readonly EnterpriseEntityRecordFormBridge $formBridge,
+        private readonly EnterpriseAttachmentService $attachmentService,
+        private readonly EnterpriseRuntimeBridge $runtimeBridge,
+        private readonly \App\Services\Rules\RuleFormBridge $ruleFormBridge,
     ) {
     }
 
@@ -54,6 +61,7 @@ class DynamicFormSubmissionService implements FormSubmissionHandler
         return DB::transaction(function () use ($request, $definition, $report) {
             $entityPublicId = $this->bridgeEntityMutation($request, $definition);
             $submission = $this->persistSubmission($request, $definition, $report, $entityPublicId);
+            $this->attachSubmissionDocuments($submission, $definition, $request);
 
             if ($request->draftId !== null) {
                 $this->draftService->deleteByPublicId($request->draftId);
@@ -62,6 +70,7 @@ class DynamicFormSubmissionService implements FormSubmissionHandler
             $this->activityService->logSubmission($submission, 'submitted');
             $this->auditRecorder->recordSubmission($submission);
             $this->workflowBridge->triggerSubmissionBestEffort($submission, $definition);
+            $this->ruleFormBridge->dispatchSubmittedBestEffort($request, $definition, $submission);
 
             return new FormSubmissionResult(
                 moduleKey: $definition->moduleKey,
@@ -244,5 +253,59 @@ class DynamicFormSubmissionService implements FormSubmissionHandler
             'submitted_at' => now(),
             'metadata' => $request->metadata,
         ]);
+    }
+
+    private function attachSubmissionDocuments(
+        FormSubmission $submission,
+        FormDefinition $definition,
+        FormSubmissionRequest $request,
+    ): void {
+        if (! app()->bound(TenantContext::class)) {
+            return;
+        }
+
+        $context = app(TenantContext::class);
+
+        try {
+            $this->runtimeBridge->requireCapability($context, 'documents');
+        } catch (\Throwable) {
+            return;
+        }
+
+        foreach ($definition->fields as $field) {
+            $fieldType = strtolower($field->type);
+
+            if (! in_array($fieldType, ['file', 'document', 'attachment'], true)) {
+                continue;
+            }
+
+            $value = $request->values[$field->key] ?? null;
+
+            if (! is_array($value)) {
+                continue;
+            }
+
+            $documentPublicId = $value['document_public_id']
+                ?? $value['public_id']
+                ?? $value['file_public_id']
+                ?? null;
+
+            if ($documentPublicId === null || $documentPublicId === '') {
+                continue;
+            }
+
+            $this->attachmentService->attachBestEffort(
+                $context->organization->id,
+                $context->workspace?->id,
+                new AttachmentRequest(
+                    documentPublicId: (string) $documentPublicId,
+                    subjectType: AttachmentSubjectType::FormSubmission->value,
+                    subjectPublicId: $submission->public_id,
+                    subjectModuleKey: $definition->moduleKey,
+                    subjectEntityKey: $definition->entityKey,
+                    metadata: ['field_key' => $field->key],
+                ),
+            );
+        }
     }
 }

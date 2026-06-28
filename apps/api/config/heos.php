@@ -36,7 +36,10 @@ return [
         ],
         'notifications' => [
             'enabled' => env('HEOS_NOTIFICATIONS_ENABLED', true),
-            'channels' => ['in_app', 'log_email'],
+            'channels' => ['in_app', 'email', 'sms', 'push', 'whatsapp', 'slack', 'teams', 'webhook', 'log_email'],
+            'default_channels' => ['in_app'],
+            'digest_frequencies' => ['daily', 'weekly'],
+            'quiet_hours_enabled' => env('HEOS_NOTIFICATIONS_QUIET_HOURS', false),
         ],
         'reference_data' => [
             'enabled' => env('HEOS_REFERENCE_DATA_ENABLED', true),
@@ -111,6 +114,13 @@ return [
         ],
         'data_repository' => [
             'enabled' => env('HEOS_DATA_REPOSITORY_ENABLED', true),
+        ],
+        'documents' => [
+            'enabled' => env('HEOS_DOCUMENTS_ENABLED', true),
+            'quota_bytes' => (int) env('HEOS_DOCUMENTS_QUOTA_BYTES', 5_368_709_120),
+        ],
+        'business_rules' => [
+            'enabled' => env('HEOS_BUSINESS_RULES_ENABLED', true),
         ],
     ],
 ];

@@ -73,6 +73,29 @@ enum AuditAction: string
     case NotificationSent = 'notification.sent';
     case NotificationRead = 'notification.read';
     case NotificationPreferenceUpdated = 'notification.preference.updated';
+    case NotificationCreated = 'notification.created';
+    case NotificationUpdated = 'notification.updated';
+    case NotificationDeleted = 'notification.deleted';
+    case NotificationDelivered = 'notification.delivered';
+    case NotificationDeliveryFailed = 'notification.delivery.failed';
+    case NotificationTemplateCreated = 'notification.template.created';
+    case NotificationTemplateUpdated = 'notification.template.updated';
+    case NotificationBroadcastSent = 'notification.broadcast.sent';
+    case RuleSetCreated = 'rule.set.created';
+    case RuleSetUpdated = 'rule.set.updated';
+    case RuleSetDeleted = 'rule.set.deleted';
+    case RuleSetEnabled = 'rule.set.enabled';
+    case RuleSetDisabled = 'rule.set.disabled';
+    case RuleDefinitionCreated = 'rule.definition.created';
+    case RuleDefinitionUpdated = 'rule.definition.updated';
+    case RuleDefinitionDeleted = 'rule.definition.deleted';
+    case RuleDefinitionEnabled = 'rule.definition.enabled';
+    case RuleDefinitionDisabled = 'rule.definition.disabled';
+    case RuleEvaluated = 'rule.evaluated';
+    case RuleExecuted = 'rule.executed';
+    case RuleViolationRecorded = 'rule.violation.recorded';
+    case RuleActivityLogged = 'rule.activity.logged';
+
     case ReferenceCatalogRegistered = 'reference.catalog.registered';
 
     case FileUploaded = 'file.uploaded';
@@ -191,6 +214,20 @@ enum AuditAction: string
     case DataRecordActivityLogged = 'data.record.activity.logged';
     case DataRecordQueried = 'data.record.queried';
 
+    case DocumentUploaded = 'document.uploaded';
+    case DocumentUpdated = 'document.updated';
+    case DocumentDeleted = 'document.deleted';
+    case DocumentVersionCreated = 'document.version.created';
+    case DocumentVersionRestored = 'document.version.restored';
+    case DocumentVersionDeleted = 'document.version.deleted';
+    case DocumentAttached = 'document.attached';
+    case DocumentDetached = 'document.detached';
+    case DocumentPreviewRequested = 'document.preview.requested';
+    case DocumentThumbnailRequested = 'document.thumbnail.requested';
+    case DocumentScanRequested = 'document.scan.requested';
+    case DocumentOcrRequested = 'document.ocr.requested';
+    case DocumentActivityLogged = 'document.activity.logged';
+
     case FormDefinitionRegistered = 'form.definition.registered';
     case FormDefinitionUpdated = 'form.definition.updated';
     case FormRendered = 'form.rendered';
@@ -286,6 +323,14 @@ enum AuditAction: string
             self::NotificationSent,
             self::NotificationRead,
             self::NotificationPreferenceUpdated,
+            self::NotificationCreated,
+            self::NotificationUpdated,
+            self::NotificationDeleted,
+            self::NotificationDelivered,
+            self::NotificationDeliveryFailed,
+            self::NotificationTemplateCreated,
+            self::NotificationTemplateUpdated,
+            self::NotificationBroadcastSent,
             self::ReferenceCatalogRegistered,
             self::FileUploaded,
             self::FileUpdated,
@@ -389,6 +434,33 @@ enum AuditAction: string
             self::DataRecordUnlinked,
             self::DataRecordActivityLogged,
             self::DataRecordQueried,
+            self::DocumentUploaded,
+            self::DocumentUpdated,
+            self::DocumentDeleted,
+            self::DocumentVersionCreated,
+            self::DocumentVersionRestored,
+            self::DocumentVersionDeleted,
+            self::DocumentAttached,
+            self::DocumentDetached,
+            self::DocumentPreviewRequested,
+            self::DocumentThumbnailRequested,
+            self::DocumentScanRequested,
+            self::DocumentOcrRequested,
+            self::DocumentActivityLogged,
+            self::RuleSetCreated,
+            self::RuleSetUpdated,
+            self::RuleSetDeleted,
+            self::RuleSetEnabled,
+            self::RuleSetDisabled,
+            self::RuleDefinitionCreated,
+            self::RuleDefinitionUpdated,
+            self::RuleDefinitionDeleted,
+            self::RuleDefinitionEnabled,
+            self::RuleDefinitionDisabled,
+            self::RuleEvaluated,
+            self::RuleExecuted,
+            self::RuleViolationRecorded,
+            self::RuleActivityLogged,
             self::FormDefinitionRegistered,
             self::FormDefinitionUpdated,
             self::FormRendered,
@@ -551,6 +623,14 @@ enum AuditAction: string
             self::NotificationSent,
             self::NotificationRead,
             self::NotificationPreferenceUpdated,
+            self::NotificationCreated,
+            self::NotificationUpdated,
+            self::NotificationDeleted,
+            self::NotificationDelivered,
+            self::NotificationDeliveryFailed,
+            self::NotificationTemplateCreated,
+            self::NotificationTemplateUpdated,
+            self::NotificationBroadcastSent,
             self::ReferenceCatalogRegistered,
             self::FileUploaded,
             self::FileUpdated,
@@ -608,7 +688,21 @@ enum AuditAction: string
             self::WorkflowTimerCreated,
             self::WorkflowTimerExecuted,
             self::WorkflowTimerFailed,
-            self::WorkflowTimerCancelled => AuditRetentionClass::Ephemeral,
+            self::WorkflowTimerCancelled,
+            self::RuleSetCreated,
+            self::RuleSetUpdated,
+            self::RuleSetDeleted,
+            self::RuleSetEnabled,
+            self::RuleSetDisabled,
+            self::RuleDefinitionCreated,
+            self::RuleDefinitionUpdated,
+            self::RuleDefinitionDeleted,
+            self::RuleDefinitionEnabled,
+            self::RuleDefinitionDisabled,
+            self::RuleEvaluated,
+            self::RuleExecuted,
+            self::RuleViolationRecorded,
+            self::RuleActivityLogged => AuditRetentionClass::Ephemeral,
         };
     }
 
