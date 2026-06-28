@@ -56,6 +56,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
             'tables' => (bool) config('heos.enterprise.tables.enabled', true),
             'dashboards' => (bool) config('heos.enterprise.dashboards.enabled', true),
             'reports' => (bool) config('heos.enterprise.reports.enabled', true),
+            'data_repository' => (bool) config('heos.enterprise.data_repository.enabled', true),
         ];
     }
 
@@ -78,6 +79,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
         private readonly \App\Services\Table\DynamicTableHealthService $tableHealthService,
         private readonly \App\Services\Dashboard\DynamicDashboardHealthService $dashboardHealthService,
         private readonly \App\Services\Report\DynamicReportHealthService $reportHealthService,
+        private readonly \App\Services\DataRepository\EnterpriseEntityRecordHealthService $dataRepositoryHealthService,
     ) {
     }
 
@@ -326,6 +328,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
                 'tables' => $this->tableHealthService->runtimeContribution($context),
                 'dashboards' => $this->dashboardHealthService->runtimeContribution($context),
                 'reports' => $this->reportHealthService->runtimeContribution($context),
+                'data_repository' => $this->dataRepositoryHealthService->runtimeContribution($context),
             ],
         ];
     }

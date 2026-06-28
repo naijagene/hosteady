@@ -34,6 +34,7 @@ enum AuditEntityType: string
     case EntityRelationship = 'entity_relationship';
     case EntityComment = 'entity_comment';
     case EntityTag = 'entity_tag';
+    case EnterpriseEntityRecord = 'enterprise_entity_record';
     case FormDefinition = 'form_definition';
     case FormSubmission = 'form_submission';
     case FormDraft = 'form_draft';

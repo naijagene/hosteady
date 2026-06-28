@@ -109,5 +109,8 @@ return [
         'reports' => [
             'enabled' => env('HEOS_REPORTS_ENABLED', true),
         ],
+        'data_repository' => [
+            'enabled' => env('HEOS_DATA_REPOSITORY_ENABLED', true),
+        ],
     ],
 ];

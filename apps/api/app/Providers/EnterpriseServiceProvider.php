@@ -310,6 +310,37 @@ class EnterpriseServiceProvider extends ServiceProvider
         $this->app->singleton(\App\Services\Entity\EnterpriseEntityAuditRecorder::class);
         $this->app->singleton(\App\Services\Entity\EnterpriseEntityDevelopmentService::class);
 
+        $this->app->singleton(\App\Services\DataRepository\EnterpriseEntityRecordValidationService::class);
+        $this->app->singleton(\App\Modules\Sdk\DataRepository\Contracts\EntityRecordValidator::class, \App\Services\DataRepository\EnterpriseEntityRecordValidationService::class);
+        $this->app->singleton(\App\Services\DataRepository\EnterpriseEntityRecordRepositoryService::class);
+        $this->app->singleton(\App\Modules\Sdk\DataRepository\Contracts\EntityRecordRepository::class, \App\Services\DataRepository\EnterpriseEntityRecordRepositoryService::class);
+        $this->app->singleton(\App\Services\DataRepository\EnterpriseEntityRecordQueryService::class);
+        $this->app->singleton(\App\Modules\Sdk\DataRepository\Contracts\EntityRecordQueryProvider::class, \App\Services\DataRepository\EnterpriseEntityRecordQueryService::class);
+        $this->app->singleton(\App\Services\DataRepository\EnterpriseEntityRecordMutationService::class);
+        $this->app->singleton(\App\Modules\Sdk\DataRepository\Contracts\EntityRecordMutationHandler::class, \App\Services\DataRepository\EnterpriseEntityRecordMutationService::class);
+        $this->app->singleton(\App\Services\DataRepository\EnterpriseEntityRecordLifecycleService::class);
+        $this->app->singleton(\App\Modules\Sdk\DataRepository\Contracts\EntityRecordLifecycleDispatcher::class, \App\Services\DataRepository\EnterpriseEntityRecordLifecycleService::class);
+        $this->app->singleton(\App\Services\DataRepository\EnterpriseEntityRecordVersionService::class);
+        $this->app->singleton(\App\Services\DataRepository\EnterpriseEntityRecordProjectionService::class);
+        $this->app->singleton(\App\Modules\Sdk\DataRepository\Contracts\EntityRecordProjectionProvider::class, \App\Services\DataRepository\EnterpriseEntityRecordProjectionService::class);
+        $this->app->singleton(\App\Services\DataRepository\EnterpriseEntityRecordRelationshipService::class);
+        $this->app->singleton(\App\Services\DataRepository\EnterpriseEntityRecordActivityService::class);
+        $this->app->singleton(\App\Services\DataRepository\EnterpriseEntityRecordDataProviderService::class);
+        $this->app->singleton(\App\Modules\Sdk\DataRepository\Contracts\EntityRecordDataProvider::class, \App\Services\DataRepository\EnterpriseEntityRecordDataProviderService::class);
+        $this->app->singleton(\App\Services\DataRepository\EnterpriseEntityRecordTableBridge::class);
+        $this->app->singleton(\App\Services\DataRepository\EnterpriseEntityRecordDashboardBridge::class);
+        $this->app->singleton(\App\Services\DataRepository\EnterpriseEntityRecordReportBridge::class);
+        $this->app->singleton(\App\Services\DataRepository\EnterpriseEntityRecordFormBridge::class);
+        $this->app->singleton(\App\Services\DataRepository\EnterpriseEntityRecordSearchIndexer::class);
+        $this->app->singleton(\App\Services\DataRepository\EnterpriseEntityRecordWorkflowBridge::class);
+        $this->app->singleton(\App\Services\DataRepository\EnterpriseEntityRecordAttachmentBridge::class);
+        $this->app->singleton(\App\Services\DataRepository\EnterpriseEntityRecordAuditRecorder::class);
+        $this->app->singleton(\App\Services\DataRepository\EnterpriseEntityRecordHealthService::class);
+        $this->app->singleton(\App\Services\DataRepository\EnterpriseEntityRecordStatisticsService::class);
+        $this->app->singleton(\App\Services\DataRepository\EnterpriseEntityRecordPolicyResolverService::class);
+        $this->app->singleton(\App\Modules\Sdk\DataRepository\Contracts\EntityRecordPolicyResolver::class, \App\Services\DataRepository\EnterpriseEntityRecordPolicyResolverService::class);
+        $this->app->singleton(\App\Services\DataRepository\EnterpriseEntityRecordDevelopmentService::class);
+
         $this->app->singleton(\App\Services\Form\DynamicFormConditionEvaluator::class);
         $this->app->singleton(\App\Modules\Sdk\Form\Contracts\FormConditionEvaluator::class, \App\Services\Form\DynamicFormConditionEvaluator::class);
         $this->app->singleton(\App\Services\Form\DynamicFormFieldResolver::class);

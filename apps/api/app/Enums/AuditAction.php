@@ -181,6 +181,16 @@ enum AuditAction: string
     case EntityTagDetached = 'entity.tag.detached';
     case EntityLifecycleEvent = 'entity.lifecycle.event';
 
+    case DataRecordCreated = 'data.record.created';
+    case DataRecordUpdated = 'data.record.updated';
+    case DataRecordDeleted = 'data.record.deleted';
+    case DataRecordRestored = 'data.record.restored';
+    case DataRecordVersioned = 'data.record.versioned';
+    case DataRecordLinked = 'data.record.linked';
+    case DataRecordUnlinked = 'data.record.unlinked';
+    case DataRecordActivityLogged = 'data.record.activity.logged';
+    case DataRecordQueried = 'data.record.queried';
+
     case FormDefinitionRegistered = 'form.definition.registered';
     case FormDefinitionUpdated = 'form.definition.updated';
     case FormRendered = 'form.rendered';
@@ -370,6 +380,15 @@ enum AuditAction: string
             self::EntityTagAttached,
             self::EntityTagDetached,
             self::EntityLifecycleEvent,
+            self::DataRecordCreated,
+            self::DataRecordUpdated,
+            self::DataRecordDeleted,
+            self::DataRecordRestored,
+            self::DataRecordVersioned,
+            self::DataRecordLinked,
+            self::DataRecordUnlinked,
+            self::DataRecordActivityLogged,
+            self::DataRecordQueried,
             self::FormDefinitionRegistered,
             self::FormDefinitionUpdated,
             self::FormRendered,

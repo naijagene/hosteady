@@ -26,6 +26,7 @@ use App\Http\Controllers\Api\V1\Tenant\DynamicTableController;
 use App\Http\Controllers\Api\V1\Tenant\DynamicDashboardController;
 use App\Http\Controllers\Api\V1\Tenant\DynamicReportController;
 use App\Http\Controllers\Api\V1\Tenant\EnterpriseEntityController;
+use App\Http\Controllers\Api\V1\Tenant\EnterpriseEntityRecordController;
 use App\Http\Controllers\Api\V1\Tenant\WorkflowMarketplaceController;
 use App\Http\Controllers\Api\V1\Tenant\WorkflowCategoryController;
 use App\Http\Controllers\Api\V1\Tenant\WorkflowDefinitionController;
@@ -222,6 +223,18 @@ Route::prefix('v1')->group(function () {
             Route::post('tenant/entities/{moduleKey}/{entityKey}/{entityPublicId}/comments', [EnterpriseEntityController::class, 'storeComment']);
             Route::post('tenant/entities/{moduleKey}/{entityKey}/{entityPublicId}/tags/{tagPublicId}', [EnterpriseEntityController::class, 'attachTag']);
             Route::delete('tenant/entities/{moduleKey}/{entityKey}/{entityPublicId}/tags/{tagPublicId}', [EnterpriseEntityController::class, 'detachTag']);
+
+            Route::delete('tenant/data/links/{linkPublicId}', [EnterpriseEntityRecordController::class, 'destroyLink']);
+            Route::get('tenant/data/{moduleKey}/{entityKey}', [EnterpriseEntityRecordController::class, 'index']);
+            Route::post('tenant/data/{moduleKey}/{entityKey}', [EnterpriseEntityRecordController::class, 'store']);
+            Route::get('tenant/data/{moduleKey}/{entityKey}/{recordPublicId}', [EnterpriseEntityRecordController::class, 'show']);
+            Route::patch('tenant/data/{moduleKey}/{entityKey}/{recordPublicId}', [EnterpriseEntityRecordController::class, 'update']);
+            Route::delete('tenant/data/{moduleKey}/{entityKey}/{recordPublicId}', [EnterpriseEntityRecordController::class, 'destroy']);
+            Route::post('tenant/data/{moduleKey}/{entityKey}/{recordPublicId}/restore', [EnterpriseEntityRecordController::class, 'restore']);
+            Route::get('tenant/data/{moduleKey}/{entityKey}/{recordPublicId}/versions', [EnterpriseEntityRecordController::class, 'versions']);
+            Route::get('tenant/data/{moduleKey}/{entityKey}/{recordPublicId}/activity', [EnterpriseEntityRecordController::class, 'activity']);
+            Route::post('tenant/data/{moduleKey}/{entityKey}/{recordPublicId}/links', [EnterpriseEntityRecordController::class, 'storeLink']);
+            Route::get('tenant/data/{moduleKey}/{entityKey}/{recordPublicId}/links', [EnterpriseEntityRecordController::class, 'links']);
 
             Route::get('tenant/business-modules/installed', [BusinessModuleController::class, 'installed']);
             Route::get('tenant/business-modules', [BusinessModuleController::class, 'index']);

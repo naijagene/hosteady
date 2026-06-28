@@ -7,6 +7,8 @@ use App\Modules\Sdk\Table\Data\TableDefinition;
 use App\Modules\Sdk\Table\Data\TableQueryRequest;
 use App\Modules\Sdk\Table\Data\TableQueryResult;
 use App\Modules\Sdk\Table\Data\TableRow;
+use App\Services\DataRepository\EnterpriseEntityRecordMapper;
+use App\Services\DataRepository\EnterpriseEntityRecordTableBridge;
 
 class DynamicTableQueryService implements TableQueryExecutor
 {
@@ -15,6 +17,7 @@ class DynamicTableQueryService implements TableQueryExecutor
         private readonly DynamicTableFilterEvaluator $filterEvaluator,
         private readonly DynamicTableSortService $sortService,
         private readonly DynamicTableAuditRecorder $auditRecorder,
+        private readonly EnterpriseEntityRecordTableBridge $tableBridge,
     ) {
     }
 
@@ -66,8 +69,21 @@ class DynamicTableQueryService implements TableQueryExecutor
      */
     private function fetchRows(TableDefinition $definition, TableQueryRequest $request): array
     {
-        // Placeholder bridge until entity repository integration is wired for tables.
-        return [];
+        if (! app()->bound(\App\Support\Tenant\TenantContext::class)) {
+            return [];
+        }
+
+        if (! EnterpriseEntityRecordMapper::entityBindingEnabled($definition->metadata)) {
+            return [];
+        }
+
+        $context = app(\App\Support\Tenant\TenantContext::class);
+
+        return $this->tableBridge->fetchRows(
+            $context->organization->id,
+            $context->workspace?->id,
+            $definition,
+        );
     }
 
     /**

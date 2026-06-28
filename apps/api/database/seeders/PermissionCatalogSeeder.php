@@ -92,6 +92,13 @@ class PermissionCatalogSeeder extends Seeder
         ['key' => 'reports.run', 'name' => 'Run Reports', 'description' => null, 'domain' => 'business'],
         ['key' => 'reports.export', 'name' => 'Export Reports', 'description' => null, 'domain' => 'business'],
         ['key' => 'reports.schedule', 'name' => 'Schedule Reports', 'description' => null, 'domain' => 'business'],
+        ['key' => 'data.records.read', 'name' => 'Read Entity Records', 'description' => null, 'domain' => 'business'],
+        ['key' => 'data.records.create', 'name' => 'Create Entity Records', 'description' => null, 'domain' => 'business'],
+        ['key' => 'data.records.update', 'name' => 'Update Entity Records', 'description' => null, 'domain' => 'business'],
+        ['key' => 'data.records.delete', 'name' => 'Delete Entity Records', 'description' => null, 'domain' => 'business'],
+        ['key' => 'data.records.restore', 'name' => 'Restore Entity Records', 'description' => null, 'domain' => 'business'],
+        ['key' => 'data.records.link', 'name' => 'Link Entity Records', 'description' => null, 'domain' => 'business'],
+        ['key' => 'data.records.manage', 'name' => 'Manage Entity Records', 'description' => null, 'domain' => 'business'],
     ];
 
     public function run(): void

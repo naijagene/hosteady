@@ -5,9 +5,15 @@ namespace App\Services\Report;
 use App\Modules\Sdk\Report\Contracts\ReportDataProvider;
 use App\Modules\Sdk\Report\Data\ReportDataset;
 use App\Modules\Sdk\Report\Data\ReportDefinition;
+use App\Services\DataRepository\EnterpriseEntityRecordReportBridge;
 
 class DynamicReportDataProviderService implements ReportDataProvider
 {
+    public function __construct(
+        private readonly EnterpriseEntityRecordReportBridge $reportBridge,
+    ) {
+    }
+
     /**
      * @var list<string>
      */
@@ -67,15 +73,42 @@ class DynamicReportDataProviderService implements ReportDataProvider
 
     private function entityPlaceholder(ReportDefinition $definition): ReportDataset
     {
+        if (! app()->bound(\App\Support\Tenant\TenantContext::class) || $definition->entityKey === null) {
+            return new ReportDataset(
+                rows: [],
+                metrics: $definition->metrics,
+                charts: $definition->charts,
+                metadata: [
+                    'source' => 'entity_placeholder',
+                    'module_key' => $definition->moduleKey,
+                    'entity_key' => $definition->entityKey,
+                    'placeholder' => true,
+                ],
+            );
+        }
+
+        $context = app(\App\Support\Tenant\TenantContext::class);
+        $rows = $this->reportBridge->rows(
+            $context->organization->id,
+            $context->workspace?->id,
+            $definition,
+        );
+        $count = $this->reportBridge->count(
+            $context->organization->id,
+            $context->workspace?->id,
+            $definition,
+        );
+
         return new ReportDataset(
-            rows: [],
+            rows: $rows,
             metrics: $definition->metrics,
             charts: $definition->charts,
             metadata: [
                 'source' => 'entity_placeholder',
                 'module_key' => $definition->moduleKey,
                 'entity_key' => $definition->entityKey,
-                'placeholder' => true,
+                'placeholder' => false,
+                'count' => $count,
             ],
         );
     }

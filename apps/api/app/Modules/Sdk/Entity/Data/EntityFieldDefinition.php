@@ -23,9 +23,9 @@ readonly class EntityFieldDefinition implements \JsonSerializable
     public static function fromArray(array $data): self
     {
         return new self(
-            key: (string) ($data['key'] ?? ''),
+            key: (string) ($data['key'] ?? $data['field_key'] ?? ''),
             label: (string) ($data['label'] ?? $data['name'] ?? ''),
-            type: (string) ($data['type'] ?? 'string'),
+            type: (string) ($data['type'] ?? $data['field_type'] ?? 'string'),
             required: (bool) ($data['required'] ?? false),
             searchable: (bool) ($data['searchable'] ?? false),
             auditable: (bool) ($data['auditable'] ?? true),

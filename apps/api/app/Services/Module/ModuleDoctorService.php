@@ -72,6 +72,7 @@ class ModuleDoctorService
             'workflow' => app(\App\Services\Enterprise\Workflow\WorkflowHealthService::class)->assess(),
             'business_modules' => app(\App\Services\Module\Development\BusinessModuleHealthService::class)->assess(),
             'entities' => app(\App\Services\Entity\EnterpriseEntityHealthService::class)->assess(),
+            'data_repository' => app(\App\Services\DataRepository\EnterpriseEntityRecordHealthService::class)->assess(),
             'forms' => app(\App\Services\Form\DynamicFormHealthService::class)->assess(),
             'tables' => app(\App\Services\Table\DynamicTableHealthService::class)->assess(),
             'dashboards' => app(\App\Services\Dashboard\DynamicDashboardHealthService::class)->assess(),

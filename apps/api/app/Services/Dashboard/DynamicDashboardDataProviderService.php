@@ -6,9 +6,15 @@ use App\Modules\Sdk\Dashboard\Contracts\DashboardDataProvider;
 use App\Modules\Sdk\Dashboard\Data\DashboardDefinition;
 use App\Modules\Sdk\Dashboard\Data\DashboardWidget;
 use App\Modules\Sdk\Dashboard\Data\DashboardWidgetData;
+use App\Services\DataRepository\EnterpriseEntityRecordDashboardBridge;
 
 class DynamicDashboardDataProviderService implements DashboardDataProvider
 {
+    public function __construct(
+        private readonly EnterpriseEntityRecordDashboardBridge $dashboardBridge,
+    ) {
+    }
+
     /**
      * @var list<string>
      */
@@ -63,15 +69,35 @@ class DynamicDashboardDataProviderService implements DashboardDataProvider
 
     private function entityCount(DashboardWidget $widget): DashboardWidgetData
     {
+        $moduleKey = $widget->dataSourceConfig['module_key'] ?? null;
+        $entityKey = $widget->dataSourceConfig['entity_key'] ?? null;
+        $metadata = [
+            'source' => 'entity_count',
+            'module_key' => $moduleKey,
+            'entity_key' => $entityKey,
+            'placeholder' => true,
+        ];
+
+        if (! app()->bound(\App\Support\Tenant\TenantContext::class) || $moduleKey === null || $entityKey === null) {
+            return new DashboardWidgetData(
+                widgetKey: $widget->widgetKey,
+                value: 0,
+                metadata: $metadata,
+            );
+        }
+
+        $context = app(\App\Support\Tenant\TenantContext::class);
+        $count = $this->dashboardBridge->entityCount(
+            $context->organization->id,
+            $context->workspace?->id,
+            $widget,
+        );
+        $metadata['placeholder'] = false;
+
         return new DashboardWidgetData(
             widgetKey: $widget->widgetKey,
-            value: 0,
-            metadata: [
-                'source' => 'entity_count',
-                'module_key' => $widget->dataSourceConfig['module_key'] ?? null,
-                'entity_key' => $widget->dataSourceConfig['entity_key'] ?? null,
-                'placeholder' => true,
-            ],
+            value: $count,
+            metadata: $metadata,
         );
     }
 

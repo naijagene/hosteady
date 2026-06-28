@@ -12,6 +12,7 @@ use App\Modules\Sdk\Form\Data\FormValidationReport;
 use App\Modules\Sdk\Form\Enums\FormSubmissionStatus;
 use App\Modules\Sdk\Form\Enums\FormType;
 use App\Modules\Sdk\Form\Exceptions\FormNotFoundException;
+use App\Services\DataRepository\EnterpriseEntityRecordFormBridge;
 use App\Support\Tenant\TenantContext;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -25,6 +26,7 @@ class DynamicFormSubmissionService implements FormSubmissionHandler
         private readonly DynamicFormWorkflowBridge $workflowBridge,
         private readonly DynamicFormAuditRecorder $auditRecorder,
         private readonly DynamicFormDraftService $draftService,
+        private readonly EnterpriseEntityRecordFormBridge $formBridge,
     ) {
     }
 
@@ -189,6 +191,19 @@ class DynamicFormSubmissionService implements FormSubmissionHandler
             return $request->entityPublicId;
         }
 
+        if (! app()->bound(TenantContext::class)) {
+            return $request->entityPublicId;
+        }
+
+        if (\App\Services\DataRepository\EnterpriseEntityRecordMapper::entityBindingEnabled($definition->metadata)) {
+            return $this->formBridge->mutateFromForm(
+                app(TenantContext::class),
+                $definition,
+                $request->values,
+                $request->entityPublicId,
+            );
+        }
+
         $operation = match ($definition->type) {
             FormType::Create->value => 'create',
             FormType::Edit->value => 'update',
@@ -199,7 +214,6 @@ class DynamicFormSubmissionService implements FormSubmissionHandler
             return $request->entityPublicId;
         }
 
-        // Placeholder bridge until entity repository integration is wired for forms.
         return $operation === 'create'
             ? (string) Str::uuid7()
             : $request->entityPublicId;

@@ -34,6 +34,7 @@ readonly class ConfigEnterpriseRuntimeContext implements EnterpriseRuntimeContex
             'entities' => (bool) config('heos.enterprise.entities.enabled', true),
             'forms' => (bool) config('heos.enterprise.forms.enabled', true),
             'tables' => (bool) config('heos.enterprise.tables.enabled', true),
+            'data_repository' => (bool) config('heos.enterprise.data_repository.enabled', true),
             default => false,
         };
     }
