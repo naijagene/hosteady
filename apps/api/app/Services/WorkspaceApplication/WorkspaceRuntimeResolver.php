@@ -60,6 +60,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
             'documents' => (bool) config('heos.enterprise.documents.enabled', true),
             'business_rules' => (bool) config('heos.enterprise.business_rules.enabled', true),
             'integrations' => (bool) config('heos.enterprise.integrations.enabled', true),
+            'application_runtime' => (bool) config('heos.enterprise.application_runtime.enabled', true),
         ];
     }
 
@@ -87,6 +88,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
         private readonly \App\Services\Notification\NotificationHealthService $notificationHealthService,
         private readonly \App\Services\Rules\RuleHealthService $ruleHealthService,
         private readonly \App\Services\Integration\IntegrationHealthService $integrationHealthService,
+        private readonly \App\Services\Application\ApplicationHealthService $applicationHealthService,
     ) {
     }
 
@@ -340,6 +342,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
                 'notifications' => $this->notificationHealthService->runtimeContribution($context),
                 'business_rules' => $this->ruleHealthService->runtimeContribution($context),
                 'integrations' => $this->integrationHealthService->runtimeContribution($context),
+                'application' => $this->applicationHealthService->runtimeContribution($context),
             ],
         ];
     }

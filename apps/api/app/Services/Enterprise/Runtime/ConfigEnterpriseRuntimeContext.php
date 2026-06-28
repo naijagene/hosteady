@@ -38,6 +38,7 @@ readonly class ConfigEnterpriseRuntimeContext implements EnterpriseRuntimeContex
             'documents' => (bool) config('heos.enterprise.documents.enabled', true),
             'business_rules' => (bool) config('heos.enterprise.business_rules.enabled', true),
             'integrations' => (bool) config('heos.enterprise.integrations.enabled', true),
+            'application_runtime' => (bool) config('heos.enterprise.application_runtime.enabled', true),
             default => false,
         };
     }

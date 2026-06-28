@@ -485,6 +485,32 @@ class EnterpriseServiceProvider extends ServiceProvider
         $this->app->singleton(\App\Services\Integration\IntegrationNotificationBridge::class);
         $this->app->singleton(\App\Services\Integration\IntegrationRulesBridge::class);
 
+        $this->app->singleton(\App\Services\Application\ApplicationRuntimeMapper::class);
+        $this->app->singleton(\App\Services\Application\ApplicationAuditRecorder::class);
+        $this->app->singleton(\App\Services\Application\ApplicationSearchIndexer::class);
+        $this->app->singleton(\App\Services\Application\ApplicationStatisticsService::class);
+        $this->app->singleton(\App\Services\Application\ApplicationHealthService::class);
+        $this->app->singleton(\App\Services\Application\ApplicationPermissionBridge::class);
+        $this->app->singleton(\App\Services\Application\ApplicationRuntimeManifestService::class);
+        $this->app->singleton(\App\Modules\Sdk\Application\Contracts\ApplicationManifestProvider::class, \App\Services\Application\ApplicationRuntimeManifestService::class);
+        $this->app->singleton(\App\Services\Application\ApplicationDiscoveryService::class);
+        $this->app->singleton(\App\Services\Application\ApplicationLoaderService::class);
+        $this->app->singleton(\App\Services\Application\NavigationBuilderService::class);
+        $this->app->singleton(\App\Services\Application\NavigationRegistryService::class);
+        $this->app->singleton(\App\Services\Application\MenuBuilderService::class);
+        $this->app->singleton(\App\Modules\Sdk\Application\Contracts\MenuProvider::class, \App\Services\Application\MenuBuilderService::class);
+        $this->app->singleton(\App\Services\Application\WorkspaceManagerService::class);
+        $this->app->singleton(\App\Modules\Sdk\Application\Contracts\WorkspaceProvider::class, \App\Services\Application\WorkspaceManagerService::class);
+        $this->app->singleton(\App\Services\Application\ApplicationRuntimeRegistryService::class);
+        $this->app->singleton(\App\Modules\Sdk\Application\Contracts\ApplicationRegistry::class, \App\Services\Application\ApplicationRuntimeRegistryService::class);
+        $this->app->singleton(\App\Modules\Sdk\Application\Contracts\ApplicationLifecycle::class, \App\Services\Application\ApplicationRuntimeRegistryService::class);
+        $this->app->singleton(\App\Services\Application\ApplicationRuntimeService::class);
+        $this->app->singleton(\App\Modules\Sdk\Application\Contracts\ApplicationRuntime::class, \App\Services\Application\ApplicationRuntimeService::class);
+        $this->app->singleton(\App\Modules\Sdk\Application\Contracts\NavigationProvider::class, \App\Services\Application\ApplicationRuntimeService::class);
+        $this->app->singleton(\App\Services\Application\EnterpriseApplicationService::class);
+        $this->app->singleton(\App\Modules\Sdk\Application\Contracts\ApplicationProvider::class, \App\Services\Application\EnterpriseApplicationService::class);
+        $this->app->singleton(\App\Services\Application\ApplicationDevelopmentService::class);
+
         $this->app->singleton(\App\Services\Form\DynamicFormConditionEvaluator::class);
         $this->app->singleton(\App\Modules\Sdk\Form\Contracts\FormConditionEvaluator::class, \App\Services\Form\DynamicFormConditionEvaluator::class);
         $this->app->singleton(\App\Services\Form\DynamicFormFieldResolver::class);

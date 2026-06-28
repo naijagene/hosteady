@@ -123,6 +123,9 @@ class PermissionCatalogSeeder extends Seeder
         ['key' => 'integrations.dispatch', 'name' => 'Dispatch Integration Events', 'description' => null, 'domain' => 'integrations'],
         ['key' => 'integrations.replay', 'name' => 'Replay Integration Events', 'description' => null, 'domain' => 'integrations'],
         ['key' => 'integrations.admin', 'name' => 'Administer Integrations', 'description' => null, 'domain' => 'integrations'],
+        ['key' => 'application.read', 'name' => 'Read Application Runtime', 'description' => null, 'domain' => 'application'],
+        ['key' => 'application.manage', 'name' => 'Manage Application Runtime', 'description' => null, 'domain' => 'application'],
+        ['key' => 'navigation.read', 'name' => 'Read Navigation', 'description' => null, 'domain' => 'application'],
     ];
 
     public function run(): void

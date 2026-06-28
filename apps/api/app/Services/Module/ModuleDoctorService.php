@@ -81,6 +81,7 @@ class ModuleDoctorService
             'notification_platform' => app(\App\Services\Notification\NotificationHealthService::class)->assess(),
             'business_rules' => app(\App\Services\Rules\RuleHealthService::class)->assess(),
             'integrations' => app(\App\Services\Integration\IntegrationHealthService::class)->assess(),
+            'application_runtime' => app(\App\Services\Application\ApplicationHealthService::class)->assess(),
         ];
 
         $this->collectEnterpriseHealthWarnings($enterpriseHealth, $warnings, $errors);
@@ -103,6 +104,7 @@ class ModuleDoctorService
                     'notifications' => (bool) config('heos.enterprise.notifications.enabled', true),
                     'business_rules' => (bool) config('heos.enterprise.business_rules.enabled', true),
                     'integrations' => (bool) config('heos.enterprise.integrations.enabled', true),
+                    'application_runtime' => (bool) config('heos.enterprise.application_runtime.enabled', true),
                     'reference_data' => (bool) config('heos.enterprise.reference_data.enabled', true),
                     'files' => (bool) config('heos.enterprise.files.enabled', true),
                     'runtime_aware' => (bool) config('heos.enterprise.runtime_aware', true),

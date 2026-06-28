@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\V1\Tenant\PlatformJobController;
 use App\Http\Controllers\Api\V1\Tenant\ScheduledTaskController;
 use App\Http\Controllers\Api\V1\Tenant\EnterpriseNotificationController;
 use App\Http\Controllers\Api\V1\Tenant\EnterpriseBusinessRuleController;
+use App\Http\Controllers\Api\V1\Tenant\EnterpriseApplicationController;
 use App\Http\Controllers\Api\V1\Tenant\EnterpriseIntegrationController;
 use App\Http\Controllers\Api\V1\Tenant\ReferenceDataController;
 use App\Http\Controllers\Api\V1\Tenant\SearchController;
@@ -175,6 +176,14 @@ Route::prefix('v1')->group(function () {
             Route::post('tenant/integrations/subscriptions', [EnterpriseIntegrationController::class, 'storeSubscription']);
             Route::post('tenant/integrations/dispatches', [EnterpriseIntegrationController::class, 'storeDispatch']);
             Route::patch('tenant/integrations/dead-letters/{deadLetterPublicId}/resolve', [EnterpriseIntegrationController::class, 'resolveDeadLetter']);
+
+            Route::get('tenant/application-runtime/navigation', [EnterpriseApplicationController::class, 'navigation']);
+            Route::get('tenant/application-runtime/workspaces', [EnterpriseApplicationController::class, 'workspaces']);
+            Route::get('tenant/application-runtime/apps', [EnterpriseApplicationController::class, 'index']);
+            Route::post('tenant/application-runtime/register', [EnterpriseApplicationController::class, 'register']);
+            Route::get('tenant/application-runtime/apps/{publicId}', [EnterpriseApplicationController::class, 'show']);
+            Route::post('tenant/application-runtime/apps/{publicId}/enable', [EnterpriseApplicationController::class, 'enable']);
+            Route::post('tenant/application-runtime/apps/{publicId}/disable', [EnterpriseApplicationController::class, 'disable']);
 
             Route::get('tenant/workflows/automation/rules', [WorkflowAutomationController::class, 'indexRules']);
             Route::post('tenant/workflows/automation/rules', [WorkflowAutomationController::class, 'storeRule']);

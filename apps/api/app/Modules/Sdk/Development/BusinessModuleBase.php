@@ -150,4 +150,44 @@ abstract class BusinessModuleBase implements
     {
         return app(BusinessModuleValidatorService::class)->validateModule($this);
     }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    public function navigation(): array
+    {
+        return [];
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    public function menus(): array
+    {
+        return $this->navigation();
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function workspace(): array
+    {
+        return [
+            'module_key' => $this->moduleKey(),
+            'name' => $this->name(),
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function application(): array
+    {
+        return [
+            'application_key' => $this->moduleKey(),
+            'name' => $this->name(),
+            'type' => $this->type(),
+            'version' => $this->version(),
+        ];
+    }
 }

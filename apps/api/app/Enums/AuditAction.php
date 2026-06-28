@@ -104,6 +104,11 @@ enum AuditAction: string
     case IntegrationDispatchFailed = 'integration.dispatch.failed';
     case IntegrationDeadLetterEnqueued = 'integration.dead_letter.enqueued';
     case IntegrationDeadLetterResolved = 'integration.dead_letter.resolved';
+    case ApplicationRuntimeRegistered = 'application.registered';
+    case ApplicationRuntimeEnabled = 'application.runtime.enabled';
+    case ApplicationRuntimeDisabled = 'application.runtime.disabled';
+    case ApplicationNavigationUpdated = 'application.navigation.updated';
+    case ApplicationWorkspaceCreated = 'application.workspace.created';
 
     case ReferenceCatalogRegistered = 'reference.catalog.registered';
 
@@ -479,6 +484,11 @@ enum AuditAction: string
             self::IntegrationDispatchFailed,
             self::IntegrationDeadLetterEnqueued,
             self::IntegrationDeadLetterResolved,
+            self::ApplicationRuntimeRegistered,
+            self::ApplicationRuntimeEnabled,
+            self::ApplicationRuntimeDisabled,
+            self::ApplicationNavigationUpdated,
+            self::ApplicationWorkspaceCreated,
             self::FormDefinitionRegistered,
             self::FormDefinitionUpdated,
             self::FormRendered,
@@ -729,7 +739,12 @@ enum AuditAction: string
             self::IntegrationDispatchCompleted,
             self::IntegrationDispatchFailed,
             self::IntegrationDeadLetterEnqueued,
-            self::IntegrationDeadLetterResolved => AuditRetentionClass::Ephemeral,
+            self::IntegrationDeadLetterResolved,
+            self::ApplicationRuntimeRegistered,
+            self::ApplicationRuntimeEnabled,
+            self::ApplicationRuntimeDisabled,
+            self::ApplicationNavigationUpdated,
+            self::ApplicationWorkspaceCreated => AuditRetentionClass::Ephemeral,
         };
     }
 

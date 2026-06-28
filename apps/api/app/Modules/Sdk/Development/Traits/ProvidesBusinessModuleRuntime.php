@@ -18,6 +18,10 @@ trait ProvidesBusinessModuleRuntime
                 fn ($capability) => $capability->toArray(),
                 $this->capabilities(),
             ),
+            'navigation' => $this->navigation(),
+            'menus' => $this->menus(),
+            'workspace' => $this->workspace(),
+            'application' => $this->application(),
         ];
     }
 

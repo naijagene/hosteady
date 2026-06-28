@@ -125,5 +125,8 @@ return [
         'integrations' => [
             'enabled' => env('HEOS_INTEGRATIONS_ENABLED', true),
         ],
+        'application_runtime' => [
+            'enabled' => env('HEOS_APPLICATION_RUNTIME_ENABLED', true),
+        ],
     ],
 ];
