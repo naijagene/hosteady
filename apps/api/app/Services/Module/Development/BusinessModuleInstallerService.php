@@ -29,6 +29,7 @@ class BusinessModuleInstallerService implements BusinessModuleInstaller
         private readonly \App\Services\Entity\EnterpriseEntityRegistryService $entityRegistryService,
         private readonly \App\Services\Form\DynamicFormRegistryService $formRegistryService,
         private readonly \App\Services\Table\DynamicTableRegistryService $tableRegistryService,
+        private readonly \App\Services\Dashboard\DynamicDashboardRegistryService $dashboardRegistryService,
     ) {
     }
 
@@ -92,6 +93,7 @@ class BusinessModuleInstallerService implements BusinessModuleInstaller
             $this->registerManifestEntities($manifest);
             $this->registerManifestForms($manifest);
             $this->registerManifestTables($manifest);
+            $this->registerManifestDashboards($manifest);
 
             $installation = BusinessModuleInstallation::query()->create([
                 'organization_id' => $organization->id,
@@ -356,6 +358,26 @@ class BusinessModuleInstallerService implements BusinessModuleInstaller
             );
         } catch (\Throwable) {
             // Table registration must not block module installation.
+        }
+    }
+
+    private function registerManifestDashboards(\App\Modules\Sdk\Development\Data\BusinessModuleManifest $manifest): void
+    {
+        if ($manifest->dashboards === []) {
+            return;
+        }
+
+        if (! (bool) config('heos.enterprise.dashboards.enabled', true)) {
+            return;
+        }
+
+        try {
+            $this->dashboardRegistryService->registerFromManifestDashboards(
+                $manifest->dashboards,
+                $manifest->moduleKey,
+            );
+        } catch (\Throwable) {
+            // Dashboard registration must not block module installation.
         }
     }
 

@@ -13,6 +13,7 @@ readonly class BusinessModuleManifest implements \JsonSerializable
      * @param  list<array<string, mixed>>  $entities
      * @param  list<array<string, mixed>>  $forms
      * @param  list<array<string, mixed>>  $tables
+     * @param  list<array<string, mixed>>  $dashboards
      * @param  list<array<string, mixed>>  $workflows
      * @param  list<string>  $dependencies
      * @param  array<string, mixed>  $settings
@@ -30,6 +31,7 @@ readonly class BusinessModuleManifest implements \JsonSerializable
         public array $entities = [],
         public array $forms = [],
         public array $tables = [],
+        public array $dashboards = [],
         public array $workflows = [],
         public array $dependencies = [],
         public array $settings = [],
@@ -75,6 +77,7 @@ readonly class BusinessModuleManifest implements \JsonSerializable
             entities: is_array($data['entities'] ?? null) ? $data['entities'] : [],
             forms: is_array($data['forms'] ?? null) ? $data['forms'] : [],
             tables: is_array($data['tables'] ?? null) ? $data['tables'] : [],
+            dashboards: is_array($data['dashboards'] ?? null) ? $data['dashboards'] : [],
             workflows: is_array($data['workflows'] ?? null) ? $data['workflows'] : [],
             dependencies: is_array($data['dependencies'] ?? null) ? array_values(array_map('strval', $data['dependencies'])) : [],
             settings: is_array($data['settings'] ?? null) ? $data['settings'] : [],
@@ -99,6 +102,7 @@ readonly class BusinessModuleManifest implements \JsonSerializable
             'entities' => $this->entities,
             'forms' => $this->forms,
             'tables' => $this->tables,
+            'dashboards' => $this->dashboards,
             'workflows' => $this->workflows,
             'dependencies' => $this->dependencies,
             'settings' => $this->settings,

@@ -103,5 +103,8 @@ return [
         'tables' => [
             'enabled' => env('HEOS_TABLES_ENABLED', true),
         ],
+        'dashboards' => [
+            'enabled' => env('HEOS_DASHBOARDS_ENABLED', true),
+        ],
     ],
 ];

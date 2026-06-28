@@ -23,6 +23,7 @@ use App\Http\Controllers\Api\V1\Tenant\WorkflowDesignerController;
 use App\Http\Controllers\Api\V1\Tenant\BusinessModuleController;
 use App\Http\Controllers\Api\V1\Tenant\DynamicFormController;
 use App\Http\Controllers\Api\V1\Tenant\DynamicTableController;
+use App\Http\Controllers\Api\V1\Tenant\DynamicDashboardController;
 use App\Http\Controllers\Api\V1\Tenant\EnterpriseEntityController;
 use App\Http\Controllers\Api\V1\Tenant\WorkflowMarketplaceController;
 use App\Http\Controllers\Api\V1\Tenant\WorkflowCategoryController;
@@ -180,6 +181,18 @@ Route::prefix('v1')->group(function () {
             Route::post('tenant/tables/{moduleKey}/{tableKey}/query', [DynamicTableController::class, 'query']);
             Route::get('tenant/tables/{moduleKey}/{tableKey}/views', [DynamicTableController::class, 'views']);
             Route::post('tenant/tables/{moduleKey}/{tableKey}/views', [DynamicTableController::class, 'storeView']);
+
+            Route::delete('tenant/dashboards/views/{viewPublicId}', [DynamicDashboardController::class, 'destroyView']);
+            Route::patch('tenant/dashboards/views/{viewPublicId}/default', [DynamicDashboardController::class, 'setDefaultView']);
+            Route::patch('tenant/dashboards/widgets/{widgetPublicId}', [DynamicDashboardController::class, 'updateWidget']);
+            Route::delete('tenant/dashboards/widgets/{widgetPublicId}', [DynamicDashboardController::class, 'destroyWidget']);
+            Route::get('tenant/dashboards', [DynamicDashboardController::class, 'index']);
+            Route::get('tenant/dashboards/{moduleKey}/{dashboardKey}', [DynamicDashboardController::class, 'show']);
+            Route::get('tenant/dashboards/{moduleKey}/{dashboardKey}/render', [DynamicDashboardController::class, 'render']);
+            Route::post('tenant/dashboards/{moduleKey}/{dashboardKey}/widgets', [DynamicDashboardController::class, 'storeWidget']);
+            Route::get('tenant/dashboards/{moduleKey}/{dashboardKey}/widgets', [DynamicDashboardController::class, 'widgets']);
+            Route::post('tenant/dashboards/{moduleKey}/{dashboardKey}/views', [DynamicDashboardController::class, 'storeView']);
+            Route::get('tenant/dashboards/{moduleKey}/{dashboardKey}/views', [DynamicDashboardController::class, 'views']);
 
             Route::get('tenant/entities/tags', [EnterpriseEntityController::class, 'tags']);
             Route::post('tenant/entities/tags', [EnterpriseEntityController::class, 'storeTag']);

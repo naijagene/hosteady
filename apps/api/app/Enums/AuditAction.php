@@ -198,6 +198,17 @@ enum AuditAction: string
     case TableViewDeleted = 'table.view.deleted';
     case TableActivityLogged = 'table.activity.logged';
 
+    case DashboardDefinitionRegistered = 'dashboard.definition.registered';
+    case DashboardDefinitionUpdated = 'dashboard.definition.updated';
+    case DashboardRendered = 'dashboard.rendered';
+    case DashboardWidgetCreated = 'dashboard.widget.created';
+    case DashboardWidgetUpdated = 'dashboard.widget.updated';
+    case DashboardWidgetDeleted = 'dashboard.widget.deleted';
+    case DashboardViewCreated = 'dashboard.view.created';
+    case DashboardViewUpdated = 'dashboard.view.updated';
+    case DashboardViewDeleted = 'dashboard.view.deleted';
+    case DashboardActivityLogged = 'dashboard.activity.logged';
+
     public function category(): AuditCategory
     {
         return match ($this) {
@@ -361,6 +372,17 @@ enum AuditAction: string
             self::TableViewSaved,
             self::TableViewDeleted,
             self::TableActivityLogged => AuditCategory::Application,
+
+            self::DashboardDefinitionRegistered,
+            self::DashboardDefinitionUpdated,
+            self::DashboardRendered,
+            self::DashboardWidgetCreated,
+            self::DashboardWidgetUpdated,
+            self::DashboardWidgetDeleted,
+            self::DashboardViewCreated,
+            self::DashboardViewUpdated,
+            self::DashboardViewDeleted,
+            self::DashboardActivityLogged => AuditCategory::Application,
 
             self::ApplicationInstalled,
             self::ApplicationEnabled,

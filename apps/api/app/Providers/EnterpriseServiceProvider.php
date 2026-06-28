@@ -140,6 +140,7 @@ class EnterpriseServiceProvider extends ServiceProvider
         $this->app->singleton(FileQueryService::class);
         $this->app->singleton(FileVisibilityResolver::class);
         $this->app->singleton(EnterpriseTableHealthGuard::class);
+        $this->app->singleton(\App\Services\Enterprise\Support\EnterpriseDashboardHealthGuard::class);
         $this->app->singleton(EnterpriseStorageHealthService::class);
         $this->app->singleton(LaravelStorageAdapter::class);
         $this->app->singleton(LaravelFileServiceAdapter::class);
@@ -357,6 +358,35 @@ class EnterpriseServiceProvider extends ServiceProvider
         $this->app->singleton(\App\Services\Table\DynamicTableStatisticsService::class);
         $this->app->singleton(\App\Services\Table\DynamicTableAuditRecorder::class);
         $this->app->singleton(\App\Services\Table\DynamicTableDevelopmentService::class);
+
+        $this->app->singleton(\App\Services\Dashboard\DynamicDashboardFilterService::class);
+        $this->app->singleton(\App\Modules\Sdk\Dashboard\Contracts\DashboardFilterEvaluator::class, \App\Services\Dashboard\DynamicDashboardFilterService::class);
+        $this->app->singleton(\App\Services\Dashboard\DynamicDashboardMetricService::class);
+        $this->app->singleton(\App\Modules\Sdk\Dashboard\Contracts\DashboardMetricResolver::class, \App\Services\Dashboard\DynamicDashboardMetricService::class);
+        $this->app->singleton(\App\Services\Dashboard\DynamicDashboardLayoutService::class);
+        $this->app->singleton(\App\Modules\Sdk\Dashboard\Contracts\DashboardLayoutProvider::class, \App\Services\Dashboard\DynamicDashboardLayoutService::class);
+        $this->app->singleton(\App\Services\Dashboard\DynamicDashboardValidationService::class);
+        $this->app->singleton(\App\Services\Dashboard\DynamicDashboardRegistryService::class);
+        $this->app->singleton(\App\Modules\Sdk\Dashboard\Contracts\DashboardRegistry::class, \App\Services\Dashboard\DynamicDashboardRegistryService::class);
+        $this->app->singleton(\App\Services\Dashboard\DynamicDashboardDefinitionService::class);
+        $this->app->singleton(\App\Services\Dashboard\DynamicDashboardGeneratorService::class);
+        $this->app->singleton(\App\Modules\Sdk\Dashboard\Contracts\DashboardGenerator::class, \App\Services\Dashboard\DynamicDashboardGeneratorService::class);
+        $this->app->singleton(\App\Services\Dashboard\DynamicDashboardRendererService::class);
+        $this->app->singleton(\App\Modules\Sdk\Dashboard\Contracts\DashboardRenderer::class, \App\Services\Dashboard\DynamicDashboardRendererService::class);
+        $this->app->singleton(\App\Services\Dashboard\DynamicDashboardDataProviderService::class);
+        $this->app->singleton(\App\Modules\Sdk\Dashboard\Contracts\DashboardDataProvider::class, \App\Services\Dashboard\DynamicDashboardDataProviderService::class);
+        $this->app->singleton(\App\Services\Dashboard\DynamicDashboardWidgetService::class);
+        $this->app->singleton(\App\Modules\Sdk\Dashboard\Contracts\DashboardWidgetProvider::class, \App\Services\Dashboard\DynamicDashboardWidgetService::class);
+        $this->app->singleton(\App\Services\Dashboard\DynamicDashboardViewService::class);
+        $this->app->singleton(\App\Services\Dashboard\DynamicDashboardQueryService::class);
+        $this->app->singleton(\App\Services\Dashboard\DynamicDashboardActionService::class);
+        $this->app->singleton(\App\Services\Dashboard\DynamicDashboardActivityService::class);
+        $this->app->singleton(\App\Services\Dashboard\DynamicDashboardSearchIndexer::class);
+        $this->app->singleton(\App\Services\Dashboard\DynamicDashboardWorkflowBridge::class);
+        $this->app->singleton(\App\Services\Dashboard\DynamicDashboardHealthService::class);
+        $this->app->singleton(\App\Services\Dashboard\DynamicDashboardStatisticsService::class);
+        $this->app->singleton(\App\Services\Dashboard\DynamicDashboardAuditRecorder::class);
+        $this->app->singleton(\App\Services\Dashboard\DynamicDashboardDevelopmentService::class);
     }
 
     public function boot(): void

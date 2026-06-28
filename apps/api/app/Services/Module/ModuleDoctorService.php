@@ -74,6 +74,7 @@ class ModuleDoctorService
             'entities' => app(\App\Services\Entity\EnterpriseEntityHealthService::class)->assess(),
             'forms' => app(\App\Services\Form\DynamicFormHealthService::class)->assess(),
             'tables' => app(\App\Services\Table\DynamicTableHealthService::class)->assess(),
+            'dashboards' => app(\App\Services\Dashboard\DynamicDashboardHealthService::class)->assess(),
         ];
 
         $this->collectEnterpriseHealthWarnings($enterpriseHealth, $warnings, $errors);

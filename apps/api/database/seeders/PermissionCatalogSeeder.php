@@ -83,6 +83,10 @@ class PermissionCatalogSeeder extends Seeder
         ['key' => 'tables.manage', 'name' => 'Manage Tables', 'description' => null, 'domain' => 'business'],
         ['key' => 'tables.query', 'name' => 'Query Tables', 'description' => null, 'domain' => 'business'],
         ['key' => 'tables.export', 'name' => 'Export Tables', 'description' => null, 'domain' => 'business'],
+        ['key' => 'dashboards.read', 'name' => 'Read Dashboards', 'description' => null, 'domain' => 'business'],
+        ['key' => 'dashboards.manage', 'name' => 'Manage Dashboards', 'description' => null, 'domain' => 'business'],
+        ['key' => 'dashboards.render', 'name' => 'Render Dashboards', 'description' => null, 'domain' => 'business'],
+        ['key' => 'dashboards.export', 'name' => 'Export Dashboards', 'description' => null, 'domain' => 'business'],
     ];
 
     public function run(): void
