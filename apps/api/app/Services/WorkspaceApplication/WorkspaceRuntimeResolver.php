@@ -59,6 +59,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
             'data_repository' => (bool) config('heos.enterprise.data_repository.enabled', true),
             'documents' => (bool) config('heos.enterprise.documents.enabled', true),
             'business_rules' => (bool) config('heos.enterprise.business_rules.enabled', true),
+            'integrations' => (bool) config('heos.enterprise.integrations.enabled', true),
         ];
     }
 
@@ -85,6 +86,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
         private readonly \App\Services\Document\EnterpriseDocumentHealthService $documentHealthService,
         private readonly \App\Services\Notification\NotificationHealthService $notificationHealthService,
         private readonly \App\Services\Rules\RuleHealthService $ruleHealthService,
+        private readonly \App\Services\Integration\IntegrationHealthService $integrationHealthService,
     ) {
     }
 
@@ -337,6 +339,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
                 'documents' => $this->documentHealthService->runtimeContribution($context),
                 'notifications' => $this->notificationHealthService->runtimeContribution($context),
                 'business_rules' => $this->ruleHealthService->runtimeContribution($context),
+                'integrations' => $this->integrationHealthService->runtimeContribution($context),
             ],
         ];
     }

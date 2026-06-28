@@ -147,6 +147,21 @@ class EnterpriseEntityRecordLifecycleService implements EntityRecordLifecycleDis
             );
         } catch (\Throwable) {
         }
+
+        try {
+            app(\App\Services\Integration\IntegrationEntityBridge::class)->publishRecordEventBestEffort(
+                $context,
+                $action,
+                new \App\Modules\Sdk\DataRepository\Data\EntityRecordReference(
+                    publicId: $record->publicId,
+                    moduleKey: $record->moduleKey,
+                    entityKey: $record->entityKey,
+                    status: $record->status,
+                ),
+                $afterState ?? [],
+            );
+        } catch (\Throwable) {
+        }
     }
 
     private function dispatchRecordLifecycle(

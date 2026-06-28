@@ -27,7 +27,7 @@ class TenantAuthorizationServiceTest extends TestCase
         $context = TenantContext::fromModels($user, $organization, $membership, $workspace);
         $service = app(TenantAuthorizationService::class);
 
-        $this->assertCount(105, $service->permissionsFor($context));
+        $this->assertCount(111, $service->permissionsFor($context));
         $this->assertTrue($service->allows($context, 'organization.archive'));
         $this->assertTrue($service->allows($context, 'workspace.applications.manage'));
     }
@@ -89,6 +89,8 @@ class TenantAuthorizationServiceTest extends TestCase
             'forms.draft',
             'forms.read',
             'forms.submit',
+            'integrations.publish',
+            'integrations.read',
             'jobs.read',
             'notifications.read',
             'organization.read',

@@ -50,5 +50,6 @@ enum AuditEntityType: string
     case EnterpriseDocument = 'enterprise_document';
     case EnterpriseNotification = 'enterprise_notification';
     case EnterpriseRule = 'enterprise_rule';
+    case EnterpriseIntegration = 'enterprise_integration';
     case User = 'user';
 }

@@ -117,6 +117,12 @@ class PermissionCatalogSeeder extends Seeder
         ['key' => 'rules.evaluate', 'name' => 'Evaluate Business Rules', 'description' => null, 'domain' => 'business'],
         ['key' => 'rules.execute', 'name' => 'Execute Business Rules', 'description' => null, 'domain' => 'business'],
         ['key' => 'rules.admin', 'name' => 'Administer Business Rules', 'description' => null, 'domain' => 'business'],
+        ['key' => 'integrations.read', 'name' => 'Read Integrations', 'description' => null, 'domain' => 'integrations'],
+        ['key' => 'integrations.manage', 'name' => 'Manage Integrations', 'description' => null, 'domain' => 'integrations'],
+        ['key' => 'integrations.publish', 'name' => 'Publish Integration Events', 'description' => null, 'domain' => 'integrations'],
+        ['key' => 'integrations.dispatch', 'name' => 'Dispatch Integration Events', 'description' => null, 'domain' => 'integrations'],
+        ['key' => 'integrations.replay', 'name' => 'Replay Integration Events', 'description' => null, 'domain' => 'integrations'],
+        ['key' => 'integrations.admin', 'name' => 'Administer Integrations', 'description' => null, 'domain' => 'integrations'],
     ];
 
     public function run(): void

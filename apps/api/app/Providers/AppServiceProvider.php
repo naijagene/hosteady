@@ -26,7 +26,9 @@ use App\Policies\BusinessModulePolicy;
 use App\Policies\EnterpriseDocumentPolicy;
 use App\Policies\EnterpriseNotificationPolicy;
 use App\Policies\EnterpriseBusinessRulePolicy;
+use App\Policies\EnterpriseIntegrationPolicy;
 use App\Models\RuleDefinition;
+use App\Models\IntegrationEvent;
 use App\Policies\EnterpriseEntityRecordPolicy;
 use App\Policies\EntityDefinitionPolicy;
 use App\Policies\FormDefinitionPolicy;
@@ -99,6 +101,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(EnterpriseDocument::class, EnterpriseDocumentPolicy::class);
         Gate::policy(EnterpriseNotification::class, EnterpriseNotificationPolicy::class);
         Gate::policy(RuleDefinition::class, EnterpriseBusinessRulePolicy::class);
+        Gate::policy(IntegrationEvent::class, EnterpriseIntegrationPolicy::class);
         Gate::policy(EnterpriseEntityRecord::class, EnterpriseEntityRecordPolicy::class);
         Gate::policy(FormDefinition::class, FormDefinitionPolicy::class);
         Gate::policy(TableDefinition::class, TableDefinitionPolicy::class);

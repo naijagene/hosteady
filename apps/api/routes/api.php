@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\V1\Tenant\PlatformJobController;
 use App\Http\Controllers\Api\V1\Tenant\ScheduledTaskController;
 use App\Http\Controllers\Api\V1\Tenant\EnterpriseNotificationController;
 use App\Http\Controllers\Api\V1\Tenant\EnterpriseBusinessRuleController;
+use App\Http\Controllers\Api\V1\Tenant\EnterpriseIntegrationController;
 use App\Http\Controllers\Api\V1\Tenant\ReferenceDataController;
 use App\Http\Controllers\Api\V1\Tenant\SearchController;
 use App\Http\Controllers\Api\V1\Tenant\TenantContextController;
@@ -160,6 +161,20 @@ Route::prefix('v1')->group(function () {
             Route::patch('tenant/rules/{rulePublicId}', [EnterpriseBusinessRuleController::class, 'update']);
             Route::patch('tenant/rules/{rulePublicId}/enable', [EnterpriseBusinessRuleController::class, 'enable']);
             Route::patch('tenant/rules/{rulePublicId}/disable', [EnterpriseBusinessRuleController::class, 'disable']);
+
+            Route::get('tenant/integrations/health', [EnterpriseIntegrationController::class, 'health']);
+            Route::get('tenant/integrations/statistics', [EnterpriseIntegrationController::class, 'statistics']);
+            Route::get('tenant/integrations/events', [EnterpriseIntegrationController::class, 'indexEvents']);
+            Route::post('tenant/integrations/events', [EnterpriseIntegrationController::class, 'storeEvent']);
+            Route::post('tenant/integrations/events/{eventPublicId}/replay', [EnterpriseIntegrationController::class, 'replayEvent']);
+            Route::get('tenant/integrations/connectors', [EnterpriseIntegrationController::class, 'indexConnectors']);
+            Route::post('tenant/integrations/connectors', [EnterpriseIntegrationController::class, 'storeConnector']);
+            Route::get('tenant/integrations/endpoints', [EnterpriseIntegrationController::class, 'indexEndpoints']);
+            Route::post('tenant/integrations/endpoints', [EnterpriseIntegrationController::class, 'storeEndpoint']);
+            Route::get('tenant/integrations/subscriptions', [EnterpriseIntegrationController::class, 'indexSubscriptions']);
+            Route::post('tenant/integrations/subscriptions', [EnterpriseIntegrationController::class, 'storeSubscription']);
+            Route::post('tenant/integrations/dispatches', [EnterpriseIntegrationController::class, 'storeDispatch']);
+            Route::patch('tenant/integrations/dead-letters/{deadLetterPublicId}/resolve', [EnterpriseIntegrationController::class, 'resolveDeadLetter']);
 
             Route::get('tenant/workflows/automation/rules', [WorkflowAutomationController::class, 'indexRules']);
             Route::post('tenant/workflows/automation/rules', [WorkflowAutomationController::class, 'storeRule']);

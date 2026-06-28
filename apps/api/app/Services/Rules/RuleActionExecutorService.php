@@ -6,9 +6,15 @@ use App\Modules\Sdk\Rules\Contracts\RuleActionExecutor;
 use App\Modules\Sdk\Rules\Data\RuleAction;
 use App\Modules\Sdk\Rules\Data\RuleDefinition;
 use App\Modules\Sdk\Rules\Enums\RuleActionType;
+use App\Services\Integration\IntegrationRulesBridge;
 
 class RuleActionExecutorService implements RuleActionExecutor
 {
+    public function __construct(
+        private readonly IntegrationRulesBridge $integrationRulesBridge,
+    ) {
+    }
+
     /** @var list<string> */
     private const SAFE_ACTIONS = [
         'add_violation',
@@ -35,6 +41,11 @@ class RuleActionExecutorService implements RuleActionExecutor
             $type = RuleActionType::from($action->type);
 
             if (! in_array($type->value, self::SAFE_ACTIONS, true)) {
+                if ($type === RuleActionType::EmitEvent) {
+                    $applied[] = $this->emitEvent($action, $facts, $rule);
+                    continue;
+                }
+
                 $warnings[] = [
                     'action' => $type->value,
                     'message' => sprintf('External action [%s] is not executed in metadata-only mode.', $type->value),
@@ -134,6 +145,29 @@ class RuleActionExecutorService implements RuleActionExecutor
             'type' => $type,
             'field' => $action->field,
             'metadata' => $action->metadata,
+        ];
+    }
+
+    private function emitEvent(RuleAction $action, array $facts, RuleDefinition $rule): array
+    {
+        $eventName = (string) ($action->metadata['event_name'] ?? $action->value ?? 'rule.event');
+        $payload = is_array($action->metadata['payload'] ?? null)
+            ? $action->metadata['payload']
+            : $facts;
+
+        if (app()->bound(\App\Support\Tenant\TenantContext::class)) {
+            $this->integrationRulesBridge->emitEventBestEffort(
+                app(\App\Support\Tenant\TenantContext::class),
+                $eventName,
+                $payload,
+                $rule->moduleKey,
+            );
+        }
+
+        return [
+            'type' => 'emit_event',
+            'event_name' => $eventName,
+            'rule_public_id' => $rule->publicId,
         ];
     }
 }

@@ -471,13 +471,13 @@ class M6EnterpriseBusinessRulesTest extends TestCase
         $this->assertSame('tag_record', $result['warnings'][0]['action']);
     }
 
-    public function test_external_action_emit_event_warns(): void
+    public function test_external_action_emit_event_executes_when_integration_bound(): void
     {
         $executor = app(\App\Services\Rules\RuleActionExecutorService::class);
         $rule = \App\Modules\Sdk\Rules\Data\RuleDefinition::fromArray(['public_id' => '01900000-0000-7000-8000-000000000902', 'rule_set_public_id' => 'set', 'name' => 'External']);
-        $result = $executor->execute([['type' => 'emit_event']], [], $rule);
-        $this->assertNotEmpty($result['warnings']);
-        $this->assertSame('emit_event', $result['warnings'][0]['action']);
+        $result = $executor->execute([['type' => 'emit_event', 'metadata' => ['event_name' => 'rule.test.event']]], [], $rule);
+        $this->assertNotEmpty($result['actions_applied']);
+        $this->assertSame('emit_event', $result['actions_applied'][0]['type']);
     }
 
     public function test_rule_set_crud_flow(): void
@@ -641,7 +641,7 @@ class M6EnterpriseBusinessRulesTest extends TestCase
     public function test_permission_catalog_has_rules_permissions(): void
     {
         $this->seedHeosPlatform();
-        $this->assertSame(105, Permission::query()->count());
+        $this->assertSame(111, Permission::query()->count());
         foreach (['rules.read', 'rules.manage', 'rules.evaluate', 'rules.execute', 'rules.admin'] as $key) {
             $this->assertNotNull(Permission::query()->where('key', $key)->first());
         }

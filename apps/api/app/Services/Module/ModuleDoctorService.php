@@ -80,6 +80,7 @@ class ModuleDoctorService
             'documents' => app(\App\Services\Document\EnterpriseDocumentHealthService::class)->assess(),
             'notification_platform' => app(\App\Services\Notification\NotificationHealthService::class)->assess(),
             'business_rules' => app(\App\Services\Rules\RuleHealthService::class)->assess(),
+            'integrations' => app(\App\Services\Integration\IntegrationHealthService::class)->assess(),
         ];
 
         $this->collectEnterpriseHealthWarnings($enterpriseHealth, $warnings, $errors);
@@ -101,6 +102,7 @@ class ModuleDoctorService
                     'event_bus' => (bool) config('heos.enterprise.event_bus.enabled', true),
                     'notifications' => (bool) config('heos.enterprise.notifications.enabled', true),
                     'business_rules' => (bool) config('heos.enterprise.business_rules.enabled', true),
+                    'integrations' => (bool) config('heos.enterprise.integrations.enabled', true),
                     'reference_data' => (bool) config('heos.enterprise.reference_data.enabled', true),
                     'files' => (bool) config('heos.enterprise.files.enabled', true),
                     'runtime_aware' => (bool) config('heos.enterprise.runtime_aware', true),

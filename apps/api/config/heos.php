@@ -122,5 +122,8 @@ return [
         'business_rules' => [
             'enabled' => env('HEOS_BUSINESS_RULES_ENABLED', true),
         ],
+        'integrations' => [
+            'enabled' => env('HEOS_INTEGRATIONS_ENABLED', true),
+        ],
     ],
 ];

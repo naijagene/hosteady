@@ -95,6 +95,15 @@ enum AuditAction: string
     case RuleExecuted = 'rule.executed';
     case RuleViolationRecorded = 'rule.violation.recorded';
     case RuleActivityLogged = 'rule.activity.logged';
+    case IntegrationEventPublished = 'integration.event.published';
+    case IntegrationEventReplayed = 'integration.event.replayed';
+    case IntegrationConnectorCreated = 'integration.connector.created';
+    case IntegrationEndpointCreated = 'integration.endpoint.created';
+    case IntegrationSubscriptionCreated = 'integration.subscription.created';
+    case IntegrationDispatchCompleted = 'integration.dispatch.completed';
+    case IntegrationDispatchFailed = 'integration.dispatch.failed';
+    case IntegrationDeadLetterEnqueued = 'integration.dead_letter.enqueued';
+    case IntegrationDeadLetterResolved = 'integration.dead_letter.resolved';
 
     case ReferenceCatalogRegistered = 'reference.catalog.registered';
 
@@ -461,6 +470,15 @@ enum AuditAction: string
             self::RuleExecuted,
             self::RuleViolationRecorded,
             self::RuleActivityLogged,
+            self::IntegrationEventPublished,
+            self::IntegrationEventReplayed,
+            self::IntegrationConnectorCreated,
+            self::IntegrationEndpointCreated,
+            self::IntegrationSubscriptionCreated,
+            self::IntegrationDispatchCompleted,
+            self::IntegrationDispatchFailed,
+            self::IntegrationDeadLetterEnqueued,
+            self::IntegrationDeadLetterResolved,
             self::FormDefinitionRegistered,
             self::FormDefinitionUpdated,
             self::FormRendered,
@@ -702,7 +720,16 @@ enum AuditAction: string
             self::RuleEvaluated,
             self::RuleExecuted,
             self::RuleViolationRecorded,
-            self::RuleActivityLogged => AuditRetentionClass::Ephemeral,
+            self::RuleActivityLogged,
+            self::IntegrationEventPublished,
+            self::IntegrationEventReplayed,
+            self::IntegrationConnectorCreated,
+            self::IntegrationEndpointCreated,
+            self::IntegrationSubscriptionCreated,
+            self::IntegrationDispatchCompleted,
+            self::IntegrationDispatchFailed,
+            self::IntegrationDeadLetterEnqueued,
+            self::IntegrationDeadLetterResolved => AuditRetentionClass::Ephemeral,
         };
     }
 

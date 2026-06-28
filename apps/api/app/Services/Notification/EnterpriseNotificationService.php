@@ -172,6 +172,15 @@ class EnterpriseNotificationService implements NotificationPort
         $this->auditRecorder->recordSent($reference);
         $this->searchIndexer->indexBestEffort($reference, $context);
 
+        try {
+            app(\App\Services\Integration\IntegrationNotificationBridge::class)->publishNotificationEventBestEffort(
+                $context,
+                'notification.sent',
+                $reference,
+            );
+        } catch (\Throwable) {
+        }
+
         return $reference;
     }
 

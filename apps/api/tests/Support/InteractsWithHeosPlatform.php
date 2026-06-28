@@ -123,6 +123,12 @@ trait InteractsWithHeosPlatform
             'rules.evaluate',
             'rules.execute',
             'rules.admin',
+            'integrations.read',
+            'integrations.manage',
+            'integrations.publish',
+            'integrations.dispatch',
+            'integrations.replay',
+            'integrations.admin',
         ];
     }
 
@@ -144,7 +150,7 @@ trait InteractsWithHeosPlatform
 
     protected function assertPermissionCatalogComplete(): void
     {
-        $this->assertSame(105, Permission::query()->count());
+        $this->assertSame(111, Permission::query()->count());
     }
 
     /**
