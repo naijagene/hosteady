@@ -6,10 +6,11 @@ use App\Models\Concerns\HasHeosPublicId;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class NotificationPreference extends Model
+class NotificationSubscription extends Model
 {
-    use HasHeosPublicId, HasUuids;
+    use HasHeosPublicId, HasUuids, SoftDeletes;
 
     public $incrementing = false;
 
@@ -22,12 +23,10 @@ class NotificationPreference extends Model
         'public_id',
         'organization_id',
         'membership_id',
-        'channel',
-        'type',
+        'event_type',
+        'channels',
         'enabled',
-        'preferred_channels_json',
-        'digest_frequency',
-        'quiet_hours_json',
+        'metadata',
     ];
 
     /**
@@ -36,9 +35,9 @@ class NotificationPreference extends Model
     protected function casts(): array
     {
         return [
+            'channels' => 'array',
+            'metadata' => 'array',
             'enabled' => 'boolean',
-            'preferred_channels_json' => 'array',
-            'quiet_hours_json' => 'array',
         ];
     }
 
