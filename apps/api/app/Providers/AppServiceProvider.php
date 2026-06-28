@@ -27,6 +27,8 @@ use App\Policies\EnterpriseDocumentPolicy;
 use App\Policies\EnterpriseNotificationPolicy;
 use App\Policies\EnterpriseBusinessRulePolicy;
 use App\Policies\ApplicationRuntimePolicy;
+use App\Models\UiPage;
+use App\Policies\UiPagePolicy;
 use App\Policies\EnterpriseIntegrationPolicy;
 use App\Models\RuleDefinition;
 use App\Models\ApplicationRuntime\ApplicationRuntimeApp;
@@ -105,6 +107,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(RuleDefinition::class, EnterpriseBusinessRulePolicy::class);
         Gate::policy(IntegrationEvent::class, EnterpriseIntegrationPolicy::class);
         Gate::policy(ApplicationRuntimeApp::class, ApplicationRuntimePolicy::class);
+        Gate::policy(UiPage::class, UiPagePolicy::class);
         Gate::policy(EnterpriseEntityRecord::class, EnterpriseEntityRecordPolicy::class);
         Gate::policy(FormDefinition::class, FormDefinitionPolicy::class);
         Gate::policy(TableDefinition::class, TableDefinitionPolicy::class);

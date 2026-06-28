@@ -128,5 +128,8 @@ return [
         'application_runtime' => [
             'enabled' => env('HEOS_APPLICATION_RUNTIME_ENABLED', true),
         ],
+        'ui_metadata' => [
+            'enabled' => env('HEOS_UI_METADATA_ENABLED', true),
+        ],
     ],
 ];

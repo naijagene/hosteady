@@ -52,5 +52,9 @@ enum AuditEntityType: string
     case EnterpriseRule = 'enterprise_rule';
     case EnterpriseIntegration = 'enterprise_integration';
     case ApplicationRuntime = 'application_runtime';
+    case UiPage = 'ui_page';
+    case UiLayout = 'ui_layout';
+    case UiComponent = 'ui_component';
+    case UiPersonalization = 'ui_personalization';
     case User = 'user';
 }

@@ -262,7 +262,7 @@ class M6EnterpriseIntegrationEventBusTest extends TestCase
     public function test_permission_catalog_has_integration_permissions(): void
     {
         $this->seedHeosPlatform();
-        $this->assertSame(114, Permission::query()->count());
+        $this->assertSame(118, Permission::query()->count());
         foreach (['integrations.read', 'integrations.manage', 'integrations.publish', 'integrations.dispatch', 'integrations.replay', 'integrations.admin'] as $key) {
             $this->assertNotNull(Permission::query()->where('key', $key)->first());
         }

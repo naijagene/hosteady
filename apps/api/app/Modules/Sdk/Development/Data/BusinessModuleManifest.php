@@ -16,6 +16,9 @@ readonly class BusinessModuleManifest implements \JsonSerializable
      * @param  list<array<string, mixed>>  $dashboards
      * @param  list<array<string, mixed>>  $reports
      * @param  list<array<string, mixed>>  $workflows
+     * @param  list<array<string, mixed>>  $uiPages
+     * @param  list<array<string, mixed>>  $uiLayouts
+     * @param  list<array<string, mixed>>  $uiComponents
      * @param  list<string>  $dependencies
      * @param  array<string, mixed>  $settings
      * @param  array<string, mixed>  $metadata
@@ -35,6 +38,9 @@ readonly class BusinessModuleManifest implements \JsonSerializable
         public array $dashboards = [],
         public array $reports = [],
         public array $workflows = [],
+        public array $uiPages = [],
+        public array $uiLayouts = [],
+        public array $uiComponents = [],
         public array $dependencies = [],
         public array $settings = [],
         public array $metadata = [],
@@ -67,6 +73,8 @@ readonly class BusinessModuleManifest implements \JsonSerializable
             }
         }
 
+        $ui = is_array($data['ui'] ?? null) ? $data['ui'] : [];
+
         return new self(
             moduleKey: (string) ($data['module_key'] ?? $data['key'] ?? ''),
             name: (string) ($data['name'] ?? ''),
@@ -82,6 +90,9 @@ readonly class BusinessModuleManifest implements \JsonSerializable
             dashboards: is_array($data['dashboards'] ?? null) ? $data['dashboards'] : [],
             reports: is_array($data['reports'] ?? null) ? $data['reports'] : [],
             workflows: is_array($data['workflows'] ?? null) ? $data['workflows'] : [],
+            uiPages: is_array($ui['pages'] ?? null) ? $ui['pages'] : [],
+            uiLayouts: is_array($ui['layouts'] ?? null) ? $ui['layouts'] : [],
+            uiComponents: is_array($ui['components'] ?? null) ? $ui['components'] : [],
             dependencies: is_array($data['dependencies'] ?? null) ? array_values(array_map('strval', $data['dependencies'])) : [],
             settings: is_array($data['settings'] ?? null) ? $data['settings'] : [],
             metadata: is_array($data['metadata'] ?? null) ? $data['metadata'] : [],
@@ -108,6 +119,11 @@ readonly class BusinessModuleManifest implements \JsonSerializable
             'dashboards' => $this->dashboards,
             'reports' => $this->reports,
             'workflows' => $this->workflows,
+            'ui' => [
+                'pages' => $this->uiPages,
+                'layouts' => $this->uiLayouts,
+                'components' => $this->uiComponents,
+            ],
             'dependencies' => $this->dependencies,
             'settings' => $this->settings,
             'metadata' => $this->metadata,

@@ -174,7 +174,7 @@ class M7ApplicationRuntimeTest extends TestCase
     public function test_permission_catalog_has_application_runtime_permissions(): void
     {
         $this->seedHeosPlatform();
-        $this->assertSame(114, Permission::query()->count());
+        $this->assertSame(118, Permission::query()->count());
         foreach (['application.read', 'application.manage', 'navigation.read'] as $key) {
             $this->assertNotNull(Permission::query()->where('key', $key)->first());
         }

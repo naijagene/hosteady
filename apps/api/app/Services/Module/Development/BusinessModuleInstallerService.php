@@ -31,6 +31,9 @@ class BusinessModuleInstallerService implements BusinessModuleInstaller
         private readonly \App\Services\Table\DynamicTableRegistryService $tableRegistryService,
         private readonly \App\Services\Dashboard\DynamicDashboardRegistryService $dashboardRegistryService,
         private readonly \App\Services\Report\DynamicReportRegistryService $reportRegistryService,
+        private readonly \App\Services\Ui\UiPageRegistryService $uiPageRegistryService,
+        private readonly \App\Services\Ui\UiLayoutService $uiLayoutService,
+        private readonly \App\Services\Ui\UiComponentService $uiComponentService,
     ) {
     }
 
@@ -96,6 +99,7 @@ class BusinessModuleInstallerService implements BusinessModuleInstaller
             $this->registerManifestTables($manifest);
             $this->registerManifestDashboards($manifest);
             $this->registerManifestReports($manifest);
+            $this->registerManifestUi($manifest, $organization->id, $workspaceId);
 
             $installation = BusinessModuleInstallation::query()->create([
                 'organization_id' => $organization->id,
@@ -400,6 +404,59 @@ class BusinessModuleInstallerService implements BusinessModuleInstaller
             );
         } catch (\Throwable) {
             // Report registration must not block module installation.
+        }
+    }
+
+    private function registerManifestUi(
+        \App\Modules\Sdk\Development\Data\BusinessModuleManifest $manifest,
+        string $organizationId,
+        ?string $workspaceId,
+    ): void {
+        if ($manifest->uiPages === [] && $manifest->uiLayouts === [] && $manifest->uiComponents === []) {
+            return;
+        }
+
+        if (! (bool) config('heos.enterprise.ui_metadata.enabled', true)) {
+            return;
+        }
+
+        foreach ($manifest->uiPages as $page) {
+            if (! is_array($page)) {
+                continue;
+            }
+
+            try {
+                $payload = array_merge($page, ['module_key' => $manifest->moduleKey]);
+                $this->uiPageRegistryService->registerFromSource($organizationId, $workspaceId, null, $payload);
+            } catch (\Throwable) {
+                // UI page registration must not block module installation.
+            }
+        }
+
+        foreach ($manifest->uiLayouts as $layout) {
+            if (! is_array($layout)) {
+                continue;
+            }
+
+            try {
+                $payload = array_merge($layout, ['module_key' => $manifest->moduleKey]);
+                $this->uiLayoutService->registerFromSource($organizationId, $workspaceId, null, $payload);
+            } catch (\Throwable) {
+                // UI layout registration must not block module installation.
+            }
+        }
+
+        foreach ($manifest->uiComponents as $component) {
+            if (! is_array($component)) {
+                continue;
+            }
+
+            try {
+                $payload = array_merge($component, ['module_key' => $manifest->moduleKey]);
+                $this->uiComponentService->registerFromSource($organizationId, $workspaceId, null, $payload);
+            } catch (\Throwable) {
+                // UI component registration must not block module installation.
+            }
         }
     }
 

@@ -126,6 +126,10 @@ class PermissionCatalogSeeder extends Seeder
         ['key' => 'application.read', 'name' => 'Read Application Runtime', 'description' => null, 'domain' => 'application'],
         ['key' => 'application.manage', 'name' => 'Manage Application Runtime', 'description' => null, 'domain' => 'application'],
         ['key' => 'navigation.read', 'name' => 'Read Navigation', 'description' => null, 'domain' => 'application'],
+        ['key' => 'ui.read', 'name' => 'Read UI Metadata', 'description' => null, 'domain' => 'ui'],
+        ['key' => 'ui.manage', 'name' => 'Manage UI Metadata', 'description' => null, 'domain' => 'ui'],
+        ['key' => 'ui.render', 'name' => 'Render UI Metadata', 'description' => null, 'domain' => 'ui'],
+        ['key' => 'ui.personalize', 'name' => 'Personalize UI Metadata', 'description' => null, 'domain' => 'ui'],
     ];
 
     public function run(): void

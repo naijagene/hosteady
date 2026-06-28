@@ -85,6 +85,30 @@ trait ProvidesBusinessModuleAssets
     }
 
     /**
+     * @return list<array<string, mixed>>
+     */
+    public function pages(): array
+    {
+        return $this->manifest()->uiPages;
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    public function layouts(): array
+    {
+        return $this->manifest()->uiLayouts;
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    public function components(): array
+    {
+        return $this->manifest()->uiComponents;
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public function settings(): array

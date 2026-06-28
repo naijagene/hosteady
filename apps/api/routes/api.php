@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\V1\Tenant\EnterpriseNotificationController;
 use App\Http\Controllers\Api\V1\Tenant\EnterpriseBusinessRuleController;
 use App\Http\Controllers\Api\V1\Tenant\EnterpriseApplicationController;
 use App\Http\Controllers\Api\V1\Tenant\EnterpriseIntegrationController;
+use App\Http\Controllers\Api\V1\Tenant\EnterpriseUiController;
 use App\Http\Controllers\Api\V1\Tenant\ReferenceDataController;
 use App\Http\Controllers\Api\V1\Tenant\SearchController;
 use App\Http\Controllers\Api\V1\Tenant\TenantContextController;
@@ -184,6 +185,19 @@ Route::prefix('v1')->group(function () {
             Route::get('tenant/application-runtime/apps/{publicId}', [EnterpriseApplicationController::class, 'show']);
             Route::post('tenant/application-runtime/apps/{publicId}/enable', [EnterpriseApplicationController::class, 'enable']);
             Route::post('tenant/application-runtime/apps/{publicId}/disable', [EnterpriseApplicationController::class, 'disable']);
+
+            Route::get('tenant/ui/runtime', [EnterpriseUiController::class, 'runtime']);
+            Route::get('tenant/ui/health', [EnterpriseUiController::class, 'health']);
+            Route::get('tenant/ui/statistics', [EnterpriseUiController::class, 'statistics']);
+            Route::get('tenant/ui/pages', [EnterpriseUiController::class, 'indexPages']);
+            Route::post('tenant/ui/pages', [EnterpriseUiController::class, 'storePage']);
+            Route::get('tenant/ui/layouts', [EnterpriseUiController::class, 'indexLayouts']);
+            Route::post('tenant/ui/layouts', [EnterpriseUiController::class, 'storeLayout']);
+            Route::get('tenant/ui/components', [EnterpriseUiController::class, 'indexComponents']);
+            Route::post('tenant/ui/components', [EnterpriseUiController::class, 'storeComponent']);
+            Route::patch('tenant/ui/personalization/{pagePublicId}', [EnterpriseUiController::class, 'updatePersonalization']);
+            Route::get('tenant/ui/pages/{moduleKey}/{pageKey}/render', [EnterpriseUiController::class, 'renderPage']);
+            Route::get('tenant/ui/pages/{moduleKey}/{pageKey}', [EnterpriseUiController::class, 'showPage']);
 
             Route::get('tenant/workflows/automation/rules', [WorkflowAutomationController::class, 'indexRules']);
             Route::post('tenant/workflows/automation/rules', [WorkflowAutomationController::class, 'storeRule']);

@@ -109,6 +109,15 @@ enum AuditAction: string
     case ApplicationRuntimeDisabled = 'application.runtime.disabled';
     case ApplicationNavigationUpdated = 'application.navigation.updated';
     case ApplicationWorkspaceCreated = 'application.workspace.created';
+    case UiPageRegistered = 'ui.page.registered';
+    case UiPageUpdated = 'ui.page.updated';
+    case UiPageRendered = 'ui.page.rendered';
+    case UiLayoutRegistered = 'ui.layout.registered';
+    case UiLayoutUpdated = 'ui.layout.updated';
+    case UiComponentRegistered = 'ui.component.registered';
+    case UiComponentUpdated = 'ui.component.updated';
+    case UiPersonalizationUpdated = 'ui.personalization.updated';
+    case UiActivityLogged = 'ui.activity.logged';
 
     case ReferenceCatalogRegistered = 'reference.catalog.registered';
 
@@ -489,6 +498,15 @@ enum AuditAction: string
             self::ApplicationRuntimeDisabled,
             self::ApplicationNavigationUpdated,
             self::ApplicationWorkspaceCreated,
+            self::UiPageRegistered,
+            self::UiPageUpdated,
+            self::UiPageRendered,
+            self::UiLayoutRegistered,
+            self::UiLayoutUpdated,
+            self::UiComponentRegistered,
+            self::UiComponentUpdated,
+            self::UiPersonalizationUpdated,
+            self::UiActivityLogged,
             self::FormDefinitionRegistered,
             self::FormDefinitionUpdated,
             self::FormRendered,
@@ -744,7 +762,16 @@ enum AuditAction: string
             self::ApplicationRuntimeEnabled,
             self::ApplicationRuntimeDisabled,
             self::ApplicationNavigationUpdated,
-            self::ApplicationWorkspaceCreated => AuditRetentionClass::Ephemeral,
+            self::ApplicationWorkspaceCreated,
+            self::UiPageRegistered,
+            self::UiPageUpdated,
+            self::UiPageRendered,
+            self::UiLayoutRegistered,
+            self::UiLayoutUpdated,
+            self::UiComponentRegistered,
+            self::UiComponentUpdated,
+            self::UiPersonalizationUpdated,
+            self::UiActivityLogged => AuditRetentionClass::Ephemeral,
         };
     }
 
