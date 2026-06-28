@@ -26,7 +26,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
     public const SCHEMA_VERSION = 1;
 
     /**
-     * @return array{audit: bool, settings: bool, workspace: bool, notifications: bool, events: bool, reference_data: bool, storage: bool, media: bool, jobs: bool, scheduler: bool, search: bool, indexing: bool, workflow: bool, human_tasks: bool, approvals: bool, approval: bool, automation: bool, workflow_designer: bool, workflow_marketplace: bool, business_modules: bool, entities: bool, forms: bool, tables: bool, dashboards: bool}
+     * @return array{audit: bool, settings: bool, workspace: bool, notifications: bool, events: bool, reference_data: bool, storage: bool, media: bool, jobs: bool, scheduler: bool, search: bool, indexing: bool, workflow: bool, human_tasks: bool, approvals: bool, approval: bool, automation: bool, workflow_designer: bool, workflow_marketplace: bool, business_modules: bool, entities: bool, forms: bool, tables: bool, dashboards: bool, reports: bool}
      */
     private function platformCapabilities(): array
     {
@@ -55,6 +55,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
             'forms' => (bool) config('heos.enterprise.forms.enabled', true),
             'tables' => (bool) config('heos.enterprise.tables.enabled', true),
             'dashboards' => (bool) config('heos.enterprise.dashboards.enabled', true),
+            'reports' => (bool) config('heos.enterprise.reports.enabled', true),
         ];
     }
 
@@ -76,6 +77,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
         private readonly \App\Services\Form\DynamicFormHealthService $formHealthService,
         private readonly \App\Services\Table\DynamicTableHealthService $tableHealthService,
         private readonly \App\Services\Dashboard\DynamicDashboardHealthService $dashboardHealthService,
+        private readonly \App\Services\Report\DynamicReportHealthService $reportHealthService,
     ) {
     }
 
@@ -323,6 +325,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
                 'forms' => $this->formHealthService->runtimeContribution($context),
                 'tables' => $this->tableHealthService->runtimeContribution($context),
                 'dashboards' => $this->dashboardHealthService->runtimeContribution($context),
+                'reports' => $this->reportHealthService->runtimeContribution($context),
             ],
         ];
     }

@@ -106,5 +106,8 @@ return [
         'dashboards' => [
             'enabled' => env('HEOS_DASHBOARDS_ENABLED', true),
         ],
+        'reports' => [
+            'enabled' => env('HEOS_REPORTS_ENABLED', true),
+        ],
     ],
 ];

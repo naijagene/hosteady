@@ -24,6 +24,7 @@ use App\Http\Controllers\Api\V1\Tenant\BusinessModuleController;
 use App\Http\Controllers\Api\V1\Tenant\DynamicFormController;
 use App\Http\Controllers\Api\V1\Tenant\DynamicTableController;
 use App\Http\Controllers\Api\V1\Tenant\DynamicDashboardController;
+use App\Http\Controllers\Api\V1\Tenant\DynamicReportController;
 use App\Http\Controllers\Api\V1\Tenant\EnterpriseEntityController;
 use App\Http\Controllers\Api\V1\Tenant\WorkflowMarketplaceController;
 use App\Http\Controllers\Api\V1\Tenant\WorkflowCategoryController;
@@ -193,6 +194,21 @@ Route::prefix('v1')->group(function () {
             Route::get('tenant/dashboards/{moduleKey}/{dashboardKey}/widgets', [DynamicDashboardController::class, 'widgets']);
             Route::post('tenant/dashboards/{moduleKey}/{dashboardKey}/views', [DynamicDashboardController::class, 'storeView']);
             Route::get('tenant/dashboards/{moduleKey}/{dashboardKey}/views', [DynamicDashboardController::class, 'views']);
+
+            Route::patch('tenant/reports/schedules/{schedulePublicId}/pause', [DynamicReportController::class, 'pauseSchedule']);
+            Route::patch('tenant/reports/schedules/{schedulePublicId}/resume', [DynamicReportController::class, 'resumeSchedule']);
+            Route::delete('tenant/reports/schedules/{schedulePublicId}', [DynamicReportController::class, 'destroySchedule']);
+            Route::get('tenant/reports/runs/{runPublicId}', [DynamicReportController::class, 'showRun']);
+            Route::get('tenant/reports/exports/{exportPublicId}', [DynamicReportController::class, 'showExport']);
+            Route::get('tenant/reports', [DynamicReportController::class, 'index']);
+            Route::get('tenant/reports/{moduleKey}/{reportKey}', [DynamicReportController::class, 'show']);
+            Route::get('tenant/reports/{moduleKey}/{reportKey}/render', [DynamicReportController::class, 'render']);
+            Route::post('tenant/reports/{moduleKey}/{reportKey}/run', [DynamicReportController::class, 'run']);
+            Route::post('tenant/reports/{moduleKey}/{reportKey}/export', [DynamicReportController::class, 'export']);
+            Route::get('tenant/reports/{moduleKey}/{reportKey}/runs', [DynamicReportController::class, 'runs']);
+            Route::get('tenant/reports/{moduleKey}/{reportKey}/exports', [DynamicReportController::class, 'exports']);
+            Route::post('tenant/reports/{moduleKey}/{reportKey}/schedules', [DynamicReportController::class, 'storeSchedule']);
+            Route::get('tenant/reports/{moduleKey}/{reportKey}/schedules', [DynamicReportController::class, 'schedules']);
 
             Route::get('tenant/entities/tags', [EnterpriseEntityController::class, 'tags']);
             Route::post('tenant/entities/tags', [EnterpriseEntityController::class, 'storeTag']);

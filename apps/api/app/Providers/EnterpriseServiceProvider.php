@@ -141,6 +141,7 @@ class EnterpriseServiceProvider extends ServiceProvider
         $this->app->singleton(FileVisibilityResolver::class);
         $this->app->singleton(EnterpriseTableHealthGuard::class);
         $this->app->singleton(\App\Services\Enterprise\Support\EnterpriseDashboardHealthGuard::class);
+        $this->app->singleton(\App\Services\Enterprise\Support\EnterpriseReportHealthGuard::class);
         $this->app->singleton(EnterpriseStorageHealthService::class);
         $this->app->singleton(LaravelStorageAdapter::class);
         $this->app->singleton(LaravelFileServiceAdapter::class);
@@ -387,6 +388,38 @@ class EnterpriseServiceProvider extends ServiceProvider
         $this->app->singleton(\App\Services\Dashboard\DynamicDashboardStatisticsService::class);
         $this->app->singleton(\App\Services\Dashboard\DynamicDashboardAuditRecorder::class);
         $this->app->singleton(\App\Services\Dashboard\DynamicDashboardDevelopmentService::class);
+
+        $this->app->singleton(\App\Services\Report\DynamicReportFilterService::class);
+        $this->app->singleton(\App\Modules\Sdk\Report\Contracts\ReportFilterEvaluator::class, \App\Services\Report\DynamicReportFilterService::class);
+        $this->app->singleton(\App\Services\Report\DynamicReportAggregateService::class);
+        $this->app->singleton(\App\Modules\Sdk\Report\Contracts\ReportAggregateResolver::class, \App\Services\Report\DynamicReportAggregateService::class);
+        $this->app->singleton(\App\Services\Report\DynamicReportValidationService::class);
+        $this->app->singleton(\App\Services\Report\DynamicReportRegistryService::class);
+        $this->app->singleton(\App\Modules\Sdk\Report\Contracts\ReportRegistry::class, \App\Services\Report\DynamicReportRegistryService::class);
+        $this->app->singleton(\App\Services\Report\DynamicReportDefinitionService::class);
+        $this->app->singleton(\App\Services\Report\DynamicReportGeneratorService::class);
+        $this->app->singleton(\App\Modules\Sdk\Report\Contracts\ReportGenerator::class, \App\Services\Report\DynamicReportGeneratorService::class);
+        $this->app->singleton(\App\Services\Report\DynamicReportRendererService::class);
+        $this->app->singleton(\App\Modules\Sdk\Report\Contracts\ReportRenderer::class, \App\Services\Report\DynamicReportRendererService::class);
+        $this->app->singleton(\App\Services\Report\DynamicReportDataProviderService::class);
+        $this->app->singleton(\App\Modules\Sdk\Report\Contracts\ReportDataProvider::class, \App\Services\Report\DynamicReportDataProviderService::class);
+        $this->app->singleton(\App\Services\Report\DynamicReportQueryService::class);
+        $this->app->singleton(\App\Services\Report\DynamicReportGroupingService::class);
+        $this->app->singleton(\App\Services\Report\DynamicReportChartService::class);
+        $this->app->singleton(\App\Services\Report\DynamicReportTemplateService::class);
+        $this->app->singleton(\App\Modules\Sdk\Report\Contracts\ReportTemplateProvider::class, \App\Services\Report\DynamicReportTemplateService::class);
+        $this->app->singleton(\App\Services\Report\DynamicReportRunService::class);
+        $this->app->singleton(\App\Services\Report\DynamicReportExportService::class);
+        $this->app->singleton(\App\Modules\Sdk\Report\Contracts\ReportExporter::class, \App\Services\Report\DynamicReportExportService::class);
+        $this->app->singleton(\App\Services\Report\DynamicReportScheduleService::class);
+        $this->app->singleton(\App\Modules\Sdk\Report\Contracts\ReportScheduler::class, \App\Services\Report\DynamicReportScheduleService::class);
+        $this->app->singleton(\App\Services\Report\DynamicReportActivityService::class);
+        $this->app->singleton(\App\Services\Report\DynamicReportSearchIndexer::class);
+        $this->app->singleton(\App\Services\Report\DynamicReportWorkflowBridge::class);
+        $this->app->singleton(\App\Services\Report\DynamicReportHealthService::class);
+        $this->app->singleton(\App\Services\Report\DynamicReportStatisticsService::class);
+        $this->app->singleton(\App\Services\Report\DynamicReportAuditRecorder::class);
+        $this->app->singleton(\App\Services\Report\DynamicReportDevelopmentService::class);
     }
 
     public function boot(): void

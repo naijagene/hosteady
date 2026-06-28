@@ -42,5 +42,9 @@ enum AuditEntityType: string
     case DashboardDefinition = 'dashboard_definition';
     case DashboardWidget = 'dashboard_widget';
     case DashboardView = 'dashboard_view';
+    case ReportDefinition = 'report_definition';
+    case ReportRun = 'report_run';
+    case ReportExport = 'report_export';
+    case ReportSchedule = 'report_schedule';
     case User = 'user';
 }

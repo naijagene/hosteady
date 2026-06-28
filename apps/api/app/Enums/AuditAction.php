@@ -209,6 +209,20 @@ enum AuditAction: string
     case DashboardViewDeleted = 'dashboard.view.deleted';
     case DashboardActivityLogged = 'dashboard.activity.logged';
 
+    case ReportDefinitionRegistered = 'report.definition.registered';
+    case ReportDefinitionUpdated = 'report.definition.updated';
+    case ReportRendered = 'report.rendered';
+    case ReportRunStarted = 'report.run.started';
+    case ReportRunCompleted = 'report.run.completed';
+    case ReportRunFailed = 'report.run.failed';
+    case ReportExportRequested = 'report.export.requested';
+    case ReportExportCompleted = 'report.export.completed';
+    case ReportExportFailed = 'report.export.failed';
+    case ReportScheduleCreated = 'report.schedule.created';
+    case ReportScheduleUpdated = 'report.schedule.updated';
+    case ReportScheduleDeleted = 'report.schedule.deleted';
+    case ReportActivityLogged = 'report.activity.logged';
+
     public function category(): AuditCategory
     {
         return match ($this) {
@@ -383,6 +397,20 @@ enum AuditAction: string
             self::DashboardViewUpdated,
             self::DashboardViewDeleted,
             self::DashboardActivityLogged => AuditCategory::Application,
+
+            self::ReportDefinitionRegistered,
+            self::ReportDefinitionUpdated,
+            self::ReportRendered,
+            self::ReportRunStarted,
+            self::ReportRunCompleted,
+            self::ReportRunFailed,
+            self::ReportExportRequested,
+            self::ReportExportCompleted,
+            self::ReportExportFailed,
+            self::ReportScheduleCreated,
+            self::ReportScheduleUpdated,
+            self::ReportScheduleDeleted,
+            self::ReportActivityLogged => AuditCategory::Application,
 
             self::ApplicationInstalled,
             self::ApplicationEnabled,

@@ -93,6 +93,11 @@ trait InteractsWithHeosPlatform
             'dashboards.manage',
             'dashboards.render',
             'dashboards.export',
+            'reports.read',
+            'reports.manage',
+            'reports.run',
+            'reports.export',
+            'reports.schedule',
         ];
     }
 
@@ -114,7 +119,7 @@ trait InteractsWithHeosPlatform
 
     protected function assertPermissionCatalogComplete(): void
     {
-        $this->assertSame(75, Permission::query()->count());
+        $this->assertSame(80, Permission::query()->count());
     }
 
     /**

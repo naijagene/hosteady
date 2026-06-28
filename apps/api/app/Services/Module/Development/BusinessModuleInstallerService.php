@@ -30,6 +30,7 @@ class BusinessModuleInstallerService implements BusinessModuleInstaller
         private readonly \App\Services\Form\DynamicFormRegistryService $formRegistryService,
         private readonly \App\Services\Table\DynamicTableRegistryService $tableRegistryService,
         private readonly \App\Services\Dashboard\DynamicDashboardRegistryService $dashboardRegistryService,
+        private readonly \App\Services\Report\DynamicReportRegistryService $reportRegistryService,
     ) {
     }
 
@@ -94,6 +95,7 @@ class BusinessModuleInstallerService implements BusinessModuleInstaller
             $this->registerManifestForms($manifest);
             $this->registerManifestTables($manifest);
             $this->registerManifestDashboards($manifest);
+            $this->registerManifestReports($manifest);
 
             $installation = BusinessModuleInstallation::query()->create([
                 'organization_id' => $organization->id,
@@ -378,6 +380,26 @@ class BusinessModuleInstallerService implements BusinessModuleInstaller
             );
         } catch (\Throwable) {
             // Dashboard registration must not block module installation.
+        }
+    }
+
+    private function registerManifestReports(\App\Modules\Sdk\Development\Data\BusinessModuleManifest $manifest): void
+    {
+        if ($manifest->reports === []) {
+            return;
+        }
+
+        if (! (bool) config('heos.enterprise.reports.enabled', true)) {
+            return;
+        }
+
+        try {
+            $this->reportRegistryService->registerFromManifestReports(
+                $manifest->reports,
+                $manifest->moduleKey,
+            );
+        } catch (\Throwable) {
+            // Report registration must not block module installation.
         }
     }
 

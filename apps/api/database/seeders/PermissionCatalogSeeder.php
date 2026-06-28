@@ -87,6 +87,11 @@ class PermissionCatalogSeeder extends Seeder
         ['key' => 'dashboards.manage', 'name' => 'Manage Dashboards', 'description' => null, 'domain' => 'business'],
         ['key' => 'dashboards.render', 'name' => 'Render Dashboards', 'description' => null, 'domain' => 'business'],
         ['key' => 'dashboards.export', 'name' => 'Export Dashboards', 'description' => null, 'domain' => 'business'],
+        ['key' => 'reports.read', 'name' => 'Read Reports', 'description' => null, 'domain' => 'business'],
+        ['key' => 'reports.manage', 'name' => 'Manage Reports', 'description' => null, 'domain' => 'business'],
+        ['key' => 'reports.run', 'name' => 'Run Reports', 'description' => null, 'domain' => 'business'],
+        ['key' => 'reports.export', 'name' => 'Export Reports', 'description' => null, 'domain' => 'business'],
+        ['key' => 'reports.schedule', 'name' => 'Schedule Reports', 'description' => null, 'domain' => 'business'],
     ];
 
     public function run(): void
