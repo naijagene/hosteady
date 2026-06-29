@@ -13,6 +13,17 @@
   --color-hds-border: #d8e2ef;
   --color-hds-text: #334155;
   --color-hds-text-muted: #64748b;
+  --color-background: #ffffff;
+  --color-foreground: #334155;
+  --color-card: #ffffff;
+  --color-card-foreground: #334155;
+  --color-primary: #0c2d57;
+  --color-primary-foreground: #ffffff;
+  --color-muted: #f4f7fb;
+  --color-muted-foreground: #64748b;
+  --color-border: #d8e2ef;
+  --color-input: #d8e2ef;
+  --color-destructive: #dc2626;
   --font-sans: system-ui, 'Segoe UI', Roboto, sans-serif;
   --font-heading: system-ui, 'Segoe UI', Roboto, sans-serif;
   --font-mono: ui-monospace, Consolas, monospace;
@@ -43,6 +54,18 @@
   --sans: var(--font-sans);
   --heading: var(--font-heading);
   --mono: var(--font-mono);
+
+  --background: var(--hds-surface);
+  --foreground: var(--hds-text);
+  --card: var(--hds-surface);
+  --card-foreground: var(--hds-text);
+  --primary: var(--hds-brand-blue);
+  --primary-foreground: #ffffff;
+  --muted: var(--hds-surface-muted);
+  --muted-foreground: var(--hds-text-muted);
+  --border: var(--hds-border);
+  --input: var(--hds-border);
+  --destructive: #dc2626;
 }
 
 @media (prefers-color-scheme: dark) {
