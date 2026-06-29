@@ -9,6 +9,7 @@ use App\Modules\Sdk\Ui\Data\UiRenderPayload;
 use App\Modules\Sdk\Ui\Enums\UiBindingType;
 use App\Modules\Sdk\Ui\Exceptions\UiRenderException;
 use App\Support\Tenant\TenantContext;
+use App\Services\Theme\ThemeUiBridge;
 
 class UiRendererService implements UiRenderer
 {
@@ -24,6 +25,7 @@ class UiRendererService implements UiRenderer
         private readonly UiTableBridge $tableBridge,
         private readonly UiDashboardBridge $dashboardBridge,
         private readonly UiReportBridge $reportBridge,
+        private readonly ThemeUiBridge $themeUiBridge,
         private readonly UiApplicationBridge $applicationBridge,
         private readonly UiWorkflowBridge $workflowBridge,
         private readonly UiTableHealthSupport $tableHealthSupport,
@@ -50,6 +52,12 @@ class UiRendererService implements UiRenderer
         }
 
         $theme = $this->themeService->themeForPage($page);
+        $resolvedTheme = $this->themeUiBridge->resolveForPage(
+            $context,
+            $page->moduleKey,
+            $page->pageKey,
+            $page->theme,
+        );
         $personalization = $this->personalizationService->get($context, $page->publicId);
         $components = $this->resolveComponents($context, $page);
         $payload = new UiRenderPayload(
@@ -60,7 +68,7 @@ class UiRendererService implements UiRenderer
             actions: $this->actionService->pageActions($page),
             conditions: $page->conditions,
             breakpoints: $page->breakpoints,
-            theme: $theme->toArray(),
+            theme: array_replace_recursive($theme->toArray(), $resolvedTheme['theme']),
             personalization: $personalization->personalization,
             permissions: $this->permissionBridge->renderPermissions($context),
             runtimeContext: $this->buildRuntimeContext($context, $page),

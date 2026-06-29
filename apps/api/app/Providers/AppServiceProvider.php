@@ -29,8 +29,10 @@ use App\Policies\EnterpriseBusinessRulePolicy;
 use App\Policies\ApplicationRuntimePolicy;
 use App\Models\UiPage;
 use App\Models\NavigationDefinition;
+use App\Models\ThemeDefinition;
 use App\Policies\UiPagePolicy;
 use App\Policies\NavigationDefinitionPolicy;
+use App\Policies\ThemeDefinitionPolicy;
 use App\Policies\EnterpriseIntegrationPolicy;
 use App\Models\RuleDefinition;
 use App\Models\ApplicationRuntime\ApplicationRuntimeApp;
@@ -111,6 +113,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(ApplicationRuntimeApp::class, ApplicationRuntimePolicy::class);
         Gate::policy(UiPage::class, UiPagePolicy::class);
         Gate::policy(NavigationDefinition::class, NavigationDefinitionPolicy::class);
+        Gate::policy(ThemeDefinition::class, ThemeDefinitionPolicy::class);
         Gate::policy(EnterpriseEntityRecord::class, EnterpriseEntityRecordPolicy::class);
         Gate::policy(FormDefinition::class, FormDefinitionPolicy::class);
         Gate::policy(TableDefinition::class, TableDefinitionPolicy::class);

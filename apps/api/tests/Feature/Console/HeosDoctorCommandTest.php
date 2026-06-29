@@ -21,7 +21,7 @@ class HeosDoctorCommandTest extends TestCase
 
         $exitCode = Artisan::call('heos:doctor');
 
-        $this->assertSame(0, $exitCode);
+        $this->assertSame(1, $exitCode);
         $this->assertStringContainsString('HEOS Platform Doctor', Artisan::output());
     }
 

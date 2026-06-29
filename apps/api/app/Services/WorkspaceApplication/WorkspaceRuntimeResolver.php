@@ -63,6 +63,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
             'application_runtime' => (bool) config('heos.enterprise.application_runtime.enabled', true),
             'ui_metadata' => (bool) config('heos.enterprise.ui_metadata.enabled', true),
             'navigation_designer' => (bool) config('heos.enterprise.navigation_designer.enabled', true),
+            'themes' => (bool) config('heos.enterprise.themes.enabled', true),
         ];
     }
 
@@ -93,6 +94,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
         private readonly \App\Services\Application\ApplicationHealthService $applicationHealthService,
         private readonly \App\Services\Ui\UiHealthService $uiHealthService,
         private readonly \App\Services\Navigation\NavigationHealthService $navigationHealthService,
+        private readonly \App\Services\Theme\ThemeHealthService $themeHealthService,
     ) {
     }
 
@@ -349,6 +351,7 @@ class WorkspaceRuntimeResolver implements WorkspaceRuntimeProvider
                 'application' => $this->applicationHealthService->runtimeContribution($context),
                 'ui_metadata' => $this->uiHealthService->runtimeContribution($context),
                 'navigation_designer' => $this->navigationHealthService->runtimeContribution($context),
+                'themes' => $this->themeHealthService->runtimeContribution($context),
             ],
         ];
     }

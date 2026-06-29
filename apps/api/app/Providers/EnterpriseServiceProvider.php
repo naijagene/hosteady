@@ -579,6 +579,34 @@ class EnterpriseServiceProvider extends ServiceProvider
         $this->app->singleton(\App\Services\Navigation\NavigationApplicationRuntimeBridge::class);
         $this->app->singleton(\App\Services\Navigation\NavigationDevelopmentService::class);
 
+        $this->app->singleton(\App\Services\Theme\ThemeMapper::class);
+        $this->app->singleton(\App\Services\Theme\ThemeTableHealthSupport::class);
+        $this->app->singleton(\App\Services\Theme\ThemeAuditRecorder::class);
+        $this->app->singleton(\App\Services\Theme\ThemeSearchIndexer::class);
+        $this->app->singleton(\App\Services\Theme\ThemePlatformEventBridge::class);
+        $this->app->singleton(\App\Services\Theme\ThemeStatisticsService::class);
+        $this->app->singleton(\App\Services\Theme\ThemeHealthService::class);
+        $this->app->singleton(\App\Services\Theme\ThemePermissionBridge::class);
+        $this->app->singleton(\App\Services\Theme\ThemeInheritanceResolverService::class);
+        $this->app->singleton(\App\Modules\Sdk\Theme\Contracts\ThemeInheritanceResolver::class, \App\Services\Theme\ThemeInheritanceResolverService::class);
+        $this->app->singleton(\App\Services\Theme\ThemeDefaultGeneratorService::class);
+        $this->app->singleton(\App\Services\Theme\ThemeRegistryService::class);
+        $this->app->singleton(\App\Modules\Sdk\Theme\Contracts\ThemeRegistry::class, \App\Services\Theme\ThemeRegistryService::class);
+        $this->app->singleton(\App\Services\Theme\ThemeDefinitionService::class);
+        $this->app->singleton(\App\Services\Theme\BrandProfileService::class);
+        $this->app->singleton(\App\Modules\Sdk\Theme\Contracts\ThemeBrandProfileProvider::class, \App\Services\Theme\BrandProfileService::class);
+        $this->app->singleton(\App\Services\Theme\ThemeVersionService::class);
+        $this->app->singleton(\App\Modules\Sdk\Theme\Contracts\ThemeVersionManager::class, \App\Services\Theme\ThemeVersionService::class);
+        $this->app->singleton(\App\Services\Theme\ThemeRendererService::class);
+        $this->app->singleton(\App\Modules\Sdk\Theme\Contracts\ThemeRenderer::class, \App\Services\Theme\ThemeRendererService::class);
+        $this->app->singleton(\App\Services\Theme\ThemePublisherService::class);
+        $this->app->singleton(\App\Modules\Sdk\Theme\Contracts\ThemePublisher::class, \App\Services\Theme\ThemePublisherService::class);
+        $this->app->singleton(\App\Services\Theme\ThemeApplicationBridge::class);
+        $this->app->singleton(\App\Services\Theme\ThemeNavigationBridge::class);
+        $this->app->singleton(\App\Services\Theme\ThemeDocumentBridge::class);
+        $this->app->singleton(\App\Services\Theme\ThemeUiBridge::class);
+        $this->app->singleton(\App\Services\Theme\ThemeDevelopmentService::class);
+
         $this->app->singleton(\App\Services\Form\DynamicFormConditionEvaluator::class);
         $this->app->singleton(\App\Modules\Sdk\Form\Contracts\FormConditionEvaluator::class, \App\Services\Form\DynamicFormConditionEvaluator::class);
         $this->app->singleton(\App\Services\Form\DynamicFormFieldResolver::class);

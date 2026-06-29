@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\V1\Tenant\EnterpriseApplicationController;
 use App\Http\Controllers\Api\V1\Tenant\EnterpriseIntegrationController;
 use App\Http\Controllers\Api\V1\Tenant\EnterpriseUiController;
 use App\Http\Controllers\Api\V1\Tenant\EnterpriseNavigationDesignerController;
+use App\Http\Controllers\Api\V1\Tenant\EnterpriseThemeController;
 use App\Http\Controllers\Api\V1\Tenant\ReferenceDataController;
 use App\Http\Controllers\Api\V1\Tenant\SearchController;
 use App\Http\Controllers\Api\V1\Tenant\TenantContextController;
@@ -217,6 +218,22 @@ Route::prefix('v1')->group(function () {
             Route::post('tenant/navigation-designer/definitions/{definitionPublicId}/versions', [EnterpriseNavigationDesignerController::class, 'storeVersion']);
             Route::get('tenant/navigation-designer/definitions/{definitionPublicId}/versions', [EnterpriseNavigationDesignerController::class, 'indexVersions']);
             Route::post('tenant/navigation-designer/definitions/{definitionPublicId}/publish', [EnterpriseNavigationDesignerController::class, 'publishDefinition']);
+
+            Route::get('tenant/themes/health', [EnterpriseThemeController::class, 'health']);
+            Route::get('tenant/themes/runtime', [EnterpriseThemeController::class, 'runtime']);
+            Route::get('tenant/themes/statistics', [EnterpriseThemeController::class, 'statistics']);
+            Route::get('tenant/themes', [EnterpriseThemeController::class, 'indexThemes']);
+            Route::post('tenant/themes', [EnterpriseThemeController::class, 'storeTheme']);
+            Route::post('tenant/themes/{themePublicId}/brand-profile', [EnterpriseThemeController::class, 'updateBrandProfile']);
+            Route::post('tenant/themes/{themePublicId}/versions', [EnterpriseThemeController::class, 'storeVersion']);
+            Route::get('tenant/themes/{themePublicId}/versions', [EnterpriseThemeController::class, 'indexVersions']);
+            Route::post('tenant/themes/{themePublicId}/publish', [EnterpriseThemeController::class, 'publishTheme']);
+            Route::get('tenant/themes/{themePublicId}/render', [EnterpriseThemeController::class, 'renderTheme']);
+            Route::get('tenant/themes/{themePublicId}', [EnterpriseThemeController::class, 'showTheme']);
+            Route::patch('tenant/themes/{themePublicId}', [EnterpriseThemeController::class, 'updateTheme']);
+
+            Route::get('tenant/brand-profiles', [EnterpriseThemeController::class, 'indexBrandProfiles']);
+            Route::get('tenant/brand-profiles/{brandProfilePublicId}', [EnterpriseThemeController::class, 'showBrandProfile']);
 
             Route::get('tenant/workflows/automation/rules', [WorkflowAutomationController::class, 'indexRules']);
             Route::post('tenant/workflows/automation/rules', [WorkflowAutomationController::class, 'storeRule']);

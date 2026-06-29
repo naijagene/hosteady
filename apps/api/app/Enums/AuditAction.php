@@ -126,6 +126,11 @@ enum AuditAction: string
     case NavigationPublished = 'navigation.published';
     case NavigationPersonalizationUpdated = 'navigation.personalization.updated';
     case NavigationRendered = 'navigation.rendered';
+    case ThemeDefinitionRegistered = 'theme.definition.registered';
+    case ThemeDefinitionUpdated = 'theme.definition.updated';
+    case ThemeBrandProfileUpdated = 'theme.brand_profile.updated';
+    case ThemePublished = 'theme.published';
+    case ThemeRendered = 'theme.rendered';
 
     case ReferenceCatalogRegistered = 'reference.catalog.registered';
 
@@ -523,6 +528,11 @@ enum AuditAction: string
             self::NavigationPublished,
             self::NavigationPersonalizationUpdated,
             self::NavigationRendered,
+            self::ThemeDefinitionRegistered,
+            self::ThemeDefinitionUpdated,
+            self::ThemeBrandProfileUpdated,
+            self::ThemePublished,
+            self::ThemeRendered,
             self::FormDefinitionRegistered,
             self::FormDefinitionUpdated,
             self::FormRendered,
@@ -795,7 +805,12 @@ enum AuditAction: string
             self::NavigationDraftDiscarded,
             self::NavigationPublished,
             self::NavigationPersonalizationUpdated,
-            self::NavigationRendered => AuditRetentionClass::Ephemeral,
+            self::NavigationRendered,
+            self::ThemeDefinitionRegistered,
+            self::ThemeDefinitionUpdated,
+            self::ThemeBrandProfileUpdated,
+            self::ThemePublished,
+            self::ThemeRendered => AuditRetentionClass::Ephemeral,
         };
     }
 

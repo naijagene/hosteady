@@ -134,5 +134,8 @@ return [
         'navigation_designer' => [
             'enabled' => env('HEOS_NAVIGATION_DESIGNER_ENABLED', true),
         ],
+        'themes' => [
+            'enabled' => env('HEOS_THEMES_ENABLED', true),
+        ],
     ],
 ];

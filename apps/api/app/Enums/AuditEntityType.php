@@ -60,5 +60,8 @@ enum AuditEntityType: string
     case NavigationVersion = 'navigation_version';
     case NavigationItem = 'navigation_item';
     case NavigationPersonalization = 'navigation_personalization';
+    case ThemeDefinition = 'theme_definition';
+    case ThemeVersion = 'theme_version';
+    case BrandProfile = 'brand_profile';
     case User = 'user';
 }

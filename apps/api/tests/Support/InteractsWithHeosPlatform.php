@@ -135,6 +135,10 @@ trait InteractsWithHeosPlatform
             'navigation.manage',
             'navigation.publish',
             'navigation.personalize',
+            'themes.read',
+            'themes.manage',
+            'themes.publish',
+            'themes.brand',
             'ui.read',
             'ui.manage',
             'ui.render',
@@ -160,7 +164,7 @@ trait InteractsWithHeosPlatform
 
     protected function assertPermissionCatalogComplete(): void
     {
-        $this->assertSame(121, Permission::query()->count());
+        $this->assertSame(125, Permission::query()->count());
     }
 
     /**
