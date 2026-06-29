@@ -163,14 +163,21 @@ describe('Binding renderers', () => {
     })
   })
 
-  it('ReportBindingRenderer renders section placeholders', async () => {
+  it('ReportBindingRenderer renders dynamic report viewer', async () => {
     vi.spyOn(reportsApi, 'fetchReportRender').mockResolvedValue({
       report: {
         module_key: 'platform',
         report_key: 'summary',
         name: 'Summary Report',
       },
-      sections: [{ title: 'Section A' }],
+      sections: [
+        {
+          section_key: 'summary',
+          label: 'Summary',
+          section_type: 'summary',
+          metrics: [{ metric_key: 'total', label: 'Total', value: 9 }],
+        },
+      ],
     })
 
     renderBinding(
@@ -179,7 +186,11 @@ describe('Binding renderers', () => {
           ...formComponent,
           component_type: 'report',
           binding_type: 'report',
-          binding_config: { module_key: 'platform', resource_key: 'summary' },
+          binding_config: {
+            module_key: 'platform',
+            resource_key: 'summary',
+            auto_render: true,
+          },
         }}
       />,
     )
@@ -187,7 +198,9 @@ describe('Binding renderers', () => {
     await waitFor(() => {
       expect(screen.getByTestId('report-binding-renderer')).toBeInTheDocument()
     })
+    expect(screen.getByTestId('dynamic-report-viewer')).toBeInTheDocument()
     expect(screen.getByText('Summary Report')).toBeInTheDocument()
+    expect(screen.getByText('9')).toBeInTheDocument()
   })
 
   it('DocumentBindingRenderer lists document placeholders', async () => {

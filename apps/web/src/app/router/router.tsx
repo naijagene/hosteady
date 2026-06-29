@@ -26,6 +26,7 @@ import { LogoutPage } from '@/features/auth/pages/LogoutPage'
 import { DirectFormPage } from '@/features/forms/pages/DirectFormPage'
 import { DirectTablePage } from '@/features/tables/pages/DirectTablePage'
 import { DirectDashboardPage } from '@/features/dashboards/pages/DirectDashboardPage'
+import { DirectReportPage } from '@/features/reports/pages/DirectReportPage'
 import { MetadataPage } from '@/features/renderer/pages/MetadataPage'
 import { ShellHomePage } from '@/features/shell/pages/ShellHomePage'
 import { SettingsPage } from '@/features/shell/pages/SettingsPage'
@@ -131,6 +132,12 @@ const directDashboardRoute = createRoute({
   component: DirectDashboardPage,
 })
 
+const directReportRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: '/reports/$moduleKey/$reportKey',
+  component: DirectReportPage,
+})
+
 const routeTree = rootRoute.addChildren([
   loginRoute,
   logoutRoute,
@@ -144,6 +151,7 @@ const routeTree = rootRoute.addChildren([
     directFormRoute,
     directTableRoute,
     directDashboardRoute,
+    directReportRoute,
   ]),
 ])
 
