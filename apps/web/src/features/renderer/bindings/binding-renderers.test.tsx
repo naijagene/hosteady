@@ -122,14 +122,21 @@ describe('Binding renderers', () => {
     })
   })
 
-  it('DashboardBindingRenderer renders widget placeholders', async () => {
+  it('DashboardBindingRenderer renders dynamic dashboard', async () => {
     vi.spyOn(dashboardsApi, 'fetchDashboardRender').mockResolvedValue({
       dashboard: {
         module_key: 'platform',
         dashboard_key: 'overview',
         name: 'Overview',
       },
-      widgets: [{ widget_key: 'kpi', label: 'KPI' }],
+      widgets: [
+        {
+          widget_key: 'kpi',
+          label: 'KPI',
+          widget_type: 'metric',
+        },
+      ],
+      widget_data: [{ widget_key: 'kpi', value: 7 }],
     })
 
     renderBinding(
@@ -138,7 +145,11 @@ describe('Binding renderers', () => {
           ...formComponent,
           component_type: 'dashboard',
           binding_type: 'dashboard',
-          binding_config: { module_key: 'platform', resource_key: 'overview' },
+          binding_config: {
+            module_key: 'platform',
+            resource_key: 'overview',
+            auto_render: true,
+          },
         }}
       />,
     )
@@ -146,7 +157,10 @@ describe('Binding renderers', () => {
     await waitFor(() => {
       expect(screen.getByTestId('dashboard-binding-renderer')).toBeInTheDocument()
     })
-    expect(screen.getByText('KPI')).toBeInTheDocument()
+    expect(screen.getByTestId('dynamic-dashboard-renderer')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText('7')).toBeInTheDocument()
+    })
   })
 
   it('ReportBindingRenderer renders section placeholders', async () => {

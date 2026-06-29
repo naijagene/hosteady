@@ -1,5 +1,8 @@
+import type { AxiosError } from 'axios'
 import { apiClient } from '../client'
+import { ApiError } from '../errors'
 import { unwrapData } from '../unwrap'
+import type { ApiErrorBody } from '../types/api'
 import {
   normalizeDashboardDefinition,
   normalizeDashboardRenderPayload,
@@ -33,11 +36,15 @@ export async function fetchDashboardRender(
   moduleKey: string,
   dashboardKey: string,
 ): Promise<DashboardRenderPayload> {
-  const response = await apiClient.get<
-    DashboardRenderPayload | { data: DashboardRenderPayload }
-  >(
-    `tenant/dashboards/${encodeURIComponent(moduleKey)}/${encodeURIComponent(dashboardKey)}/render`,
-  )
+  try {
+    const response = await apiClient.get<
+      DashboardRenderPayload | { data: DashboardRenderPayload }
+    >(
+      `tenant/dashboards/${encodeURIComponent(moduleKey)}/${encodeURIComponent(dashboardKey)}/render`,
+    )
 
-  return normalizeDashboardRenderPayload(unwrapData(response.data))
+    return normalizeDashboardRenderPayload(unwrapData(response.data))
+  } catch (error) {
+    throw ApiError.fromAxios(error as AxiosError<ApiErrorBody>)
+  }
 }
