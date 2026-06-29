@@ -29,6 +29,12 @@ import { DirectDashboardPage } from '@/features/dashboards/pages/DirectDashboard
 import { DirectReportPage } from '@/features/reports/pages/DirectReportPage'
 import { DocumentManagerPage } from '@/features/documents/pages/DocumentManagerPage'
 import { DirectDocumentPage } from '@/features/documents/pages/DirectDocumentPage'
+import {
+  ApprovalPage,
+  WorkflowInboxPage,
+  WorkflowInstancePage,
+  WorkflowTaskPage,
+} from '@/features/workflows'
 import { MetadataPage } from '@/features/renderer/pages/MetadataPage'
 import { ShellHomePage } from '@/features/shell/pages/ShellHomePage'
 import { SettingsPage } from '@/features/shell/pages/SettingsPage'
@@ -152,6 +158,30 @@ const directDocumentRoute = createRoute({
   component: DirectDocumentPage,
 })
 
+const workflowsRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: '/workflows',
+  component: WorkflowInboxPage,
+})
+
+const workflowInstanceRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: '/workflows/instances/$instancePublicId',
+  component: WorkflowInstancePage,
+})
+
+const workflowTaskRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: '/workflows/tasks/$taskPublicId',
+  component: WorkflowTaskPage,
+})
+
+const workflowApprovalRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: '/workflows/approvals/$approvalPublicId',
+  component: ApprovalPage,
+})
+
 const routeTree = rootRoute.addChildren([
   loginRoute,
   logoutRoute,
@@ -168,6 +198,10 @@ const routeTree = rootRoute.addChildren([
     directReportRoute,
     documentsRoute,
     directDocumentRoute,
+    workflowsRoute,
+    workflowInstanceRoute,
+    workflowTaskRoute,
+    workflowApprovalRoute,
   ]),
 ])
 

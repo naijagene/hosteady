@@ -233,13 +233,12 @@ describe('Binding renderers', () => {
     expect(screen.getByText('Policy Document')).toBeInTheDocument()
   })
 
-  it('WorkflowBindingRenderer lists workflow placeholders', async () => {
-    vi.spyOn(workflowsApi, 'fetchWorkflowDefinitions').mockResolvedValue([
-      { public_id: 'wf-1', name: 'Approval Flow' },
+  it('WorkflowBindingRenderer renders workflow inbox', async () => {
+    vi.spyOn(workflowsApi, 'fetchHumanTaskInbox').mockResolvedValue([
+      { public_id: 'task-1', title: 'Assigned task', status: 'assigned', task_type: 'review' },
     ])
-    vi.spyOn(workflowsApi, 'fetchWorkflowInstances').mockResolvedValue([
-      { public_id: 'inst-1' },
-    ])
+    vi.spyOn(workflowsApi, 'fetchApprovals').mockResolvedValue([])
+    vi.spyOn(workflowsApi, 'fetchWorkflowInstances').mockResolvedValue([])
 
     renderBinding(
       <WorkflowBindingRenderer
@@ -248,6 +247,7 @@ describe('Binding renderers', () => {
           component_key: 'queue',
           name: 'Queue',
           component_type: 'workflow_queue',
+          binding_config: { mode: 'inbox', inbox_type: 'assigned' },
         }}
       />,
     )
@@ -255,6 +255,34 @@ describe('Binding renderers', () => {
     await waitFor(() => {
       expect(screen.getByTestId('workflow-binding-renderer')).toBeInTheDocument()
     })
-    expect(screen.getByText('Approval Flow')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByTestId('workflow-inbox')).toBeInTheDocument()
+    })
+    expect(screen.getByText('Assigned task')).toBeInTheDocument()
+  })
+
+  it('WorkflowBindingRenderer renders workflow instances mode', async () => {
+    vi.spyOn(workflowsApi, 'fetchWorkflowInstances').mockResolvedValue([
+      { public_id: 'inst-1', definition_public_id: 'def-1', definition_name: 'Flow', status: 'running' },
+    ])
+
+    renderBinding(
+      <WorkflowBindingRenderer
+        component={{
+          public_id: '1',
+          component_key: 'instances',
+          name: 'Instances',
+          component_type: 'workflow',
+          binding_config: { mode: 'instances' },
+        }}
+      />,
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('workflow-binding-renderer')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getByText('Flow')).toBeInTheDocument()
+    })
   })
 })

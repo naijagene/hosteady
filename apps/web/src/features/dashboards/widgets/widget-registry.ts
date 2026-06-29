@@ -10,6 +10,7 @@ import { RecentItemsWidget } from './RecentItemsWidget'
 import { ReportWidget } from './ReportWidget'
 import { DocumentListWidget } from './DocumentListWidget'
 import { TableWidget } from './TableWidget'
+import { ApprovalQueueWidget, WorkflowInboxWidget, WorkflowStatusWidget } from '@/features/workflows'
 import type { DashboardWidgetComponentProps } from './types'
 
 type WidgetComponent = ComponentType<DashboardWidgetComponentProps>
@@ -26,6 +27,9 @@ register('table', TableWidget)
 register('report', ReportWidget)
 register('document_list', DocumentListWidget)
 register('documents', DocumentListWidget)
+register('workflow_queue', WorkflowInboxWidget)
+register('approval_queue', ApprovalQueueWidget)
+register('workflow_status', WorkflowStatusWidget)
 register('notification', NotificationWidget)
 register('activity', ActivityWidget)
 register('quick_actions', QuickActionsWidget)
