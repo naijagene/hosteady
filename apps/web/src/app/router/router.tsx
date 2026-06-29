@@ -42,6 +42,7 @@ import {
 import { MetadataPage } from '@/features/renderer/pages/MetadataPage'
 import { ShellHomePage } from '@/features/shell/pages/ShellHomePage'
 import { SettingsPage } from '@/features/shell/pages/SettingsPage'
+import { SearchPage } from '@/features/search/pages/SearchPage'
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -198,6 +199,12 @@ const notificationDetailRoute = createRoute({
   component: NotificationDetailPage,
 })
 
+const searchRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: '/search',
+  component: SearchPage,
+})
+
 const routeTree = rootRoute.addChildren([
   loginRoute,
   logoutRoute,
@@ -220,6 +227,7 @@ const routeTree = rootRoute.addChildren([
     workflowApprovalRoute,
     notificationsRoute,
     notificationDetailRoute,
+    searchRoute,
   ]),
 ])
 
