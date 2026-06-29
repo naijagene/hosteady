@@ -137,5 +137,12 @@ return [
         'themes' => [
             'enabled' => env('HEOS_THEMES_ENABLED', true),
         ],
+        'personalization' => [
+            'enabled' => env('HEOS_PERSONALIZATION_ENABLED', true),
+            'recent_max' => (int) env('HEOS_PERSONALIZATION_RECENT_MAX', 50),
+            'onboarding_flows' => [
+                'welcome' => ['start', 'profile', 'complete'],
+            ],
+        ],
     ],
 ];

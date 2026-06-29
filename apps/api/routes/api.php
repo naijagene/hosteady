@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\V1\Tenant\EnterpriseIntegrationController;
 use App\Http\Controllers\Api\V1\Tenant\EnterpriseUiController;
 use App\Http\Controllers\Api\V1\Tenant\EnterpriseNavigationDesignerController;
 use App\Http\Controllers\Api\V1\Tenant\EnterpriseThemeController;
+use App\Http\Controllers\Api\V1\Tenant\EnterprisePersonalizationController;
 use App\Http\Controllers\Api\V1\Tenant\ReferenceDataController;
 use App\Http\Controllers\Api\V1\Tenant\SearchController;
 use App\Http\Controllers\Api\V1\Tenant\TenantContextController;
@@ -234,6 +235,26 @@ Route::prefix('v1')->group(function () {
 
             Route::get('tenant/brand-profiles', [EnterpriseThemeController::class, 'indexBrandProfiles']);
             Route::get('tenant/brand-profiles/{brandProfilePublicId}', [EnterpriseThemeController::class, 'showBrandProfile']);
+
+            Route::get('tenant/personalization/runtime', [EnterprisePersonalizationController::class, 'runtime']);
+            Route::get('tenant/personalization/health', [EnterprisePersonalizationController::class, 'health']);
+            Route::get('tenant/personalization/statistics', [EnterprisePersonalizationController::class, 'statistics']);
+            Route::get('tenant/personalization/preferences', [EnterprisePersonalizationController::class, 'indexPreferences']);
+            Route::patch('tenant/personalization/preferences', [EnterprisePersonalizationController::class, 'patchPreferences']);
+            Route::get('tenant/personalization/favorites', [EnterprisePersonalizationController::class, 'indexFavorites']);
+            Route::post('tenant/personalization/favorites', [EnterprisePersonalizationController::class, 'storeFavorite']);
+            Route::delete('tenant/personalization/favorites/{favoritePublicId}', [EnterprisePersonalizationController::class, 'destroyFavorite']);
+            Route::get('tenant/personalization/recent', [EnterprisePersonalizationController::class, 'indexRecent']);
+            Route::post('tenant/personalization/recent', [EnterprisePersonalizationController::class, 'storeRecent']);
+            Route::get('tenant/personalization/shortcuts', [EnterprisePersonalizationController::class, 'indexShortcuts']);
+            Route::post('tenant/personalization/shortcuts', [EnterprisePersonalizationController::class, 'storeShortcut']);
+            Route::patch('tenant/personalization/shortcuts/{shortcutPublicId}', [EnterprisePersonalizationController::class, 'patchShortcut']);
+            Route::delete('tenant/personalization/shortcuts/{shortcutPublicId}', [EnterprisePersonalizationController::class, 'destroyShortcut']);
+            Route::get('tenant/personalization/onboarding', [EnterprisePersonalizationController::class, 'onboardingIndex']);
+            Route::post('tenant/personalization/onboarding/start', [EnterprisePersonalizationController::class, 'onboardingStart']);
+            Route::post('tenant/personalization/onboarding/step', [EnterprisePersonalizationController::class, 'onboardingStep']);
+            Route::post('tenant/personalization/onboarding/complete', [EnterprisePersonalizationController::class, 'onboardingComplete']);
+            Route::post('tenant/personalization/onboarding/reset', [EnterprisePersonalizationController::class, 'onboardingReset']);
 
             Route::get('tenant/workflows/automation/rules', [WorkflowAutomationController::class, 'indexRules']);
             Route::post('tenant/workflows/automation/rules', [WorkflowAutomationController::class, 'storeRule']);

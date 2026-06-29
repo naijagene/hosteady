@@ -154,7 +154,7 @@ class OrganizationProvisioningServiceTest extends TestCase
             ->where('key', 'owner')
             ->firstOrFail();
 
-        $this->assertSame(125, DB::table('role_permissions')
+        $this->assertSame(129, DB::table('role_permissions')
             ->where('role_id', $ownerRole->id)
             ->count());
     }

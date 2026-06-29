@@ -641,7 +641,7 @@ class M6EnterpriseBusinessRulesTest extends TestCase
     public function test_permission_catalog_has_rules_permissions(): void
     {
         $this->seedHeosPlatform();
-        $this->assertSame(125, Permission::query()->count());
+        $this->assertSame(129, Permission::query()->count());
         foreach (['rules.read', 'rules.manage', 'rules.evaluate', 'rules.execute', 'rules.admin'] as $key) {
             $this->assertNotNull(Permission::query()->where('key', $key)->first());
         }

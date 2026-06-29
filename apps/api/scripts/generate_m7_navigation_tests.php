@@ -101,7 +101,7 @@ $body .= <<<'PHP'
     public function test_permission_catalog_has_navigation_permissions(): void
     {
         $this->seedHeosPlatform();
-        $this->assertSame(125, Permission::query()->count());
+        $this->assertSame(129, Permission::query()->count());
         foreach (['navigation.read', 'navigation.manage', 'navigation.publish', 'navigation.personalize'] as $key) {
             $this->assertNotNull(Permission::query()->where('key', $key)->first());
         }

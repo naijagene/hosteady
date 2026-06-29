@@ -131,6 +131,14 @@ enum AuditAction: string
     case ThemeBrandProfileUpdated = 'theme.brand_profile.updated';
     case ThemePublished = 'theme.published';
     case ThemeRendered = 'theme.rendered';
+    case PersonalizationProfileUpdated = 'personalization.profile.updated';
+    case PersonalizationPreferenceUpdated = 'personalization.preference.updated';
+    case PersonalizationFavoriteAdded = 'personalization.favorite.added';
+    case PersonalizationFavoriteRemoved = 'personalization.favorite.removed';
+    case PersonalizationRecentRecorded = 'personalization.recent.recorded';
+    case PersonalizationShortcutUpdated = 'personalization.shortcut.updated';
+    case PersonalizationOnboardingUpdated = 'personalization.onboarding.updated';
+    case PersonalizationRuntimeComposed = 'personalization.runtime.composed';
 
     case ReferenceCatalogRegistered = 'reference.catalog.registered';
 
@@ -533,6 +541,14 @@ enum AuditAction: string
             self::ThemeBrandProfileUpdated,
             self::ThemePublished,
             self::ThemeRendered,
+            self::PersonalizationProfileUpdated,
+            self::PersonalizationPreferenceUpdated,
+            self::PersonalizationFavoriteAdded,
+            self::PersonalizationFavoriteRemoved,
+            self::PersonalizationRecentRecorded,
+            self::PersonalizationShortcutUpdated,
+            self::PersonalizationOnboardingUpdated,
+            self::PersonalizationRuntimeComposed,
             self::FormDefinitionRegistered,
             self::FormDefinitionUpdated,
             self::FormRendered,
@@ -810,7 +826,15 @@ enum AuditAction: string
             self::ThemeDefinitionUpdated,
             self::ThemeBrandProfileUpdated,
             self::ThemePublished,
-            self::ThemeRendered => AuditRetentionClass::Ephemeral,
+            self::ThemeRendered,
+            self::PersonalizationProfileUpdated,
+            self::PersonalizationPreferenceUpdated,
+            self::PersonalizationFavoriteAdded,
+            self::PersonalizationFavoriteRemoved,
+            self::PersonalizationRecentRecorded,
+            self::PersonalizationShortcutUpdated,
+            self::PersonalizationOnboardingUpdated,
+            self::PersonalizationRuntimeComposed => AuditRetentionClass::Ephemeral,
         };
     }
 

@@ -63,5 +63,11 @@ enum AuditEntityType: string
     case ThemeDefinition = 'theme_definition';
     case ThemeVersion = 'theme_version';
     case BrandProfile = 'brand_profile';
+    case PersonalizationProfile = 'personalization_profile';
+    case PersonalizationPreference = 'personalization_preference';
+    case PersonalizationFavorite = 'personalization_favorite';
+    case PersonalizationRecentItem = 'personalization_recent_item';
+    case PersonalizationShortcut = 'personalization_shortcut';
+    case PersonalizationOnboardingState = 'personalization_onboarding_state';
     case User = 'user';
 }

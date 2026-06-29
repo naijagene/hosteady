@@ -607,6 +607,36 @@ class EnterpriseServiceProvider extends ServiceProvider
         $this->app->singleton(\App\Services\Theme\ThemeUiBridge::class);
         $this->app->singleton(\App\Services\Theme\ThemeDevelopmentService::class);
 
+        $this->app->singleton(\App\Services\Personalization\PersonalizationMapper::class);
+        $this->app->singleton(\App\Services\Personalization\PersonalizationTableHealthSupport::class);
+        $this->app->singleton(\App\Services\Personalization\PersonalizationAuditRecorder::class);
+        $this->app->singleton(\App\Services\Personalization\PersonalizationSearchIndexer::class);
+        $this->app->singleton(\App\Services\Personalization\PersonalizationPlatformEventBridge::class);
+        $this->app->singleton(\App\Services\Personalization\PersonalizationStatisticsService::class);
+        $this->app->singleton(\App\Services\Personalization\PersonalizationHealthService::class);
+        $this->app->singleton(\App\Services\Personalization\PersonalizationPermissionBridge::class);
+        $this->app->singleton(\App\Services\Personalization\PersonalizationProfileService::class);
+        $this->app->singleton(\App\Services\Personalization\PersonalizationRegistryService::class);
+        $this->app->singleton(\App\Services\Personalization\PreferenceService::class);
+        $this->app->singleton(\App\Modules\Sdk\Personalization\Contracts\PersonalizationPreferenceStore::class, \App\Services\Personalization\PreferenceService::class);
+        $this->app->singleton(\App\Services\Personalization\FavoriteService::class);
+        $this->app->singleton(\App\Modules\Sdk\Personalization\Contracts\PersonalizationFavoriteStore::class, \App\Services\Personalization\FavoriteService::class);
+        $this->app->singleton(\App\Services\Personalization\RecentActivityService::class);
+        $this->app->singleton(\App\Services\Personalization\ShortcutService::class);
+        $this->app->singleton(\App\Services\Personalization\QuickActionService::class);
+        $this->app->singleton(\App\Services\Personalization\OnboardingService::class);
+        $this->app->singleton(\App\Services\Personalization\DismissedTipService::class);
+        $this->app->singleton(\App\Services\Personalization\PersonalizationRuntimeComposerService::class);
+        $this->app->singleton(\App\Modules\Sdk\Personalization\Contracts\PersonalizationRuntimeComposer::class, \App\Services\Personalization\PersonalizationRuntimeComposerService::class);
+        $this->app->singleton(\App\Services\Personalization\PersonalizationApplicationBridge::class);
+        $this->app->singleton(\App\Services\Personalization\PersonalizationUiBridge::class);
+        $this->app->singleton(\App\Services\Personalization\PersonalizationNavigationBridge::class);
+        $this->app->singleton(\App\Services\Personalization\PersonalizationThemeBridge::class);
+        $this->app->singleton(\App\Services\Personalization\PersonalizationDashboardBridge::class);
+        $this->app->singleton(\App\Services\Personalization\PersonalizationTableBridge::class);
+        $this->app->singleton(\App\Services\Personalization\PersonalizationNotificationBridge::class);
+        $this->app->singleton(\App\Services\Personalization\PersonalizationDevelopmentService::class);
+
         $this->app->singleton(\App\Services\Form\DynamicFormConditionEvaluator::class);
         $this->app->singleton(\App\Modules\Sdk\Form\Contracts\FormConditionEvaluator::class, \App\Services\Form\DynamicFormConditionEvaluator::class);
         $this->app->singleton(\App\Services\Form\DynamicFormFieldResolver::class);

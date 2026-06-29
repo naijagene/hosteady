@@ -42,6 +42,7 @@ readonly class ConfigEnterpriseRuntimeContext implements EnterpriseRuntimeContex
             'ui_metadata' => (bool) config('heos.enterprise.ui_metadata.enabled', true),
             'navigation_designer' => (bool) config('heos.enterprise.navigation_designer.enabled', true),
             'themes' => (bool) config('heos.enterprise.themes.enabled', true),
+            'personalization' => (bool) config('heos.enterprise.personalization.enabled', true),
             default => false,
         };
     }

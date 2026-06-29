@@ -85,6 +85,7 @@ class ModuleDoctorService
             'ui_metadata' => app(\App\Services\Ui\UiHealthService::class)->assess(),
             'navigation_designer' => app(\App\Services\Navigation\NavigationHealthService::class)->assess(),
             'themes' => app(\App\Services\Theme\ThemeHealthService::class)->assess(),
+            'personalization' => app(\App\Services\Personalization\PersonalizationHealthService::class)->assess(),
         ];
 
         $this->collectEnterpriseHealthWarnings($enterpriseHealth, $warnings, $errors);
@@ -111,6 +112,7 @@ class ModuleDoctorService
                     'ui_metadata' => (bool) config('heos.enterprise.ui_metadata.enabled', true),
                     'navigation_designer' => (bool) config('heos.enterprise.navigation_designer.enabled', true),
                     'themes' => (bool) config('heos.enterprise.themes.enabled', true),
+                    'personalization' => (bool) config('heos.enterprise.personalization.enabled', true),
                     'reference_data' => (bool) config('heos.enterprise.reference_data.enabled', true),
                     'files' => (bool) config('heos.enterprise.files.enabled', true),
                     'runtime_aware' => (bool) config('heos.enterprise.runtime_aware', true),
