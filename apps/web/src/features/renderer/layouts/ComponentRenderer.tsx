@@ -12,6 +12,7 @@ import { DashboardBindingRenderer } from '../bindings/DashboardBindingRenderer'
 import { ReportBindingRenderer } from '../bindings/ReportBindingRenderer'
 import { DocumentBindingRenderer } from '../bindings/DocumentBindingRenderer'
 import { WorkflowBindingRenderer } from '../bindings/WorkflowBindingRenderer'
+import { NotificationBindingRenderer } from '../bindings/NotificationBindingRenderer'
 
 interface ComponentRendererProps {
   component: UiComponent | null | undefined
@@ -49,6 +50,14 @@ function BindingRenderer({ component }: { component: UiComponent }) {
     component.component_type === 'approval_queue'
   ) {
     return <WorkflowBindingRenderer component={component} />
+  }
+
+  if (
+    isBindingType(binding, 'notification', 'notification_list', 'notification_center') ||
+    component.component_type === 'notification' ||
+    component.component_type === 'notification_list'
+  ) {
+    return <NotificationBindingRenderer component={component} />
   }
 
   return <UnknownComponent component={component} />
@@ -89,6 +98,9 @@ export function ComponentRenderer({ component }: ComponentRendererProps) {
     'workflow_queue',
     'approval_queue',
     'workflow',
+    'notification',
+    'notification_list',
+    'notification_center',
   ])
 
   const usesBinding =

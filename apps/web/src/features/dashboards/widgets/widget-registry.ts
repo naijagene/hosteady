@@ -11,6 +11,12 @@ import { ReportWidget } from './ReportWidget'
 import { DocumentListWidget } from './DocumentListWidget'
 import { TableWidget } from './TableWidget'
 import { ApprovalQueueWidget, WorkflowInboxWidget, WorkflowStatusWidget } from '@/features/workflows'
+import {
+  AnnouncementWidget,
+  MentionWidget,
+  NotificationCenterWidget,
+  ReminderWidget,
+} from '@/features/notifications/widgets/notification-widgets'
 import type { DashboardWidgetComponentProps } from './types'
 
 type WidgetComponent = ComponentType<DashboardWidgetComponentProps>
@@ -30,7 +36,15 @@ register('documents', DocumentListWidget)
 register('workflow_queue', WorkflowInboxWidget)
 register('approval_queue', ApprovalQueueWidget)
 register('workflow_status', WorkflowStatusWidget)
-register('notification', NotificationWidget)
+register('notification', NotificationCenterWidget)
+register('notifications', NotificationCenterWidget)
+register('announcement', AnnouncementWidget)
+register('announcements', AnnouncementWidget)
+register('reminder', ReminderWidget)
+register('reminders', ReminderWidget)
+register('mention', MentionWidget)
+register('mentions', MentionWidget)
+register('notification_legacy', NotificationWidget)
 register('activity', ActivityWidget)
 register('quick_actions', QuickActionsWidget)
 register('recent_items', RecentItemsWidget)

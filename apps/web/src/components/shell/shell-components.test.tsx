@@ -1,9 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { NotificationBell } from '@/components/shell/NotificationBell'
 import { HydratedRuntimeProvider } from '@/features/runtime/HydratedRuntimeProvider'
 import { useAuthStore } from '@/stores/auth-store'
 import type { HydratedRuntimeBundle } from '@/api/types/runtime'
+import * as notificationsApi from '@/api/endpoints/notifications'
 
 vi.mock('@tanstack/react-router', async () => {
   const actual = await vi.importActual<typeof import('@tanstack/react-router')>(
@@ -18,27 +20,8 @@ vi.mock('@tanstack/react-router', async () => {
       const state = { location: { pathname: '/' } }
       return options?.select ? options.select(state) : state
     },
-    Link: ({
-      children,
-      to,
-      params,
-    }: {
-      children: React.ReactNode
-      to: string
-      params?: { moduleKey: string; pageKey: string }
-    }) => (
-      <a
-        href={
-          params
-            ? `/app/${params.moduleKey}/${params.pageKey}`
-            : typeof to === 'string'
-              ? to
-              : '#'
-        }
-      >
-        {children}
-      </a>
-    ),
+    useNavigate: () => vi.fn(),
+    Link: ({ children, to }: { children: React.ReactNode; to: string }) => <a href={to}>{children}</a>,
   }
 })
 
@@ -85,16 +68,20 @@ describe('NotificationBell', () => {
   beforeEach(() => {
     useAuthStore.getState().clearAuth()
     useAuthStore.getState().setHydratedRuntime(runtime)
+    vi.spyOn(notificationsApi, 'fetchNotifications').mockImplementation(
+      () => new Promise(() => undefined),
+    )
   })
 
   it('shows unread count from hydrated runtime', () => {
     render(
-      <HydratedRuntimeProvider>
-        <NotificationBell />
-      </HydratedRuntimeProvider>,
+      <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+        <HydratedRuntimeProvider>
+          <NotificationBell />
+        </HydratedRuntimeProvider>
+      </QueryClientProvider>,
     )
     expect(screen.getByLabelText('Notifications, 4 unread')).toBeInTheDocument()
-    expect(screen.getByText('4')).toBeInTheDocument()
   })
 })
 

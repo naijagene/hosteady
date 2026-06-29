@@ -8,12 +8,14 @@ import { DashboardBindingRenderer } from '@/features/renderer/bindings/Dashboard
 import { ReportBindingRenderer } from '@/features/renderer/bindings/ReportBindingRenderer'
 import { DocumentBindingRenderer } from '@/features/renderer/bindings/DocumentBindingRenderer'
 import { WorkflowBindingRenderer } from '@/features/renderer/bindings/WorkflowBindingRenderer'
+import { NotificationBindingRenderer } from '@/features/renderer/bindings/NotificationBindingRenderer'
 import * as formsApi from '@/api/endpoints/forms'
 import * as tablesApi from '@/api/endpoints/tables'
 import * as dashboardsApi from '@/api/endpoints/dashboards'
 import * as reportsApi from '@/api/endpoints/reports'
 import * as documentsApi from '@/api/endpoints/documents'
 import * as workflowsApi from '@/api/endpoints/workflows'
+import * as notificationsApi from '@/api/endpoints/notifications'
 import { HydratedRuntimeProvider } from '@/features/runtime/HydratedRuntimeProvider'
 import { useAuthStore } from '@/stores/auth-store'
 import type { HydratedRuntimeBundle } from '@/api/types/runtime'
@@ -284,5 +286,40 @@ describe('Binding renderers', () => {
     await waitFor(() => {
       expect(screen.getByText('Flow')).toBeInTheDocument()
     })
+  })
+
+  it('NotificationBindingRenderer renders notification center', async () => {
+    vi.spyOn(notificationsApi, 'fetchNotifications').mockResolvedValue([
+      {
+        public_id: 'n-1',
+        title: 'System alert',
+        body: 'Maintenance scheduled',
+        status: 'delivered',
+        priority: 'normal',
+        category: 'system',
+        read_at: null,
+        created_at: '2024-01-01',
+      },
+    ])
+
+    renderBinding(
+      <NotificationBindingRenderer
+        component={{
+          public_id: '1',
+          component_key: 'notifications',
+          name: 'Notifications',
+          component_type: 'notification_list',
+          binding_config: { mode: 'full' },
+        }}
+      />,
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('notification-binding-renderer')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getByTestId('notification-center')).toBeInTheDocument()
+    })
+    expect(screen.getByText('System alert')).toBeInTheDocument()
   })
 })

@@ -5,6 +5,12 @@ import {
   registerWidget,
   resolveWidgetComponent,
 } from '@/features/dashboards/widgets/widget-registry'
+import {
+  AnnouncementWidget,
+  MentionWidget,
+  NotificationCenterWidget,
+  ReminderWidget,
+} from '@/features/notifications/widgets/notification-widgets'
 import { ApprovalQueueWidget, WorkflowInboxWidget, WorkflowStatusWidget } from '@/features/workflows'
 import { PlaceholderWidget } from '@/features/dashboards/widgets/PlaceholderWidget'
 import { MetricWidget } from '@/features/dashboards/widgets/MetricWidget'
@@ -18,6 +24,9 @@ describe('dashboard widget registry', () => {
     expect(types).toContain('workflow_queue')
     expect(types).toContain('approval_queue')
     expect(types).toContain('workflow_status')
+    expect(types).toContain('announcement')
+    expect(types).toContain('reminder')
+    expect(types).toContain('mention')
     expect(hasWidgetType('metric')).toBe(true)
     expect(hasWidgetType('document_list')).toBe(true)
   })
@@ -27,6 +36,10 @@ describe('dashboard widget registry', () => {
     expect(resolveWidgetComponent('workflow_queue')).toBe(WorkflowInboxWidget)
     expect(resolveWidgetComponent('approval_queue')).toBe(ApprovalQueueWidget)
     expect(resolveWidgetComponent('workflow_status')).toBe(WorkflowStatusWidget)
+    expect(resolveWidgetComponent('announcement')).toBe(AnnouncementWidget)
+    expect(resolveWidgetComponent('reminder')).toBe(ReminderWidget)
+    expect(resolveWidgetComponent('mention')).toBe(MentionWidget)
+    expect(resolveWidgetComponent('notification')).toBe(NotificationCenterWidget)
     expect(resolveWidgetComponent('unknown-widget')).toBe(PlaceholderWidget)
   })
 

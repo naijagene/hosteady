@@ -35,6 +35,10 @@ import {
   WorkflowInstancePage,
   WorkflowTaskPage,
 } from '@/features/workflows'
+import {
+  NotificationCenterPage,
+  NotificationDetailPage,
+} from '@/features/notifications'
 import { MetadataPage } from '@/features/renderer/pages/MetadataPage'
 import { ShellHomePage } from '@/features/shell/pages/ShellHomePage'
 import { SettingsPage } from '@/features/shell/pages/SettingsPage'
@@ -182,6 +186,18 @@ const workflowApprovalRoute = createRoute({
   component: ApprovalPage,
 })
 
+const notificationsRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: '/notifications',
+  component: NotificationCenterPage,
+})
+
+const notificationDetailRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: '/notifications/$publicId',
+  component: NotificationDetailPage,
+})
+
 const routeTree = rootRoute.addChildren([
   loginRoute,
   logoutRoute,
@@ -202,6 +218,8 @@ const routeTree = rootRoute.addChildren([
     workflowInstanceRoute,
     workflowTaskRoute,
     workflowApprovalRoute,
+    notificationsRoute,
+    notificationDetailRoute,
   ]),
 ])
 
