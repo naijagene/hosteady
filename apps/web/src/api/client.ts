@@ -1,8 +1,22 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios'
 import { getApiBaseUrl } from '@/lib/env'
-import { buildTenantHeaders } from './tenant-headers'
 import { useAuthStore } from '@/stores/auth-store'
-import { useSessionStore } from '@/stores/session-store'
+import {
+  attachRequestInterceptors,
+  attachResponseErrorInterceptor,
+  attachResponseSuccessInterceptor,
+} from './interceptors'
+
+let unauthorizedHandler: (() => void) | undefined
+let forbiddenHandler: (() => void) | undefined
+
+export function configureApiClientHandlers(handlers: {
+  onUnauthorized?: () => void
+  onForbidden?: () => void
+}): void {
+  unauthorizedHandler = handlers.onUnauthorized
+  forbiddenHandler = handlers.onForbidden
+}
 
 export function createApiClient(config?: AxiosRequestConfig): AxiosInstance {
   const client = axios.create({
@@ -14,28 +28,30 @@ export function createApiClient(config?: AxiosRequestConfig): AxiosInstance {
     ...config,
   })
 
-  client.interceptors.request.use((request) => {
-    const token = useAuthStore.getState().token
-
-    if (token) {
-      request.headers.Authorization = `Bearer ${token}`
-    }
-
-    const session = useSessionStore.getState()
-
-    Object.assign(
-      request.headers,
-      buildTenantHeaders({
-        organizationPublicId: session.organizationPublicId,
-        workspacePublicId: session.workspacePublicId,
-        applicationPublicId: session.applicationPublicId,
-      }),
-    )
-
-    return request
-  })
+  client.interceptors.request.use(
+    attachRequestInterceptors(() => unauthorizedHandler?.()),
+  )
+  client.interceptors.response.use(
+    attachResponseSuccessInterceptor,
+    attachResponseErrorInterceptor({
+      onUnauthorized: () => unauthorizedHandler?.(),
+      onForbidden: () => forbiddenHandler?.(),
+    }),
+  )
 
   return client
 }
 
 export const apiClient = createApiClient()
+
+export function cancelTokenSource() {
+  return axios.CancelToken.source()
+}
+
+export function isRequestCancelled(error: unknown): boolean {
+  return axios.isCancel(error)
+}
+
+export function resetAuthFromStore(): void {
+  useAuthStore.getState().logout()
+}

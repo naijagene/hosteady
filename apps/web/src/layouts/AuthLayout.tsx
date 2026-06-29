@@ -1,7 +1,12 @@
+import { type ReactNode } from 'react'
 import { Outlet } from '@tanstack/react-router'
 import { LogIn } from '@/components/icons'
 
-export function AuthLayout() {
+interface AuthLayoutProps {
+  children?: ReactNode
+}
+
+export function AuthLayout({ children }: AuthLayoutProps) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-6">
       <div className="w-full max-w-md space-y-6 rounded-xl border border-border bg-card p-8 shadow-sm">
@@ -10,12 +15,8 @@ export function AuthLayout() {
             <LogIn className="h-6 w-6" aria-hidden />
           </div>
           <h1 className="text-xl font-semibold tracking-tight">HEOS Sign In</h1>
-          <p className="text-sm text-muted-foreground">
-            Authentication flows will connect to{' '}
-            <code className="rounded bg-muted px-1 py-0.5 text-xs">POST /auth/login</code>.
-          </p>
         </div>
-        <Outlet />
+        {children ?? <Outlet />}
       </div>
     </div>
   )

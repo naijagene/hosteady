@@ -1,4 +1,7 @@
 export { RuntimeLoader } from './RuntimeLoader'
-export { RuntimeContextProvider } from './RuntimeContextProvider'
-export { useRuntimeContext } from './use-runtime-context'
-export type { RuntimeBundle } from './runtime-context'
+export { HydratedRuntimeProvider } from './HydratedRuntimeProvider'
+export {
+  useHydratedRuntime,
+  useRequiredHydratedRuntime,
+} from './use-hydrated-runtime'
+export { hydrateRuntimeBundle } from './services/hydrate-runtime'

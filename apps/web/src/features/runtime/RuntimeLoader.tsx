@@ -1,95 +1,55 @@
-import { useQuery } from '@tanstack/react-query'
-import { type ReactNode, useMemo } from 'react'
-import {
-  fetchPersonalizationRuntime,
-  fetchWorkspaceRuntime,
-} from '@/api/endpoints/runtime'
+import { type ReactNode, useEffect } from 'react'
+import { LoadingOverlay } from '@/components/loading/LoadingOverlay'
 import { useAuthStore } from '@/stores/auth-store'
-import { useSessionStore } from '@/stores/session-store'
-import { RuntimeContextProvider } from './RuntimeContextProvider'
-import type { RuntimeBundle } from './runtime-context'
+import { HydratedRuntimeProvider } from './HydratedRuntimeProvider'
 
 interface RuntimeLoaderProps {
   children: ReactNode
 }
 
 export function RuntimeLoader({ children }: RuntimeLoaderProps) {
+  const phase = useAuthStore((state) => state.phase)
+  const loading = useAuthStore((state) => state.loading)
+  const switchingWorkspace = useAuthStore((state) => state.switchingWorkspace)
+  const errorMessage = useAuthStore((state) => state.errorMessage)
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated())
-  const organizationPublicId = useSessionStore(
-    (state) => state.organizationPublicId,
-  )
-  const workspacePublicId = useSessionStore((state) => state.workspacePublicId)
-  const canLoadRuntime = isAuthenticated && Boolean(organizationPublicId)
+  const hasTenantScope = useAuthStore((state) => state.hasTenantScope())
+  const restore = useAuthStore((state) => state.restore)
 
-  const workspaceQuery = useQuery({
-    queryKey: [
-      'runtime',
-      'workspace',
-      organizationPublicId,
-      workspacePublicId,
-    ],
-    queryFn: fetchWorkspaceRuntime,
-    enabled: canLoadRuntime,
-    retry: 1,
-  })
-
-  const personalizationQuery = useQuery({
-    queryKey: [
-      'runtime',
-      'personalization',
-      organizationPublicId,
-      workspacePublicId,
-    ],
-    queryFn: fetchPersonalizationRuntime,
-    enabled: canLoadRuntime,
-    retry: 1,
-  })
-
-  const value = useMemo<RuntimeBundle>(() => {
-    const isLoading =
-      canLoadRuntime &&
-      (workspaceQuery.isLoading || personalizationQuery.isLoading)
-    const isError = workspaceQuery.isError || personalizationQuery.isError
-    const errorMessage =
-      (workspaceQuery.error as Error | undefined)?.message ??
-      (personalizationQuery.error as Error | undefined)?.message ??
-      null
-
-    return {
-      workspace: workspaceQuery.data ?? null,
-      personalization: personalizationQuery.data ?? null,
-      isLoading,
-      isError,
-      errorMessage,
+  useEffect(() => {
+    if (isAuthenticated && phase === 'idle') {
+      void restore()
     }
-  }, [
-    canLoadRuntime,
-    personalizationQuery.data,
-    personalizationQuery.error,
-    personalizationQuery.isError,
-    personalizationQuery.isLoading,
-    workspaceQuery.data,
-    workspaceQuery.error,
-    workspaceQuery.isError,
-    workspaceQuery.isLoading,
-  ])
+  }, [isAuthenticated, phase, restore])
+
+  if (!isAuthenticated) {
+    return <>{children}</>
+  }
+
+  if (loading && (phase === 'restoring' || phase === 'bootstrapping' || phase === 'hydrating')) {
+    return <LoadingOverlay label="Preparing HEOS workspace…" />
+  }
+
+  if (errorMessage && phase === 'error') {
+    return (
+      <div className="flex h-full flex-col items-center justify-center gap-2 p-8 text-sm">
+        <p className="font-medium text-destructive">Runtime unavailable</p>
+        <p className="text-muted-foreground">{errorMessage}</p>
+      </div>
+    )
+  }
+
+  if (!hasTenantScope && phase !== 'ready') {
+    return <LoadingOverlay label="Resolving tenant scope…" />
+  }
 
   return (
-    <RuntimeContextProvider value={value}>
-      {canLoadRuntime && value.isLoading ? (
-        <div className="flex h-full items-center justify-center p-8 text-sm text-muted-foreground">
-          Loading platform runtime…
-        </div>
-      ) : canLoadRuntime && value.isError ? (
-        <div className="flex h-full flex-col items-center justify-center gap-2 p-8 text-sm">
-          <p className="font-medium text-destructive">Runtime unavailable</p>
-          <p className="text-muted-foreground">
-            {value.errorMessage ?? 'Unable to load workspace runtime.'}
-          </p>
-        </div>
+    <HydratedRuntimeProvider>
+      {switchingWorkspace ? (
+        <LoadingOverlay label="Switching workspace…" />
       ) : (
         children
       )}
-    </RuntimeContextProvider>
+    </HydratedRuntimeProvider>
   )
 }

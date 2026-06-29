@@ -1,1 +1,1 @@
-export { router, authLoginPath, redirectToLogin } from './router'
+export { router, redirectToLogin } from './router'

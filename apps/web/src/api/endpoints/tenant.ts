@@ -1,15 +1,11 @@
 import { apiClient } from '../client'
+import { unwrapData } from '../unwrap'
 import type { TenantContextResponse } from '../types/runtime'
 
 export async function fetchTenantContext(): Promise<TenantContextResponse> {
-  const response = await apiClient.get<{ data: TenantContextResponse } | TenantContextResponse>(
-    'tenant/context',
-  )
-  const payload = response.data
+  const response = await apiClient.get<
+    TenantContextResponse | { data: TenantContextResponse }
+  >('tenant/context')
 
-  if ('data' in payload && payload.data) {
-    return payload.data
-  }
-
-  return payload as TenantContextResponse
+  return unwrapData(response.data)
 }

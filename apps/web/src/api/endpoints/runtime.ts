@@ -1,31 +1,40 @@
 import { apiClient } from '../client'
+import { unwrapData } from '../unwrap'
 import type {
+  NavigationMenuResponse,
   PersonalizationRuntimeResponse,
+  ThemeRuntimeResponse,
   WorkspaceRuntimeResponse,
 } from '../types/runtime'
 
 export async function fetchWorkspaceRuntime(): Promise<WorkspaceRuntimeResponse> {
   const response = await apiClient.get<
-    { data: WorkspaceRuntimeResponse } | WorkspaceRuntimeResponse
+    WorkspaceRuntimeResponse | { data: WorkspaceRuntimeResponse }
   >('tenant/workspace/runtime')
-  const payload = response.data
 
-  if ('data' in payload && payload.data) {
-    return payload.data
-  }
-
-  return payload as WorkspaceRuntimeResponse
+  return unwrapData(response.data)
 }
 
 export async function fetchPersonalizationRuntime(): Promise<PersonalizationRuntimeResponse> {
   const response = await apiClient.get<
-    { data: PersonalizationRuntimeResponse } | PersonalizationRuntimeResponse
+    PersonalizationRuntimeResponse | { data: PersonalizationRuntimeResponse }
   >('tenant/personalization/runtime')
-  const payload = response.data
 
-  if ('data' in payload && payload.data) {
-    return payload.data
-  }
+  return unwrapData(response.data)
+}
 
-  return payload as PersonalizationRuntimeResponse
+export async function fetchThemeRuntime(): Promise<ThemeRuntimeResponse> {
+  const response = await apiClient.get<
+    ThemeRuntimeResponse | { data: ThemeRuntimeResponse }
+  >('tenant/themes/runtime')
+
+  return unwrapData(response.data)
+}
+
+export async function fetchApplicationNavigation(): Promise<NavigationMenuResponse[]> {
+  const response = await apiClient.get<
+    NavigationMenuResponse[] | { data: NavigationMenuResponse[] }
+  >('tenant/application-runtime/navigation')
+
+  return unwrapData(response.data)
 }

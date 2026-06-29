@@ -1,43 +1,121 @@
-import { createRootRoute, createRoute, createRouter, redirect } from '@tanstack/react-router'
-import { AuthLayout } from '@/features/auth'
-import { ApplicationShell } from '@/features/shell'
+import {
+  createRootRoute,
+  createRoute,
+  createRouter,
+  Outlet,
+  redirect,
+} from '@tanstack/react-router'
+import { AppProviders } from '@/app/providers/AppProviders'
+import {
+  ApplicationLayout,
+  AuthLayout,
+  ErrorLayout,
+  ForbiddenLayout,
+  LoadingLayout,
+  UnauthorizedLayout,
+} from '@/layouts'
+import {
+  ApplicationGuard,
+  AuthGuard,
+  GuestGuard,
+  PermissionGuard,
+  WorkspaceGuard,
+} from '@/features/guards'
 import { AuthLoginPage } from '@/features/auth/pages/AuthLoginPage'
+import { LogoutPage } from '@/features/auth/pages/LogoutPage'
 import { ShellHomePage } from '@/features/shell/pages/ShellHomePage'
+import { SettingsPage } from '@/features/shell/pages/SettingsPage'
 
-const rootRoute = createRootRoute({})
+const rootRoute = createRootRoute({
+  component: () => (
+    <AppProviders>
+      <Outlet />
+    </AppProviders>
+  ),
+})
 
-const authLayoutRoute = createRoute({
+const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/auth',
-  component: AuthLayout,
+  path: '/login',
+  validateSearch: (search: Record<string, unknown>) => ({
+    redirect: typeof search.redirect === 'string' ? search.redirect : undefined,
+  }),
+  component: () => (
+    <GuestGuard>
+      <AuthLayout>
+        <AuthLoginPage />
+      </AuthLayout>
+    </GuestGuard>
+  ),
 })
 
-const authLoginRoute = createRoute({
-  getParentRoute: () => authLayoutRoute,
-  path: 'login',
-  component: AuthLoginPage,
+const logoutRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/logout',
+  component: LogoutPage,
 })
 
-const appLayoutRoute = createRoute({
+const unauthorizedRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/unauthorized',
+  component: UnauthorizedLayout,
+})
+
+const forbiddenRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/forbidden',
+  component: ForbiddenLayout,
+})
+
+const loadingRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/loading',
+  component: LoadingLayout,
+})
+
+const appRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/',
-  component: ApplicationShell,
+  component: () => (
+    <AuthGuard>
+      <WorkspaceGuard>
+        <ApplicationGuard>
+          <ApplicationLayout />
+        </ApplicationGuard>
+      </WorkspaceGuard>
+    </AuthGuard>
+  ),
 })
 
-const appHomeRoute = createRoute({
-  getParentRoute: () => appLayoutRoute,
+const homeRoute = createRoute({
+  getParentRoute: () => appRoute,
   path: '/',
   component: ShellHomePage,
 })
 
+const settingsRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: '/settings',
+  component: () => (
+    <PermissionGuard permission="settings.read">
+      <SettingsPage />
+    </PermissionGuard>
+  ),
+})
+
 const routeTree = rootRoute.addChildren([
-  authLayoutRoute.addChildren([authLoginRoute]),
-  appLayoutRoute.addChildren([appHomeRoute]),
+  loginRoute,
+  logoutRoute,
+  unauthorizedRoute,
+  forbiddenRoute,
+  loadingRoute,
+  appRoute.addChildren([homeRoute, settingsRoute]),
 ])
 
 export const router = createRouter({
   routeTree,
   defaultPreload: 'intent',
+  defaultNotFoundComponent: ErrorLayout,
 })
 
 declare module '@tanstack/react-router' {
@@ -46,8 +124,6 @@ declare module '@tanstack/react-router' {
   }
 }
 
-export const authLoginPath = '/auth/login' as const
-
 export function redirectToLogin(): never {
-  throw redirect({ to: authLoginPath })
+  throw redirect({ to: '/login', search: { redirect: undefined } })
 }
