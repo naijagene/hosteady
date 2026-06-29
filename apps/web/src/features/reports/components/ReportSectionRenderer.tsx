@@ -1,7 +1,9 @@
 import type { ReportSection } from '@/api/types/reports'
+import { asArray } from '@/api/types/metadata-common'
 import { ErrorBoundary } from '@/components/errors/ErrorBoundary'
 import { normalizeSectionType } from '../core/report-sections'
 import { ReportChartPlaceholder } from './ReportChartPlaceholder'
+import { ReportDocumentsSection } from './ReportDocumentsSection'
 import { ReportSummaryCards } from './ReportSummaryCards'
 import { ReportTableSection } from './ReportTableSection'
 
@@ -60,6 +62,13 @@ function ReportSectionContent({ section }: ReportSectionRendererProps) {
             {section.content ?? 'No text content provided.'}
           </p>
         </section>
+      )
+    case 'documents':
+      return (
+        <ReportDocumentsSection
+          title={section.label}
+          documents={asArray(section.metadata?.documents ?? section.rows)}
+        />
       )
     case 'group':
       return (

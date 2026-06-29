@@ -8,6 +8,7 @@ const supportedSectionTypes = new Set([
   'metric',
   'text',
   'group',
+  'documents',
   'custom',
 ])
 

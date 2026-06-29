@@ -8,6 +8,7 @@ import { PlaceholderWidget } from './PlaceholderWidget'
 import { QuickActionsWidget } from './QuickActionsWidget'
 import { RecentItemsWidget } from './RecentItemsWidget'
 import { ReportWidget } from './ReportWidget'
+import { DocumentListWidget } from './DocumentListWidget'
 import { TableWidget } from './TableWidget'
 import type { DashboardWidgetComponentProps } from './types'
 
@@ -23,6 +24,8 @@ register('metric', MetricWidget)
 register('chart', ChartWidget)
 register('table', TableWidget)
 register('report', ReportWidget)
+register('document_list', DocumentListWidget)
+register('documents', DocumentListWidget)
 register('notification', NotificationWidget)
 register('activity', ActivityWidget)
 register('quick_actions', QuickActionsWidget)

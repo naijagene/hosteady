@@ -203,10 +203,14 @@ describe('Binding renderers', () => {
     expect(screen.getByText('9')).toBeInTheDocument()
   })
 
-  it('DocumentBindingRenderer lists document placeholders', async () => {
-    vi.spyOn(documentsApi, 'fetchDocuments').mockResolvedValue([
-      { public_id: 'doc-1', title: 'Policy Document' },
-    ])
+  it('DocumentBindingRenderer renders document manager', async () => {
+    vi.spyOn(documentsApi, 'fetchDocuments').mockResolvedValue({
+      items: [{ public_id: 'doc-1', title: 'Policy Document' }],
+      page: 1,
+      per_page: 25,
+      total: 1,
+      has_more: false,
+    })
 
     renderBinding(
       <DocumentBindingRenderer
@@ -215,12 +219,16 @@ describe('Binding renderers', () => {
           component_key: 'docs',
           name: 'Documents',
           component_type: 'document_list',
+          binding_config: { mode: 'list', query_enabled: true },
         }}
       />,
     )
 
     await waitFor(() => {
       expect(screen.getByTestId('document-binding-renderer')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getByTestId('document-manager')).toBeInTheDocument()
     })
     expect(screen.getByText('Policy Document')).toBeInTheDocument()
   })

@@ -27,6 +27,8 @@ import { DirectFormPage } from '@/features/forms/pages/DirectFormPage'
 import { DirectTablePage } from '@/features/tables/pages/DirectTablePage'
 import { DirectDashboardPage } from '@/features/dashboards/pages/DirectDashboardPage'
 import { DirectReportPage } from '@/features/reports/pages/DirectReportPage'
+import { DocumentManagerPage } from '@/features/documents/pages/DocumentManagerPage'
+import { DirectDocumentPage } from '@/features/documents/pages/DirectDocumentPage'
 import { MetadataPage } from '@/features/renderer/pages/MetadataPage'
 import { ShellHomePage } from '@/features/shell/pages/ShellHomePage'
 import { SettingsPage } from '@/features/shell/pages/SettingsPage'
@@ -138,6 +140,18 @@ const directReportRoute = createRoute({
   component: DirectReportPage,
 })
 
+const documentsRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: '/documents',
+  component: DocumentManagerPage,
+})
+
+const directDocumentRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: '/documents/$documentPublicId',
+  component: DirectDocumentPage,
+})
+
 const routeTree = rootRoute.addChildren([
   loginRoute,
   logoutRoute,
@@ -152,6 +166,8 @@ const routeTree = rootRoute.addChildren([
     directTableRoute,
     directDashboardRoute,
     directReportRoute,
+    documentsRoute,
+    directDocumentRoute,
   ]),
 ])
 

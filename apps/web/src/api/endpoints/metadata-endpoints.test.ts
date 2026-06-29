@@ -87,7 +87,7 @@ describe('metadata API endpoints', () => {
     })
 
     const docs = await documentsApi.fetchDocuments()
-    expect(docs[0].title).toBe('Doc')
+    expect(docs.items[0]?.title).toBe('Doc')
   })
 
   it('fetchWorkflowDefinitions and instances', async () => {

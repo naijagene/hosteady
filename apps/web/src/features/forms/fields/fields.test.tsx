@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { createElement } from 'react'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { resolveFieldComponent } from '@/features/forms/fields'
 import type { NormalizedFormField } from '@/features/forms/types'
 import { useForm } from 'react-hook-form'
@@ -20,6 +21,15 @@ function FieldHarness({
     register,
     control,
   })
+}
+
+function renderField(field: NormalizedFormField) {
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+  return render(
+    <QueryClientProvider client={client}>
+      <FieldHarness field={field} />
+    </QueryClientProvider>,
+  )
 }
 
 const baseField = (type: string, overrides?: Partial<NormalizedFormField>): NormalizedFormField => ({
@@ -58,16 +68,14 @@ describe('field renderers', () => {
 
   types.forEach((type) => {
     it(`renders ${type} field`, () => {
-      render(
-        <FieldHarness
-          field={baseField(type, {
-            field_key: type,
-            options:
-              type === 'select' || type === 'radio'
-                ? [{ value: 'a', label: 'A' }]
-                : undefined,
-          })}
-        />,
+      renderField(
+        baseField(type, {
+          field_key: type,
+          options:
+            type === 'select' || type === 'radio'
+              ? [{ value: 'a', label: 'A' }]
+              : undefined,
+        }),
       )
 
       if (type === 'custom_type') {
@@ -99,14 +107,14 @@ describe('field renderers', () => {
     expect(screen.getByRole('textbox')).toHaveAttribute('aria-invalid', 'true')
   })
 
-  it('file field shows upload placeholder', () => {
-    render(<FieldHarness field={baseField('file', { field_key: 'file' })} />)
-    expect(screen.getByText('Upload (placeholder)')).toBeInTheDocument()
+  it('file field shows upload panel', () => {
+    renderField(baseField('file', { field_key: 'file' }))
+    expect(screen.getByLabelText('Upload document')).toBeInTheDocument()
   })
 
-  it('document field shows browse placeholder', () => {
-    render(<FieldHarness field={baseField('document', { field_key: 'doc' })} />)
-    expect(screen.getByText('Browse documents (placeholder)')).toBeInTheDocument()
+  it('document field shows browse action', () => {
+    renderField(baseField('document', { field_key: 'doc' }))
+    expect(screen.getByRole('button', { name: 'Browse documents' })).toBeInTheDocument()
   })
 })
 

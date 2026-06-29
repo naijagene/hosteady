@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import type { NormalizedTableColumn } from '@/features/tables/types'
 import {
   BooleanCell,
@@ -46,7 +47,6 @@ describe('table cell registry', () => {
     ['status', StatusCell, 'Pending'],
     ['email', LinkCell, 'test@example.com'],
     ['url', LinkCell, 'https://example.com'],
-    ['document', DocumentCell, 'file.pdf'],
   ])('renders %s cell', (type, Component, value) => {
     render(<Component column={column(type)} row={row} value={value} />)
     if (type === 'boolean') {
@@ -56,6 +56,16 @@ describe('table cell registry', () => {
     } else {
       expect(screen.getByText(String(value))).toBeInTheDocument()
     }
+  })
+
+  it('renders document cell with open action', () => {
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+    render(
+      <QueryClientProvider client={client}>
+        <DocumentCell column={column('document')} row={row} value="doc-1" />
+      </QueryClientProvider>,
+    )
+    expect(screen.getByRole('button', { name: 'Open document doc-1' })).toBeInTheDocument()
   })
 
   it('renders unsupported cell fallback', () => {

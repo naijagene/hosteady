@@ -13,7 +13,9 @@ describe('dashboard widget registry', () => {
     const types = listRegisteredWidgetTypes()
     expect(types).toContain('metric')
     expect(types).toContain('chart')
+    expect(types).toContain('document_list')
     expect(hasWidgetType('metric')).toBe(true)
+    expect(hasWidgetType('document_list')).toBe(true)
   })
 
   it('resolves known and unknown widget components', () => {

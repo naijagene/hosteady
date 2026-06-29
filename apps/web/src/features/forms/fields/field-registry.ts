@@ -2,8 +2,6 @@ import { createElement, type ComponentType } from 'react'
 import type { BaseFieldProps } from './basic-fields'
 import {
   CheckboxField,
-  DocumentField,
-  FileField,
   HiddenField,
   MultiSelectField,
   RadioField,
@@ -12,6 +10,7 @@ import {
   SwitchField,
   UnsupportedField,
 } from './choice-fields'
+import { DocumentField, FileField } from './document-fields'
 import {
   DateField,
   DateTimeField,
