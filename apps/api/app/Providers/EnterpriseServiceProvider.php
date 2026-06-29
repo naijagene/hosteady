@@ -547,6 +547,38 @@ class EnterpriseServiceProvider extends ServiceProvider
         $this->app->singleton(\App\Modules\Sdk\Ui\Contracts\UiRenderer::class, \App\Services\Ui\UiRendererService::class);
         $this->app->singleton(\App\Services\Ui\UiDevelopmentService::class);
 
+        $this->app->singleton(\App\Services\Navigation\NavigationMapper::class);
+        $this->app->singleton(\App\Services\Navigation\NavigationTableHealthSupport::class);
+        $this->app->singleton(\App\Services\Navigation\NavigationAuditRecorder::class);
+        $this->app->singleton(\App\Services\Navigation\NavigationSearchIndexer::class);
+        $this->app->singleton(\App\Services\Navigation\NavigationPlatformEventBridge::class);
+        $this->app->singleton(\App\Services\Navigation\NavigationStatisticsService::class);
+        $this->app->singleton(\App\Services\Navigation\NavigationHealthService::class);
+        $this->app->singleton(\App\Services\Navigation\NavigationPermissionBridge::class);
+        $this->app->singleton(\App\Services\Navigation\NavigationVisibilityResolverService::class);
+        $this->app->singleton(\App\Modules\Sdk\Navigation\Contracts\NavigationVisibilityResolver::class, \App\Services\Navigation\NavigationVisibilityResolverService::class);
+        $this->app->singleton(\App\Services\Navigation\NavigationTreeBuilderService::class);
+        $this->app->singleton(\App\Modules\Sdk\Navigation\Contracts\NavigationTreeBuilder::class, \App\Services\Navigation\NavigationTreeBuilderService::class);
+        $this->app->singleton(\App\Services\Navigation\NavigationUiBridge::class);
+        $this->app->singleton(\App\Services\Navigation\NavigationRulesBridge::class);
+        $this->app->singleton(\App\Services\Navigation\NavigationRegistryService::class);
+        $this->app->singleton(\App\Modules\Sdk\Navigation\Contracts\NavigationRegistry::class, \App\Services\Navigation\NavigationRegistryService::class);
+        $this->app->singleton(\App\Services\Navigation\NavigationDefinitionService::class);
+        $this->app->singleton(\App\Services\Navigation\NavigationItemService::class);
+        $this->app->singleton(\App\Services\Navigation\NavigationDraftService::class);
+        $this->app->singleton(\App\Modules\Sdk\Navigation\Contracts\NavigationDraftManager::class, \App\Services\Navigation\NavigationDraftService::class);
+        $this->app->singleton(\App\Services\Navigation\NavigationVersionService::class);
+        $this->app->singleton(\App\Modules\Sdk\Navigation\Contracts\NavigationVersionManager::class, \App\Services\Navigation\NavigationVersionService::class);
+        $this->app->singleton(\App\Services\Navigation\NavigationPublisherService::class);
+        $this->app->singleton(\App\Modules\Sdk\Navigation\Contracts\NavigationPublisher::class, \App\Services\Navigation\NavigationPublisherService::class);
+        $this->app->singleton(\App\Services\Navigation\NavigationPersonalizationService::class);
+        $this->app->singleton(\App\Modules\Sdk\Navigation\Contracts\NavigationPersonalizationProvider::class, \App\Services\Navigation\NavigationPersonalizationService::class);
+        $this->app->singleton(\App\Services\Navigation\NavigationDefaultGeneratorService::class);
+        $this->app->singleton(\App\Services\Navigation\NavigationRendererService::class);
+        $this->app->singleton(\App\Modules\Sdk\Navigation\Contracts\NavigationRenderer::class, \App\Services\Navigation\NavigationRendererService::class);
+        $this->app->singleton(\App\Services\Navigation\NavigationApplicationRuntimeBridge::class);
+        $this->app->singleton(\App\Services\Navigation\NavigationDevelopmentService::class);
+
         $this->app->singleton(\App\Services\Form\DynamicFormConditionEvaluator::class);
         $this->app->singleton(\App\Modules\Sdk\Form\Contracts\FormConditionEvaluator::class, \App\Services\Form\DynamicFormConditionEvaluator::class);
         $this->app->singleton(\App\Services\Form\DynamicFormFieldResolver::class);

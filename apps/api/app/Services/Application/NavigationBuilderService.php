@@ -13,6 +13,7 @@ class NavigationBuilderService
     public function __construct(
         private readonly ApplicationPermissionBridge $permissionBridge,
         private readonly ApplicationDiscoveryService $discoveryService,
+        private readonly \App\Services\Navigation\NavigationApplicationRuntimeBridge $navigationApplicationRuntimeBridge,
     ) {
     }
 
@@ -30,6 +31,10 @@ class NavigationBuilderService
         }
 
         foreach ($this->discoveryService->discoverNavigation($context) as $menu) {
+            $menus[] = $menu;
+        }
+
+        foreach ($this->navigationApplicationRuntimeBridge->buildMenusForRuntime($context) as $menu) {
             $menus[] = $menu;
         }
 

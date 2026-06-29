@@ -118,6 +118,14 @@ enum AuditAction: string
     case UiComponentUpdated = 'ui.component.updated';
     case UiPersonalizationUpdated = 'ui.personalization.updated';
     case UiActivityLogged = 'ui.activity.logged';
+    case NavigationDefinitionRegistered = 'navigation.definition.registered';
+    case NavigationDefinitionUpdated = 'navigation.definition.updated';
+    case NavigationItemUpdated = 'navigation.item.updated';
+    case NavigationDraftSaved = 'navigation.draft.saved';
+    case NavigationDraftDiscarded = 'navigation.draft.discarded';
+    case NavigationPublished = 'navigation.published';
+    case NavigationPersonalizationUpdated = 'navigation.personalization.updated';
+    case NavigationRendered = 'navigation.rendered';
 
     case ReferenceCatalogRegistered = 'reference.catalog.registered';
 
@@ -507,6 +515,14 @@ enum AuditAction: string
             self::UiComponentUpdated,
             self::UiPersonalizationUpdated,
             self::UiActivityLogged,
+            self::NavigationDefinitionRegistered,
+            self::NavigationDefinitionUpdated,
+            self::NavigationItemUpdated,
+            self::NavigationDraftSaved,
+            self::NavigationDraftDiscarded,
+            self::NavigationPublished,
+            self::NavigationPersonalizationUpdated,
+            self::NavigationRendered,
             self::FormDefinitionRegistered,
             self::FormDefinitionUpdated,
             self::FormRendered,
@@ -771,7 +787,15 @@ enum AuditAction: string
             self::UiComponentRegistered,
             self::UiComponentUpdated,
             self::UiPersonalizationUpdated,
-            self::UiActivityLogged => AuditRetentionClass::Ephemeral,
+            self::UiActivityLogged,
+            self::NavigationDefinitionRegistered,
+            self::NavigationDefinitionUpdated,
+            self::NavigationItemUpdated,
+            self::NavigationDraftSaved,
+            self::NavigationDraftDiscarded,
+            self::NavigationPublished,
+            self::NavigationPersonalizationUpdated,
+            self::NavigationRendered => AuditRetentionClass::Ephemeral,
         };
     }
 

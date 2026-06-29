@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\V1\Tenant\EnterpriseBusinessRuleController;
 use App\Http\Controllers\Api\V1\Tenant\EnterpriseApplicationController;
 use App\Http\Controllers\Api\V1\Tenant\EnterpriseIntegrationController;
 use App\Http\Controllers\Api\V1\Tenant\EnterpriseUiController;
+use App\Http\Controllers\Api\V1\Tenant\EnterpriseNavigationDesignerController;
 use App\Http\Controllers\Api\V1\Tenant\ReferenceDataController;
 use App\Http\Controllers\Api\V1\Tenant\SearchController;
 use App\Http\Controllers\Api\V1\Tenant\TenantContextController;
@@ -198,6 +199,24 @@ Route::prefix('v1')->group(function () {
             Route::patch('tenant/ui/personalization/{pagePublicId}', [EnterpriseUiController::class, 'updatePersonalization']);
             Route::get('tenant/ui/pages/{moduleKey}/{pageKey}/render', [EnterpriseUiController::class, 'renderPage']);
             Route::get('tenant/ui/pages/{moduleKey}/{pageKey}', [EnterpriseUiController::class, 'showPage']);
+
+            Route::get('tenant/navigation-designer/health', [EnterpriseNavigationDesignerController::class, 'health']);
+            Route::get('tenant/navigation-designer/runtime', [EnterpriseNavigationDesignerController::class, 'runtime']);
+            Route::get('tenant/navigation-designer/statistics', [EnterpriseNavigationDesignerController::class, 'statistics']);
+            Route::get('tenant/navigation-designer/definitions', [EnterpriseNavigationDesignerController::class, 'indexDefinitions']);
+            Route::post('tenant/navigation-designer/definitions', [EnterpriseNavigationDesignerController::class, 'storeDefinition']);
+            Route::patch('tenant/navigation-designer/personalization/{definitionPublicId}', [EnterpriseNavigationDesignerController::class, 'updatePersonalization']);
+            Route::patch('tenant/navigation-designer/items/{itemPublicId}', [EnterpriseNavigationDesignerController::class, 'updateItem']);
+            Route::delete('tenant/navigation-designer/items/{itemPublicId}', [EnterpriseNavigationDesignerController::class, 'destroyItem']);
+            Route::get('tenant/navigation-designer/definitions/{definitionPublicId}', [EnterpriseNavigationDesignerController::class, 'showDefinition']);
+            Route::patch('tenant/navigation-designer/definitions/{definitionPublicId}', [EnterpriseNavigationDesignerController::class, 'updateDefinition']);
+            Route::get('tenant/navigation-designer/definitions/{definitionPublicId}/items', [EnterpriseNavigationDesignerController::class, 'indexItems']);
+            Route::post('tenant/navigation-designer/definitions/{definitionPublicId}/items', [EnterpriseNavigationDesignerController::class, 'storeItem']);
+            Route::get('tenant/navigation-designer/definitions/{definitionPublicId}/tree', [EnterpriseNavigationDesignerController::class, 'showTree']);
+            Route::get('tenant/navigation-designer/definitions/{definitionPublicId}/render', [EnterpriseNavigationDesignerController::class, 'renderDefinition']);
+            Route::post('tenant/navigation-designer/definitions/{definitionPublicId}/versions', [EnterpriseNavigationDesignerController::class, 'storeVersion']);
+            Route::get('tenant/navigation-designer/definitions/{definitionPublicId}/versions', [EnterpriseNavigationDesignerController::class, 'indexVersions']);
+            Route::post('tenant/navigation-designer/definitions/{definitionPublicId}/publish', [EnterpriseNavigationDesignerController::class, 'publishDefinition']);
 
             Route::get('tenant/workflows/automation/rules', [WorkflowAutomationController::class, 'indexRules']);
             Route::post('tenant/workflows/automation/rules', [WorkflowAutomationController::class, 'storeRule']);

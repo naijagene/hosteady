@@ -131,5 +131,8 @@ return [
         'ui_metadata' => [
             'enabled' => env('HEOS_UI_METADATA_ENABLED', true),
         ],
+        'navigation_designer' => [
+            'enabled' => env('HEOS_NAVIGATION_DESIGNER_ENABLED', true),
+        ],
     ],
 ];

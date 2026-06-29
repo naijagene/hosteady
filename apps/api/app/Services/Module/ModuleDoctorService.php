@@ -83,6 +83,7 @@ class ModuleDoctorService
             'integrations' => app(\App\Services\Integration\IntegrationHealthService::class)->assess(),
             'application_runtime' => app(\App\Services\Application\ApplicationHealthService::class)->assess(),
             'ui_metadata' => app(\App\Services\Ui\UiHealthService::class)->assess(),
+            'navigation_designer' => app(\App\Services\Navigation\NavigationHealthService::class)->assess(),
         ];
 
         $this->collectEnterpriseHealthWarnings($enterpriseHealth, $warnings, $errors);
@@ -107,6 +108,7 @@ class ModuleDoctorService
                     'integrations' => (bool) config('heos.enterprise.integrations.enabled', true),
                     'application_runtime' => (bool) config('heos.enterprise.application_runtime.enabled', true),
                     'ui_metadata' => (bool) config('heos.enterprise.ui_metadata.enabled', true),
+                    'navigation_designer' => (bool) config('heos.enterprise.navigation_designer.enabled', true),
                     'reference_data' => (bool) config('heos.enterprise.reference_data.enabled', true),
                     'files' => (bool) config('heos.enterprise.files.enabled', true),
                     'runtime_aware' => (bool) config('heos.enterprise.runtime_aware', true),
