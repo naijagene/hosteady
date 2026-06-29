@@ -1,9 +1,46 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { NotificationBell } from '@/components/shell/NotificationBell'
 import { HydratedRuntimeProvider } from '@/features/runtime/HydratedRuntimeProvider'
 import { useAuthStore } from '@/stores/auth-store'
 import type { HydratedRuntimeBundle } from '@/api/types/runtime'
+
+vi.mock('@tanstack/react-router', async () => {
+  const actual = await vi.importActual<typeof import('@tanstack/react-router')>(
+    '@tanstack/react-router',
+  )
+
+  return {
+    ...actual,
+    useRouterState: (options?: {
+      select?: (state: { location: { pathname: string } }) => unknown
+    }) => {
+      const state = { location: { pathname: '/' } }
+      return options?.select ? options.select(state) : state
+    },
+    Link: ({
+      children,
+      to,
+      params,
+    }: {
+      children: React.ReactNode
+      to: string
+      params?: { moduleKey: string; pageKey: string }
+    }) => (
+      <a
+        href={
+          params
+            ? `/app/${params.moduleKey}/${params.pageKey}`
+            : typeof to === 'string'
+              ? to
+              : '#'
+        }
+      >
+        {children}
+      </a>
+    ),
+  }
+})
 
 const runtime: HydratedRuntimeBundle = {
   tenantContext: null,
@@ -94,7 +131,14 @@ describe('AppSidebar', () => {
             {
               group_key: 'core',
               label: 'Core',
-              items: [{ item_key: 'home', label: 'Home', badge: 'New' }],
+              items: [
+                {
+                  item_key: 'home',
+                  label: 'Home',
+                  badge: 'New',
+                  route: { module_key: 'platform', page_key: 'home' },
+                },
+              ],
             },
           ],
           metadata: {},

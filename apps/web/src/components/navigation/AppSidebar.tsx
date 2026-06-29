@@ -1,14 +1,39 @@
+import { Link, useRouterState } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
 import { useNavigationContext } from '@/app/providers/use-navigation-context'
+import { resolveNavigationItemRoute } from '@/features/renderer/navigation-route'
 import { cn } from '@/lib/utils'
 import type { NavigationGroupResponse, NavigationItemResponse } from '@/api/types/runtime'
 
-function NavigationItemButton({ item }: { item: NavigationItemResponse }) {
+function NavigationItemLink({ item }: { item: NavigationItemResponse }) {
+  const target = resolveNavigationItemRoute(item)
+  const pathname = useRouterState({ select: (state) => state.location.pathname })
+  const href =
+    target?.params
+      ? `/app/${target.params.moduleKey}/${target.params.pageKey}`
+      : target?.to ?? null
+  const isActive = href ? pathname === href : false
+
+  if (!target) {
+    return (
+      <button
+        type="button"
+        className="flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm text-muted-foreground"
+        aria-disabled="true"
+      >
+        <span>{item.label}</span>
+      </button>
+    )
+  }
+
   return (
-    <button
-      type="button"
-      className="flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm text-foreground hover:bg-muted"
-      aria-disabled="true"
+    <Link
+      to={target.to}
+      params={target.params}
+      className={cn(
+        'flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm hover:bg-muted',
+        isActive ? 'bg-muted font-medium text-foreground' : 'text-foreground',
+      )}
     >
       <span>{item.label}</span>
       {item.badge ? (
@@ -16,7 +41,7 @@ function NavigationItemButton({ item }: { item: NavigationItemResponse }) {
           {item.badge}
         </span>
       ) : null}
-    </button>
+    </Link>
   )
 }
 
@@ -41,7 +66,7 @@ function NavigationGroupSection({
       </button>
       {open || collapsed
         ? group.items.map((item) => (
-            <NavigationItemButton key={item.item_key} item={item} />
+            <NavigationItemLink key={item.item_key} item={item} />
           ))
         : null}
     </section>

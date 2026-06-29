@@ -23,6 +23,7 @@ import {
 } from '@/features/guards'
 import { AuthLoginPage } from '@/features/auth/pages/AuthLoginPage'
 import { LogoutPage } from '@/features/auth/pages/LogoutPage'
+import { MetadataPage } from '@/features/renderer/pages/MetadataPage'
 import { ShellHomePage } from '@/features/shell/pages/ShellHomePage'
 import { SettingsPage } from '@/features/shell/pages/SettingsPage'
 
@@ -103,13 +104,19 @@ const settingsRoute = createRoute({
   ),
 })
 
+const metadataPageRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: '/app/$moduleKey/$pageKey',
+  component: MetadataPage,
+})
+
 const routeTree = rootRoute.addChildren([
   loginRoute,
   logoutRoute,
   unauthorizedRoute,
   forbiddenRoute,
   loadingRoute,
-  appRoute.addChildren([homeRoute, settingsRoute]),
+  appRoute.addChildren([homeRoute, settingsRoute, metadataPageRoute]),
 ])
 
 export const router = createRouter({

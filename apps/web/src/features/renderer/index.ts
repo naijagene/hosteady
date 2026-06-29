@@ -1,0 +1,26 @@
+export { register, resolve, has, listRegisteredTypes, clearRegistryForTests, getRegistrySize } from './core/ComponentRegistry'
+export type { RegistryComponent, RegistryComponentProps } from './core/ComponentRegistry'
+export { RendererContextProvider } from './core/RendererContext'
+export type { RendererContextValue } from './core/renderer-context'
+export { RenderNode } from './core/RenderNode'
+export * from './core/binding-resolver'
+export * from './core/renderer-utils'
+export { PageRenderer } from './layouts/PageRenderer'
+export { LayoutRenderer } from './layouts/LayoutRenderer'
+export { RegionRenderer } from './layouts/RegionRenderer'
+export { ComponentRenderer } from './layouts/ComponentRenderer'
+export { FormBindingRenderer } from './bindings/FormBindingRenderer'
+export { TableBindingRenderer } from './bindings/TableBindingRenderer'
+export { DashboardBindingRenderer } from './bindings/DashboardBindingRenderer'
+export { ReportBindingRenderer } from './bindings/ReportBindingRenderer'
+export { DocumentBindingRenderer } from './bindings/DocumentBindingRenderer'
+export { WorkflowBindingRenderer } from './bindings/WorkflowBindingRenderer'
+export { useUiPageRender } from './hooks/useUiPageRender'
+export { useRendererContext, useOptionalRendererContext, useComponentBinding } from './hooks/useRendererContext'
+export { MetadataPage } from './pages/MetadataPage'
+export {
+  buildMetadataPagePath,
+  resolveNavigationItemRoute,
+  resolveNavigationItemHref,
+} from './navigation-route'
+export { registerDefaultComponents, resetDefaultComponentsForTests } from './register-default-components'
