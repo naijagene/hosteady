@@ -1,4 +1,5 @@
 import { apiClient } from '../client'
+import { ApiError } from '../errors'
 import { unwrapData } from '../unwrap'
 import {
   normalizeTableDefinition,
@@ -8,6 +9,8 @@ import {
   type TableQueryResult,
 } from '../types/tables'
 import { asArray } from '../types/metadata-common'
+import type { AxiosError } from 'axios'
+import type { ApiErrorBody } from '../types/api'
 
 export async function fetchTables(): Promise<TableDefinition[]> {
   const response = await apiClient.get<
@@ -35,12 +38,16 @@ export async function queryTable(
   tableKey: string,
   payload: TableQueryPayload = {},
 ): Promise<TableQueryResult> {
-  const response = await apiClient.post<
-    TableQueryResult | { data: TableQueryResult }
-  >(
-    `tenant/tables/${encodeURIComponent(moduleKey)}/${encodeURIComponent(tableKey)}/query`,
-    payload,
-  )
+  try {
+    const response = await apiClient.post<
+      TableQueryResult | { data: TableQueryResult }
+    >(
+      `tenant/tables/${encodeURIComponent(moduleKey)}/${encodeURIComponent(tableKey)}/query`,
+      payload,
+    )
 
-  return normalizeTableQueryResult(unwrapData(response.data))
+    return normalizeTableQueryResult(unwrapData(response.data))
+  } catch (error) {
+    throw ApiError.fromAxios(error as AxiosError<ApiErrorBody>)
+  }
 }

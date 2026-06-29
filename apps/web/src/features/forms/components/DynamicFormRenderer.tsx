@@ -17,6 +17,7 @@ interface DynamicFormRendererProps {
   submitEnabled?: boolean
   successMessage?: string
   preserveHidden?: boolean
+  onSubmitSuccess?: () => void
 }
 
 export function DynamicFormRenderer({
@@ -26,6 +27,7 @@ export function DynamicFormRenderer({
   submitEnabled = true,
   successMessage,
   preserveHidden = false,
+  onSubmitSuccess,
 }: DynamicFormRendererProps) {
   const runtime = useHydratedRuntime()
   const permissions = runtime?.permissions ?? []
@@ -74,6 +76,7 @@ export function DynamicFormRenderer({
     binding,
     preserveHidden: binding?.preserve_hidden ?? preserveHidden,
     setError,
+    onSuccess: onSubmitSuccess,
   })
 
   const clientErrors = Object.entries(errors).flatMap(([field, error]) =>

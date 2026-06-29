@@ -14,14 +14,39 @@ import * as dashboardsApi from '@/api/endpoints/dashboards'
 import * as reportsApi from '@/api/endpoints/reports'
 import * as documentsApi from '@/api/endpoints/documents'
 import * as workflowsApi from '@/api/endpoints/workflows'
+import { HydratedRuntimeProvider } from '@/features/runtime/HydratedRuntimeProvider'
+import { useAuthStore } from '@/stores/auth-store'
+import type { HydratedRuntimeBundle } from '@/api/types/runtime'
+
 import type { UiComponent } from '@/api/types/ui'
+
+const runtime: HydratedRuntimeBundle = {
+  tenantContext: null,
+  workspaceRuntime: null,
+  themeRuntime: null,
+  personalizationRuntime: null,
+  navigationMenus: [],
+  permissions: [],
+  roles: [],
+  user: null,
+  organization: null,
+  workspace: null,
+  membership: null,
+  application: null,
+  unreadNotificationCount: 0,
+  warnings: [],
+  source: 'runtime',
+}
 
 function renderBinding(ui: React.ReactNode) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+  useAuthStore.getState().setHydratedRuntime(runtime)
 
   return render(
     <QueryClientProvider client={client}>
-      <RendererContextProvider moduleKey="platform">{ui}</RendererContextProvider>
+      <HydratedRuntimeProvider>
+        <RendererContextProvider moduleKey="platform">{ui}</RendererContextProvider>
+      </HydratedRuntimeProvider>
     </QueryClientProvider>,
   )
 }
@@ -63,9 +88,15 @@ describe('Binding renderers', () => {
       module_key: 'platform',
       table_key: 'users',
       name: 'Users',
-      columns: [{ column_key: 'email', label: 'Email' }],
+      columns: [{ column_key: 'email', label: 'Email', column_type: 'text' }],
     })
-    vi.spyOn(tablesApi, 'queryTable').mockResolvedValue({ rows: [] })
+    vi.spyOn(tablesApi, 'queryTable').mockResolvedValue({
+      rows: [{ public_id: '1', values: { email: 'ada@test.com' } }],
+      total: 1,
+      page: 1,
+      per_page: 25,
+      last_page: 1,
+    })
 
     renderBinding(
       <TableBindingRenderer
@@ -85,7 +116,10 @@ describe('Binding renderers', () => {
     await waitFor(() => {
       expect(screen.getByTestId('table-binding-renderer')).toBeInTheDocument()
     })
-    expect(screen.getByText('Email')).toBeInTheDocument()
+    expect(screen.getByTestId('dynamic-table-renderer')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText('ada@test.com')).toBeInTheDocument()
+    })
   })
 
   it('DashboardBindingRenderer renders widget placeholders', async () => {
