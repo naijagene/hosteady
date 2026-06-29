@@ -46,6 +46,7 @@ describe('Binding renderers', () => {
       form_key: 'profile',
       name: 'Profile Form',
       fields: [{ field_key: 'name', label: 'Name', field_type: 'text' }],
+      sections: [{ section_key: 'main', label: 'Main', fields: ['name'] }],
     })
 
     renderBinding(<FormBindingRenderer component={formComponent} />)
@@ -53,7 +54,8 @@ describe('Binding renderers', () => {
     await waitFor(() => {
       expect(screen.getByTestId('form-binding-renderer')).toBeInTheDocument()
     })
-    expect(screen.getByText('Name')).toBeInTheDocument()
+    expect(screen.getByTestId('dynamic-form-renderer')).toBeInTheDocument()
+    expect(screen.getByLabelText(/Name/)).toBeInTheDocument()
   })
 
   it('TableBindingRenderer loads table metadata', async () => {

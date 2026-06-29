@@ -1,11 +1,16 @@
 import { apiClient } from '../client'
+import { ApiError } from '../errors'
 import { unwrapData } from '../unwrap'
 import {
   normalizeFormDefinition,
+  normalizeFormSubmissionResult,
   type FormDefinition,
   type FormSubmissionPayload,
+  type FormSubmissionResult,
 } from '../types/forms'
 import { asArray } from '../types/metadata-common'
+import type { AxiosError } from 'axios'
+import type { ApiErrorBody } from '../types/api'
 
 export async function fetchForms(): Promise<FormDefinition[]> {
   const response = await apiClient.get<
@@ -32,13 +37,17 @@ export async function submitForm(
   moduleKey: string,
   formKey: string,
   payload: FormSubmissionPayload,
-): Promise<Record<string, unknown>> {
-  const response = await apiClient.post<
-    Record<string, unknown> | { data: Record<string, unknown> }
-  >(
-    `tenant/forms/${encodeURIComponent(moduleKey)}/${encodeURIComponent(formKey)}/submit`,
-    payload,
-  )
+): Promise<FormSubmissionResult> {
+  try {
+    const response = await apiClient.post<
+      FormSubmissionResult | { data: FormSubmissionResult }
+    >(
+      `tenant/forms/${encodeURIComponent(moduleKey)}/${encodeURIComponent(formKey)}/submit`,
+      payload,
+    )
 
-  return unwrapData(response.data)
+    return normalizeFormSubmissionResult(unwrapData(response.data))
+  } catch (error) {
+    throw ApiError.fromAxios(error as AxiosError<ApiErrorBody>)
+  }
 }

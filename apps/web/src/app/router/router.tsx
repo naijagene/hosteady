@@ -23,6 +23,7 @@ import {
 } from '@/features/guards'
 import { AuthLoginPage } from '@/features/auth/pages/AuthLoginPage'
 import { LogoutPage } from '@/features/auth/pages/LogoutPage'
+import { DirectFormPage } from '@/features/forms/pages/DirectFormPage'
 import { MetadataPage } from '@/features/renderer/pages/MetadataPage'
 import { ShellHomePage } from '@/features/shell/pages/ShellHomePage'
 import { SettingsPage } from '@/features/shell/pages/SettingsPage'
@@ -110,13 +111,24 @@ const metadataPageRoute = createRoute({
   component: MetadataPage,
 })
 
+const directFormRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: '/forms/$moduleKey/$formKey',
+  component: DirectFormPage,
+})
+
 const routeTree = rootRoute.addChildren([
   loginRoute,
   logoutRoute,
   unauthorizedRoute,
   forbiddenRoute,
   loadingRoute,
-  appRoute.addChildren([homeRoute, settingsRoute, metadataPageRoute]),
+  appRoute.addChildren([
+    homeRoute,
+    settingsRoute,
+    metadataPageRoute,
+    directFormRoute,
+  ]),
 ])
 
 export const router = createRouter({

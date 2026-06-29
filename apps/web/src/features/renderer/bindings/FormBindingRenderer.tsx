@@ -1,7 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
 import { fetchFormDefinition } from '@/api/endpoints/forms'
+import { normalizeFormBindingContext } from '@/api/types/forms'
 import type { UiComponent } from '@/api/types/ui'
+import { DynamicFormRenderer, FormLoadingState } from '@/features/forms'
 import { useComponentBinding } from '../hooks/useComponentBinding'
+import { useOptionalRendererContext } from '../hooks/useRendererContext'
 
 interface FormBindingRendererProps {
   component: UiComponent
@@ -9,6 +12,7 @@ interface FormBindingRendererProps {
 
 export function FormBindingRenderer({ component }: FormBindingRendererProps) {
   const binding = useComponentBinding(component)
+  const rendererContext = useOptionalRendererContext()
   const query = useQuery({
     queryKey: ['form-definition', binding?.moduleKey, binding?.resourceKey],
     queryFn: () =>
@@ -25,11 +29,7 @@ export function FormBindingRenderer({ component }: FormBindingRendererProps) {
   }
 
   if (query.isLoading) {
-    return (
-      <div className="text-sm text-muted-foreground" data-testid="form-binding-loading">
-        Loading form metadata…
-      </div>
-    )
+    return <FormLoadingState />
   }
 
   if (query.isError || !query.data) {
@@ -40,36 +40,23 @@ export function FormBindingRenderer({ component }: FormBindingRendererProps) {
     )
   }
 
-  const fields = query.data.fields ?? []
+  const bindingContext = normalizeFormBindingContext(
+    {
+      ...binding.config,
+      ...component.binding_config,
+      page: rendererContext?.pageKey,
+      binding: component.component_key,
+    },
+    binding.moduleKey,
+    binding.resourceKey,
+  )
 
   return (
     <section
       className="rounded-lg border border-border bg-card p-4"
       data-testid="form-binding-renderer"
     >
-      <header className="mb-3">
-        <h4 className="text-sm font-medium text-foreground">{query.data.name}</h4>
-        <p className="text-xs text-muted-foreground">Read-only form preview</p>
-      </header>
-      <dl className="space-y-2">
-        {fields.length === 0 ? (
-          <p className="text-xs text-muted-foreground">No fields defined</p>
-        ) : (
-          fields.map((field) => (
-            <div key={field.field_key} className="grid gap-1">
-              <dt className="text-xs font-medium text-foreground">{field.label}</dt>
-              <dd className="text-xs text-muted-foreground">{field.field_type}</dd>
-            </div>
-          ))
-        )}
-      </dl>
-      <button
-        type="button"
-        disabled
-        className="mt-4 rounded-md border border-border px-3 py-1 text-xs text-muted-foreground"
-      >
-        Submit (placeholder)
-      </button>
+      <DynamicFormRenderer definition={query.data} binding={bindingContext} />
     </section>
   )
 }
