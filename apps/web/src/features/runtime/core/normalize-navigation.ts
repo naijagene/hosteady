@@ -35,18 +35,50 @@ function slugify(value: string): string {
     .replace(/^-+|-+$/g, '')
 }
 
+function inferArtifactKeysFromPath(
+  path: string,
+): { module_key?: string; page_key?: string; dashboard_key?: string; form_key?: string; table_key?: string; report_key?: string } | null {
+  const patterns = [
+    { prefix: '/app/', keys: ['module_key', 'page_key'] as const },
+    { prefix: '/dashboards/', keys: ['module_key', 'dashboard_key'] as const },
+    { prefix: '/forms/', keys: ['module_key', 'form_key'] as const },
+    { prefix: '/tables/', keys: ['module_key', 'table_key'] as const },
+    { prefix: '/reports/', keys: ['module_key', 'report_key'] as const },
+  ]
+
+  for (const pattern of patterns) {
+    if (!path.startsWith(pattern.prefix)) {
+      continue
+    }
+
+    const segments = path.slice(pattern.prefix.length).split('/').filter(Boolean)
+    if (segments.length < 2) {
+      continue
+    }
+
+    return {
+      [pattern.keys[0]]: segments[0],
+      [pattern.keys[1]]: segments[1],
+    }
+  }
+
+  return null
+}
+
 function buildItemRoute(record: ApiRecord): NavigationItemResponse['route'] | undefined {
   if (isRecord(record.route)) {
     return record.route as NavigationItemResponse['route']
   }
 
   if (typeof record.route === 'string' && record.route.trim() !== '') {
-    return { path: record.route }
+    const inferred = inferArtifactKeysFromPath(record.route)
+    return inferred ? { path: record.route, ...inferred } : { path: record.route }
   }
 
   const path = readString(record, 'path', 'href', 'route_path', 'routePath')
   if (path) {
-    return { path }
+    const inferred = inferArtifactKeysFromPath(path)
+    return inferred ? { path, ...inferred } : { path }
   }
 
   const moduleKey = readString(record, 'module_key', 'moduleKey')
@@ -60,6 +92,25 @@ function buildItemRoute(record: ApiRecord): NavigationItemResponse['route'] | un
   const metadataPageKey = metadata ? readString(metadata, 'page_key', 'pageKey') : null
   if (metadataModuleKey && metadataPageKey) {
     return { module_key: metadataModuleKey, page_key: metadataPageKey }
+  }
+
+  if (moduleKey && metadata) {
+    const dashboardKey = readString(metadata, 'dashboard_key', 'dashboardKey')
+    if (dashboardKey) {
+      return {
+        module_key: moduleKey,
+        dashboard_key: dashboardKey,
+        path: `/dashboards/${moduleKey}/${dashboardKey}`,
+      }
+    }
+
+    if (metadataPageKey) {
+      return {
+        module_key: moduleKey,
+        page_key: metadataPageKey,
+        path: `/app/${moduleKey}/${metadataPageKey}`,
+      }
+    }
   }
 
   return undefined

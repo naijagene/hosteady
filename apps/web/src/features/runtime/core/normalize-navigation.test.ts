@@ -36,6 +36,48 @@ describe('normalizeNavigationMenus', () => {
     expect(menus[0]?.groups[0]?.items[0]?.label).toBe('Alpha Preview Home')
   })
 
+  it('preserves alpha route paths from string route values', () => {
+    const menus = normalizeNavigationMenus([
+      {
+        menu_key: 'alpha-primary',
+        label: 'Alpha Primary Navigation',
+        groups: [
+          {
+            group_key: 'default',
+            label: 'Main',
+            items: [
+              {
+                item_key: 'alpha-home',
+                label: 'Alpha Preview Home',
+                module_key: 'alpha.preview',
+                route: '/app/alpha.preview/home',
+                metadata: { page_key: 'home' },
+              },
+              {
+                item_key: 'alpha-dashboard',
+                label: 'Sample Dashboard',
+                module_key: 'alpha.preview',
+                route: '/dashboards/alpha.preview/sample',
+              },
+            ],
+          },
+        ],
+        metadata: {},
+      },
+    ])
+
+    expect(menus[0]?.groups[0]?.items[0]?.route).toMatchObject({
+      path: '/app/alpha.preview/home',
+      module_key: 'alpha.preview',
+      page_key: 'home',
+    })
+    expect(menus[0]?.groups[0]?.items[1]?.route).toMatchObject({
+      path: '/dashboards/alpha.preview/sample',
+      module_key: 'alpha.preview',
+      dashboard_key: 'sample',
+    })
+  })
+
   it('drops null or invalid group entries', () => {
     const menus = normalizeNavigationMenus([
       {

@@ -192,6 +192,52 @@ describe('AppSidebar', () => {
 
     expect(screen.getByText('Alpha Preview Home')).toBeInTheDocument()
     expect(screen.getByText('Documents')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Alpha Preview Home' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Documents' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Alpha Preview Home' })).not.toBeInTheDocument()
     expect(screen.queryByText('Runtime fallback routes')).not.toBeInTheDocument()
+  })
+
+  it('renders clickable alpha dashboard navigation links', async () => {
+    useAuthStore.getState().setHydratedRuntime({
+      ...runtime,
+      navigationMenus: [
+        {
+          menu_key: 'alpha-primary',
+          label: 'Alpha Primary Navigation',
+          groups: [
+            {
+              group_key: 'default',
+              label: 'Main',
+              items: [
+                {
+                  item_key: 'alpha-dashboard',
+                  label: 'Alpha Dashboard',
+                  route: { path: '/dashboards/alpha.preview/sample', module_key: 'alpha.preview' },
+                },
+              ],
+            },
+          ],
+          metadata: {},
+        },
+      ],
+    })
+
+    const { NavigationProvider } = await import('@/app/providers/NavigationProvider')
+    const { HydratedRuntimeProvider } = await import(
+      '@/features/runtime/HydratedRuntimeProvider'
+    )
+    const { AppSidebar } = await import('@/components/navigation/AppSidebar')
+
+    render(
+      <HydratedRuntimeProvider>
+        <NavigationProvider>
+          <AppSidebar />
+        </NavigationProvider>
+      </HydratedRuntimeProvider>,
+    )
+
+    expect(screen.getByRole('link', { name: 'Alpha Dashboard' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Alpha Dashboard' })).not.toBeInTheDocument()
   })
 })

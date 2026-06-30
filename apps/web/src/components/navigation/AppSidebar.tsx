@@ -2,20 +2,20 @@ import { Link, useRouterState } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
 import { useNavigationContext } from '@/app/providers/use-navigation-context'
 import { collectNavigationGroups } from '@/features/runtime/core/normalize-navigation'
-import { resolveNavigationItemRoute } from '@/features/renderer/navigation-route'
+import {
+  resolveNavigationItemHref,
+  resolveNavigationItemRoute,
+} from '@/features/renderer/navigation-route'
 import { cn } from '@/lib/utils'
 import type { NavigationGroupResponse, NavigationItemResponse } from '@/api/types/runtime'
 
 function NavigationItemLink({ item }: { item: NavigationItemResponse }) {
   const target = resolveNavigationItemRoute(item)
   const pathname = useRouterState({ select: (state) => state.location.pathname })
-  const href =
-    target?.params
-      ? `/app/${target.params.moduleKey}/${target.params.pageKey}`
-      : target?.to ?? null
+  const href = resolveNavigationItemHref(item)
   const isActive = href ? pathname === href : false
 
-  if (!target) {
+  if (!target || !href) {
     return (
       <button
         type="button"
@@ -31,6 +31,7 @@ function NavigationItemLink({ item }: { item: NavigationItemResponse }) {
     <Link
       to={target.to}
       params={target.params}
+      aria-current={isActive ? 'page' : undefined}
       className={cn(
         'flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm hover:bg-muted',
         isActive ? 'bg-muted font-medium text-foreground' : 'text-foreground',

@@ -89,7 +89,7 @@ export interface NavigationItemResponse {
   item_key: string
   label: string
   item_type?: string
-  route?: ApiRecord
+  route?: ApiRecord | string
   badge?: string | null
   sort_order?: number
   required_permission?: string | null

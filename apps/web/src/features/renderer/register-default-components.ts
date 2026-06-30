@@ -6,6 +6,7 @@ import { GridComponent } from './components/GridComponent'
 import { MetricComponent } from './components/MetricComponent'
 import { SectionComponent } from './components/SectionComponent'
 import { StaticTextComponent } from './components/StaticTextComponent'
+import { NavigationMenuComponent } from './components/NavigationMenuComponent'
 import { TabsComponent } from './components/TabsComponent'
 import { UnknownComponent } from './components/UnknownComponent'
 import { WorkflowQueuePlaceholder } from './components/WorkflowQueuePlaceholder'
@@ -36,7 +37,7 @@ export function registerDefaultComponents(): void {
   register('notification_list', StaticTextComponent)
   register('activity_feed', ActivityBindingRenderer)
   register('platform_overview', AdministrationBindingRenderer)
-  register('navigation_menu', StaticTextComponent)
+  register('navigation_menu', NavigationMenuComponent)
   register('form', FormBindingRenderer)
   register('table', TableBindingRenderer)
   register('dashboard', DashboardBindingRenderer)
