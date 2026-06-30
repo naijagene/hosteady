@@ -43,4 +43,19 @@ class ThemeStatisticsService
             registeredModules: (clone $definitions)->distinct('module_key')->count('module_key'),
         );
     }
+
+    public function statisticsPlatformWide(): ThemeStatistics
+    {
+        if (! $this->tableHealthSupport->coreTablesPresent()) {
+            return $this->tableHealthSupport->emptyStatistics();
+        }
+
+        return new ThemeStatistics(
+            definitions: ThemeDefinition::query()->count(),
+            versions: ThemeVersion::query()->count(),
+            brandProfiles: BrandProfile::query()->count(),
+            publishedDefinitions: ThemeDefinition::query()->where('status', ThemeDefinitionStatus::Published->value)->count(),
+            registeredModules: ThemeDefinition::query()->distinct('module_key')->count('module_key'),
+        );
+    }
 }

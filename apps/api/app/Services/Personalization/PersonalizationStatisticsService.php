@@ -45,6 +45,32 @@ class PersonalizationStatisticsService
     }
 
     /**
+     * @return array<string, int>
+     */
+    public function statisticsPlatformWide(): array
+    {
+        if (! $this->tableHealthSupport->coreTablesPresent()) {
+            return [
+                'profiles' => 0,
+                'preferences' => 0,
+                'favorites' => 0,
+                'recent_items' => 0,
+                'shortcuts' => 0,
+                'onboarding_states' => 0,
+            ];
+        }
+
+        return [
+            'profiles' => PersonalizationProfile::query()->count(),
+            'preferences' => PersonalizationPreference::query()->count(),
+            'favorites' => PersonalizationFavorite::query()->count(),
+            'recent_items' => PersonalizationRecentItem::query()->count(),
+            'shortcuts' => PersonalizationShortcut::query()->count(),
+            'onboarding_states' => PersonalizationOnboardingState::query()->count(),
+        ];
+    }
+
+    /**
      * @param  \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $query
      */
     private function countScoped($query, Organization $organization, ?Workspace $workspace): int

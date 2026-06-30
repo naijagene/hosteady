@@ -25,7 +25,7 @@ class ThemeHealthService
 
         $stats = $context !== null
             ? $this->statisticsService->statisticsForScope($context->organization, $context->workspace)
-            : $this->tableHealthSupport->emptyStatistics();
+            : $this->statisticsService->statisticsPlatformWide();
 
         if ($stats->definitions === 0 && $missingTables === []) {
             $warnings[] = 'No theme definitions registered.';

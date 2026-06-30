@@ -29,14 +29,7 @@ class PersonalizationHealthService
 
         $stats = $context !== null
             ? $this->statisticsService->statisticsForScope($context->organization, $context->workspace)
-            : [
-                'profiles' => 0,
-                'preferences' => 0,
-                'favorites' => 0,
-                'recent_items' => 0,
-                'shortcuts' => 0,
-                'onboarding_states' => 0,
-            ];
+            : $this->statisticsService->statisticsPlatformWide();
 
         if (($stats['profiles'] ?? 0) === 0 && ($stats['preferences'] ?? 0) === 0) {
             $warnings[] = 'No personalization profiles or preferences registered.';
