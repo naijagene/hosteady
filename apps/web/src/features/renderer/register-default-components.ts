@@ -13,6 +13,7 @@ import { FormBindingRenderer } from './bindings/FormBindingRenderer'
 import { TableBindingRenderer } from './bindings/TableBindingRenderer'
 import { DashboardBindingRenderer } from './bindings/DashboardBindingRenderer'
 import { ReportBindingRenderer } from './bindings/ReportBindingRenderer'
+import { ActivityBindingRenderer } from './bindings/ActivityBindingRenderer'
 
 let initialized = false
 
@@ -32,7 +33,7 @@ export function registerDefaultComponents(): void {
   register('workflow_queue', WorkflowQueuePlaceholder)
   register('approval_queue', WorkflowQueuePlaceholder)
   register('notification_list', StaticTextComponent)
-  register('activity_feed', StaticTextComponent)
+  register('activity_feed', ActivityBindingRenderer)
   register('navigation_menu', StaticTextComponent)
   register('form', FormBindingRenderer)
   register('table', TableBindingRenderer)

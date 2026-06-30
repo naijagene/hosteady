@@ -17,6 +17,11 @@ import {
   NotificationCenterWidget,
   ReminderWidget,
 } from '@/features/notifications/widgets/notification-widgets'
+import {
+  ActivityFeedDashboardWidget,
+  AuditSummaryDashboardWidget,
+  SystemHistoryDashboardWidget,
+} from '@/features/activity/widgets/activity-dashboard-widgets'
 import type { DashboardWidgetComponentProps } from './types'
 
 type WidgetComponent = ComponentType<DashboardWidgetComponentProps>
@@ -46,6 +51,9 @@ register('mention', MentionWidget)
 register('mentions', MentionWidget)
 register('notification_legacy', NotificationWidget)
 register('activity', ActivityWidget)
+register('activity_feed', ActivityFeedDashboardWidget)
+register('audit_summary', AuditSummaryDashboardWidget)
+register('system_history', SystemHistoryDashboardWidget)
 register('quick_actions', QuickActionsWidget)
 register('recent_items', RecentItemsWidget)
 register('favorites', FavoritesWidget)

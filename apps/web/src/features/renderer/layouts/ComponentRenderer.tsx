@@ -13,6 +13,7 @@ import { ReportBindingRenderer } from '../bindings/ReportBindingRenderer'
 import { DocumentBindingRenderer } from '../bindings/DocumentBindingRenderer'
 import { WorkflowBindingRenderer } from '../bindings/WorkflowBindingRenderer'
 import { NotificationBindingRenderer } from '../bindings/NotificationBindingRenderer'
+import { ActivityBindingRenderer } from '../bindings/ActivityBindingRenderer'
 
 interface ComponentRendererProps {
   component: UiComponent | null | undefined
@@ -60,6 +61,14 @@ function BindingRenderer({ component }: { component: UiComponent }) {
     return <NotificationBindingRenderer component={component} />
   }
 
+  if (
+    isBindingType(binding, 'activity_feed', 'activity', 'audit', 'history') ||
+    component.component_type === 'activity_feed' ||
+    component.component_type === 'activity'
+  ) {
+    return <ActivityBindingRenderer component={component} />
+  }
+
   return <UnknownComponent component={component} />
 }
 
@@ -101,6 +110,10 @@ export function ComponentRenderer({ component }: ComponentRendererProps) {
     'notification',
     'notification_list',
     'notification_center',
+    'activity_feed',
+    'activity',
+    'audit',
+    'history',
   ])
 
   const usesBinding =

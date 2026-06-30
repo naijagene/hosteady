@@ -17,6 +17,8 @@ const widgetTypeAliases: Record<string, string> = {
   notifications: 'notification',
   activity_feed: 'activity',
   activity: 'activity',
+  audit_summary: 'audit_summary',
+  system_history: 'system_history',
   quick_actions: 'quick_actions',
   quick_action: 'quick_actions',
   recent_items: 'recent_items',
@@ -32,7 +34,7 @@ export function normalizeWidgetType(widgetType: string | undefined | null): stri
     return widgetTypeAliases[normalized]
   }
 
-  if (['metric', 'chart', 'table', 'report', 'notification', 'activity', 'quick_actions', 'recent_items', 'favorites'].includes(normalized)) {
+  if (['metric', 'chart', 'table', 'report', 'notification', 'activity', 'quick_actions', 'recent_items', 'favorites', 'audit_summary', 'system_history'].includes(normalized)) {
     return normalized
   }
 

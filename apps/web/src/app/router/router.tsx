@@ -39,6 +39,11 @@ import {
   NotificationCenterPage,
   NotificationDetailPage,
 } from '@/features/notifications'
+import {
+  ActivityCenterPage,
+  AuditViewerPage,
+  EntityHistoryPage,
+} from '@/features/activity'
 import { MetadataPage } from '@/features/renderer/pages/MetadataPage'
 import { ShellHomePage } from '@/features/shell/pages/ShellHomePage'
 import { SettingsPage } from '@/features/shell/pages/SettingsPage'
@@ -205,6 +210,24 @@ const searchRoute = createRoute({
   component: SearchPage,
 })
 
+const activityRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: '/activity',
+  component: ActivityCenterPage,
+})
+
+const auditRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: '/activity/audit',
+  component: AuditViewerPage,
+})
+
+const entityHistoryRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: '/activity/$entityType/$entityPublicId',
+  component: EntityHistoryPage,
+})
+
 const routeTree = rootRoute.addChildren([
   loginRoute,
   logoutRoute,
@@ -228,6 +251,9 @@ const routeTree = rootRoute.addChildren([
     notificationsRoute,
     notificationDetailRoute,
     searchRoute,
+    activityRoute,
+    auditRoute,
+    entityHistoryRoute,
   ]),
 ])
 

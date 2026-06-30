@@ -53,6 +53,16 @@ const platformRoutes: SearchResult[] = [
     route: '/search',
     source: 'local',
   },
+  {
+    id: 'route-activity',
+    title: 'Activity Center',
+    description: 'Recent activity and audit history',
+    type: 'page',
+    icon: 'activity',
+    route: '/activity',
+    source: 'local',
+    permission: 'activity.read',
+  },
 ]
 
 function searchLocalCollection(results: SearchResult[], query: string): SearchResult[] {

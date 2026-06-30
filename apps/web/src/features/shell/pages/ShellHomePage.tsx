@@ -13,6 +13,7 @@ import {
   DashboardRecentItems,
   useHomePersonalization,
 } from '@/features/dashboards'
+import { ActivityFeedWidget, AuditSummaryWidget, SystemHistoryWidget } from '@/features/activity'
 import { useHydratedRuntime } from '@/features/runtime/use-hydrated-runtime'
 import { OrganizationSelectPage } from '@/features/auth/pages/OrganizationSelectPage'
 
@@ -155,9 +156,17 @@ export function ShellHomePage() {
         </section>
 
         <section className="rounded-lg border border-border bg-card p-4">
-          <h2 className="text-sm font-medium text-foreground">Recent workflow activity</h2>
+          <ActivityFeedWidget title="Recent activity" binding={{ per_page: 4, mode: 'compact' }} />
+        </section>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-3">
+        <AuditSummaryWidget />
+        <SystemHistoryWidget />
+        <section className="rounded-lg border border-border bg-card p-4">
+          <h2 className="text-sm font-medium text-foreground">Security activity</h2>
           <p className="mt-3 text-xs text-muted-foreground">
-            Recent workflow activity feed will appear here when runtime activity endpoints are available.
+            Security audit events will appear here when `security.audit.read` data is available.
           </p>
         </section>
       </div>
