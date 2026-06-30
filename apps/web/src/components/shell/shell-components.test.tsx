@@ -145,4 +145,40 @@ describe('AppSidebar', () => {
     expect(screen.getByText('Home')).toBeInTheDocument()
     expect(screen.getByText('New')).toBeInTheDocument()
   })
+
+  it('renders fallback group when group_key is missing', async () => {
+    const { NavigationProvider } = await import('@/app/providers/NavigationProvider')
+    const { HydratedRuntimeProvider } = await import(
+      '@/features/runtime/HydratedRuntimeProvider'
+    )
+    const { AppSidebar } = await import('@/components/navigation/AppSidebar')
+
+    useAuthStore.getState().setHydratedRuntime({
+      ...runtime,
+      navigationMenus: [
+        {
+          menu_key: 'alpha-preview',
+          label: 'Alpha Primary Navigation',
+          groups: [
+            {
+              label: 'Main',
+              items: [{ item_key: 'alpha-home', label: 'Alpha Preview Home' }],
+            },
+          ] as unknown as (typeof runtime.navigationMenus)[0]['groups'],
+          metadata: {},
+        },
+      ],
+    })
+
+    render(
+      <HydratedRuntimeProvider>
+        <NavigationProvider>
+          <AppSidebar />
+        </NavigationProvider>
+      </HydratedRuntimeProvider>,
+    )
+
+    expect(screen.getByText('Main')).toBeInTheDocument()
+    expect(screen.getByText('Alpha Preview Home')).toBeInTheDocument()
+  })
 })

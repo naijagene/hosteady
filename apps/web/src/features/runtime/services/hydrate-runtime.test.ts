@@ -100,6 +100,53 @@ describe('hydrateRuntimeBundle', () => {
   it('normalizes workspace navigation groups when app menus are empty', async () => {
     const runtime = await hydrateRuntimeBundle()
     expect(runtime.navigationMenus[0]?.groups[0]?.label).toBe('Main')
+    expect(runtime.navigationMenus[0]?.groups[0]?.group_key).toBe('main')
+  })
+
+  it('normalizes flat workspace navigation contributions into a default group', async () => {
+    const { fetchWorkspaceRuntime, fetchApplicationNavigation } = await import('@/api/endpoints/runtime')
+    vi.mocked(fetchApplicationNavigation).mockResolvedValueOnce([])
+    vi.mocked(fetchWorkspaceRuntime).mockResolvedValueOnce({
+      organization: { public_id: 'org-1' },
+      workspace: { public_id: 'ws-1', name: 'Default' },
+      membership: { public_id: 'mem-1' },
+      active_applications: [],
+      active_application: null,
+      runtime_version: 3,
+      settings_version: 1,
+      runtime_metadata: {},
+      capabilities: {},
+      navigation: [
+        { item_key: 'demo-home', label: 'Demo Home' },
+        { item_key: 'demo-settings', label: 'Demo Settings' },
+      ],
+      feature_flags: {},
+      module_diagnostics: {},
+      settings_metadata: {},
+    } as never)
+
+    const runtime = await hydrateRuntimeBundle()
+
+    expect(runtime.navigationMenus[0]?.groups[0]?.group_key).toBe('default')
+    expect(runtime.navigationMenus[0]?.groups[0]?.label).toBe('Main')
+    expect(runtime.navigationMenus[0]?.groups[0]?.items).toHaveLength(2)
+  })
+
+  it('fills missing group_key on application navigation menus', async () => {
+    const { fetchApplicationNavigation } = await import('@/api/endpoints/runtime')
+    vi.mocked(fetchApplicationNavigation).mockResolvedValueOnce([
+      {
+        menu_key: 'alpha-preview',
+        label: 'Alpha Primary Navigation',
+        groups: [{ label: 'Alpha Primary Navigation', items: [{ item_key: 'alpha-home', label: 'Alpha Preview Home' }] }],
+        metadata: {},
+      },
+    ] as never)
+
+    const runtime = await hydrateRuntimeBundle()
+
+    expect(runtime.navigationMenus[0]?.groups[0]?.group_key).toBe('default')
+    expect(runtime.navigationMenus[0]?.groups[0]?.items[0]?.label).toBe('Alpha Preview Home')
   })
 
   it('merges warnings from theme and personalization', async () => {

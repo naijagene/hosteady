@@ -80,6 +80,34 @@ describe('alpha health core', () => {
     expect(checks.every((item) => item.status !== 'unavailable')).toBe(true)
   })
 
+  it('accepts alpha navigation payloads without group_key', () => {
+    const alphaRuntime = {
+      ...runtime,
+      navigationMenus: [
+        {
+          menu_key: 'alpha-preview',
+          label: 'Alpha Primary Navigation',
+          groups: [
+            {
+              label: 'Main',
+              items: [{ item_key: 'alpha-home', label: 'Alpha Preview Home' }],
+            },
+          ],
+          metadata: {},
+        },
+      ],
+    } as HydratedRuntimeBundle
+
+    const checks = buildAlphaRuntimeChecks({
+      authenticated: true,
+      organizationPublicId: 'org-1',
+      workspacePublicId: 'ws-1',
+      runtime: alphaRuntime,
+    })
+
+    expect(checks.find((item) => item.key === 'navigation')?.status).toBe('ready')
+  })
+
   it('marks unavailable when runtime missing', () => {
     const checks = buildAlphaRuntimeChecks({
       authenticated: false,

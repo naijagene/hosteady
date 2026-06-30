@@ -1,6 +1,7 @@
 import { Link, useRouterState } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
 import { useNavigationContext } from '@/app/providers/use-navigation-context'
+import { collectNavigationGroups } from '@/features/runtime/core/normalize-navigation'
 import { resolveNavigationItemRoute } from '@/features/renderer/navigation-route'
 import { cn } from '@/lib/utils'
 import type { NavigationGroupResponse, NavigationItemResponse } from '@/api/types/runtime'
@@ -65,7 +66,7 @@ function NavigationGroupSection({
         {!collapsed ? <span>{open ? '−' : '+'}</span> : null}
       </button>
       {open || collapsed
-        ? group.items.map((item) => (
+        ? (group.items ?? []).map((item) => (
             <NavigationItemLink key={item.item_key} item={item} />
           ))
         : null}
@@ -77,7 +78,7 @@ export function AppSidebar() {
   const { menus, overrides } = useNavigationContext()
   const collapsed = overrides.collapsed === true
 
-  const groups = useMemo(() => menus.flatMap((menu) => menu.groups), [menus])
+  const groups = useMemo(() => collectNavigationGroups(menus), [menus])
 
   return (
     <aside
@@ -97,9 +98,9 @@ export function AppSidebar() {
             Navigation will appear when runtime metadata is available.
           </p>
         ) : (
-          groups.map((group) => (
+          groups.map((group, index) => (
             <NavigationGroupSection
-              key={group.group_key}
+              key={`${group.group_key}-${index}`}
               group={group}
               collapsed={collapsed}
             />

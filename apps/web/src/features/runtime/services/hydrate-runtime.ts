@@ -6,49 +6,21 @@ import {
 } from '@/api/endpoints/runtime'
 import { fetchTenantContext } from '@/api/endpoints/tenant'
 import { fetchUnreadNotificationCount } from '@/api/endpoints/notifications'
-import type {
-  HydratedRuntimeBundle,
-  NavigationMenuResponse,
-} from '@/api/types/runtime'
+import type { HydratedRuntimeBundle } from '@/api/types/runtime'
 import type { ApiRecord } from '@/api/types/api'
+import { normalizeNavigationMenus } from '@/features/runtime/core/normalize-navigation'
 
-function normalizeNavigationMenus(
-  workspaceNavigation: ApiRecord | ApiRecord[],
-  applicationMenus: NavigationMenuResponse[],
-): NavigationMenuResponse[] {
-  if (applicationMenus.length > 0) {
-    return applicationMenus
+function resolveNavigationMenus(
+  workspaceNavigation: unknown,
+  applicationMenus: unknown,
+): ReturnType<typeof normalizeNavigationMenus> {
+  const normalizedApplicationMenus = normalizeNavigationMenus(applicationMenus)
+
+  if (normalizedApplicationMenus.length > 0) {
+    return normalizedApplicationMenus
   }
 
-  if (Array.isArray(workspaceNavigation)) {
-    return workspaceNavigation as unknown as NavigationMenuResponse[]
-  }
-
-  if (
-    workspaceNavigation &&
-    typeof workspaceNavigation === 'object' &&
-    Array.isArray((workspaceNavigation as ApiRecord).menus)
-  ) {
-    return (workspaceNavigation as ApiRecord).menus as NavigationMenuResponse[]
-  }
-
-  if (
-    workspaceNavigation &&
-    typeof workspaceNavigation === 'object' &&
-    Array.isArray((workspaceNavigation as ApiRecord).groups)
-  ) {
-    return [
-      {
-        menu_key: 'main',
-        label: 'Main',
-        groups: (workspaceNavigation as ApiRecord)
-          .groups as NavigationMenuResponse['groups'],
-        metadata: (workspaceNavigation as ApiRecord).metadata as ApiRecord,
-      },
-    ]
-  }
-
-  return []
+  return normalizeNavigationMenus(workspaceNavigation)
 }
 
 export async function hydrateRuntimeBundle(): Promise<HydratedRuntimeBundle> {
@@ -68,7 +40,7 @@ export async function hydrateRuntimeBundle(): Promise<HydratedRuntimeBundle> {
     fetchUnreadNotificationCount().catch(() => 0),
   ])
 
-  const menus = normalizeNavigationMenus(
+  const menus = resolveNavigationMenus(
     workspaceRuntime.navigation,
     navigationMenus,
   )
