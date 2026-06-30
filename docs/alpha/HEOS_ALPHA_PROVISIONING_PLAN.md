@@ -10,35 +10,43 @@ Step-by-step plan to provision the Alpha validation tenant **Moondew Group / Pro
 
 ```powershell
 cd C:\Projects\Hosteady\apps\api
-php artisan migrate:fresh --seed
+php artisan migrate
 # Ensure ALPHA_DEMO_PASSWORD is set in .env
 php artisan db:seed --class=AlphaDemoSeeder
 ```
+
+**Important:** Run migrations **before** the first Alpha demo seed. If the tenant was created pre-migration, re-run:
+
+```powershell
+php artisan db:seed --class=AlphaDemoSeeder
+```
+
+The seeder is idempotent **by section** — it completes missing theme, personalization, UI metadata, and samples without recreating Moondew Group.
 
 ### What `AlphaDemoSeeder` creates
 
 | # | Artifact | Status |
 |---|----------|--------|
 | 1 | Organization — Moondew Group | ✅ Automated |
-| 2 | Workspace — Production | ✅ Automated (renamed from default) |
+| 2 | Workspace — Production | ✅ Automated |
 | 3 | Administrator — BIGJYDE | ✅ Automated |
 | 4 | Manager user | ✅ Automated |
 | 5 | Viewer user | ✅ Automated |
 | 6 | Sample application — Hosteady Platform Preview | ✅ Automated (catalog key `demo`) |
-| 7 | Navigation definition | ⚠️ Optional (attempted; may warn if tables/contracts differ) |
-| 8 | Theme definition | ⚠️ Optional |
-| 9 | Personalization | ⚠️ Requires runtime usage / follow-up |
-| 10 | UI page — Alpha Preview Home | ⚠️ Optional |
-| 11 | Form — `alpha.preview/sample` | ⚠️ Optional |
-| 12 | Table — `alpha.preview/sample` | ⚠️ Optional |
-| 13 | Dashboard — `alpha.preview/sample` | ⚠️ Optional |
-| 14 | Report — `alpha.preview/sample` | ⚠️ Optional |
-| 15 | Document record | ❌ Manual — see § Manual steps |
-| 16 | Workflow definition | ❌ Manual — see § Manual steps |
-| 17 | Human task | ❌ Manual — depends on workflow execution |
-| 18 | Approval | ❌ Manual — depends on workflow execution |
-| 19 | Notification | ❌ Manual — see § Manual steps |
-| 20 | Activity/audit entry | ⚠️ Partial — org provisioning emits domain audit events |
+| 7 | Navigation definition + items | ✅ Automated (publish requires version) |
+| 8 | Theme definition + brand profile | ✅ Automated |
+| 9 | Personalization profile + preferences | ✅ Automated |
+| 10 | UI page — Alpha Preview Home | ✅ Automated (post-migration) |
+| 11 | Form — `alpha.preview/sample` | ✅ Automated |
+| 12 | Table — `alpha.preview/sample` | ✅ Automated |
+| 13 | Dashboard — `alpha.preview/sample` | ✅ Automated |
+| 14 | Report — `alpha.preview/sample` | ✅ Automated |
+| 15 | Document placeholder | ✅ Automated |
+| 16 | Workflow definition | ❌ Manual — designer contracts |
+| 17 | Human task | ❌ Manual — depends on workflow |
+| 18 | Approval | ❌ Manual — depends on workflow |
+| 19 | Notification sample | ✅ Automated |
+| 20 | Activity/audit entry | ✅ Via org provisioning + platform audit trail |
 
 ---
 

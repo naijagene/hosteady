@@ -31,12 +31,13 @@ composer install
 copy .env.example .env
 # Set ALPHA_DEMO_PASSWORD=your-local-placeholder in .env
 php artisan key:generate
-php artisan migrate:fresh --seed
+php artisan migrate
 php artisan db:seed --class=AlphaDemoSeeder
 php artisan heos:doctor
-php artisan test
 php artisan serve
 ```
+
+If Moondew Group was created before migrations, run migrations then **re-run** `AlphaDemoSeeder` to backfill theme, personalization, and UI metadata.
 
 ```powershell
 cd C:\Projects\Hosteady\apps\web

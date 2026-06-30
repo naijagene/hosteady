@@ -399,9 +399,9 @@ Use after `AlphaDemoSeeder` provisioning with **Moondew Group / Production / BIG
 
 | Step | Command / action | Pass / Fail | Notes |
 |------|------------------|-------------|-------|
-| Fresh migrate | `php artisan migrate:fresh --seed` | ☐ | |
-| Alpha demo seed | `php artisan db:seed --class=AlphaDemoSeeder` | ☐ | Requires `ALPHA_DEMO_PASSWORD` |
-| Doctor | `php artisan heos:doctor` | ☐ | Warnings documented |
+| Migrate | `php artisan migrate` | ☐ | Run before/at seed time |
+| Alpha demo seed | `php artisan db:seed --class=AlphaDemoSeeder` | ☐ | Requires `ALPHA_DEMO_PASSWORD`; re-run after migrations |
+| Doctor | `php artisan heos:doctor` | ☐ | Expect no theme/personalization empty warnings post-seed |
 | Tests | `php artisan test` | ☐ | |
 
 ### B. Frontend
