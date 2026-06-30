@@ -146,7 +146,7 @@ describe('AppSidebar', () => {
     expect(screen.getByText('New')).toBeInTheDocument()
   })
 
-  it('renders fallback group when group_key is missing', async () => {
+  it('renders alpha navigation items from backend payload', async () => {
     const { NavigationProvider } = await import('@/app/providers/NavigationProvider')
     const { HydratedRuntimeProvider } = await import(
       '@/features/runtime/HydratedRuntimeProvider'
@@ -157,14 +157,26 @@ describe('AppSidebar', () => {
       ...runtime,
       navigationMenus: [
         {
-          menu_key: 'alpha-preview',
+          menu_key: 'alpha-primary',
           label: 'Alpha Primary Navigation',
           groups: [
             {
+              group_key: 'default',
               label: 'Main',
-              items: [{ item_key: 'alpha-home', label: 'Alpha Preview Home' }],
+              items: [
+                {
+                  item_key: 'alpha-home',
+                  label: 'Alpha Preview Home',
+                  route: { module_key: 'alpha.preview', page_key: 'home' },
+                },
+                {
+                  item_key: 'alpha-documents',
+                  label: 'Documents',
+                  route: { path: '/documents' },
+                },
+              ],
             },
-          ] as unknown as (typeof runtime.navigationMenus)[0]['groups'],
+          ],
           metadata: {},
         },
       ],
@@ -178,7 +190,8 @@ describe('AppSidebar', () => {
       </HydratedRuntimeProvider>,
     )
 
-    expect(screen.getByText('Main')).toBeInTheDocument()
     expect(screen.getByText('Alpha Preview Home')).toBeInTheDocument()
+    expect(screen.getByText('Documents')).toBeInTheDocument()
+    expect(screen.queryByText('Runtime fallback routes')).not.toBeInTheDocument()
   })
 })

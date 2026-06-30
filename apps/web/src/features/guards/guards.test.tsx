@@ -4,6 +4,7 @@ import { AuthGuard } from '@/features/guards/AuthGuard'
 import { GuestGuard } from '@/features/guards/GuestGuard'
 import { PermissionGuard } from '@/features/guards/PermissionGuard'
 import { WorkspaceGuard } from '@/features/guards/WorkspaceGuard'
+import { sanitizeRedirectTarget } from '@/features/auth/core/redirect-sanitize'
 import { useAuthStore } from '@/stores/auth-store'
 
 vi.mock('@tanstack/react-router', async () => {
@@ -13,15 +14,21 @@ vi.mock('@tanstack/react-router', async () => {
 
   return {
     ...actual,
-    Navigate: ({ to }: { to: string }) => <div>navigate:{to}</div>,
-    useRouterState: () => ({ location: { pathname: '/protected' } }),
+    Navigate: ({ to, search }: { to: string; search?: { redirect?: string } }) => (
+      <div>
+        navigate:{to}
+        {search?.redirect ? `:redirect=${search.redirect}` : ''}
+      </div>
+    ),
+    useRouterState: () => ({ location: { pathname: '/login' } }),
+    useNavigate: () => vi.fn(),
   }
 })
 
 describe('AuthGuard', () => {
   beforeEach(() => useAuthStore.getState().clearAuth())
 
-  it('redirects guests to login', () => {
+  it('redirects guests to login without redirect loop', () => {
     render(
       <AuthGuard>
         <div>Protected</div>
@@ -29,6 +36,31 @@ describe('AuthGuard', () => {
     )
 
     expect(screen.getByText('navigate:/login')).toBeInTheDocument()
+    expect(screen.queryByText(':redirect=/login')).not.toBeInTheDocument()
+  })
+
+  it('shows recovery UI when bootstrap failed', () => {
+    useAuthStore.getState().setAuthSession({
+      accessToken: 'token',
+      expiresAt: new Date(Date.now() + 60_000).toISOString(),
+      user: {
+        public_id: 'user-1',
+        display_name: 'User',
+        email: 'user@example.com',
+        status: 'active',
+      },
+    })
+    useAuthStore.getState().setPhase('error')
+    useAuthStore.getState().setErrorMessage('Session restore failed')
+
+    render(
+      <AuthGuard>
+        <div>Protected</div>
+      </AuthGuard>,
+    )
+
+    expect(screen.getByText('Unable to initialize HEOS')).toBeInTheDocument()
+    expect(screen.getByText('Session restore failed')).toBeInTheDocument()
   })
 
   it('renders children for authenticated users', () => {
@@ -115,6 +147,34 @@ describe('PermissionGuard', () => {
     expect(screen.getByText('navigate:/forbidden')).toBeInTheDocument()
   })
 
+  it('allows administration permissions required by admin routes', () => {
+    useAuthStore.getState().setAuthSession({
+      accessToken: 'token',
+      expiresAt: new Date(Date.now() + 60_000).toISOString(),
+      user: {
+        public_id: 'user-1',
+        display_name: 'User',
+        email: 'user@example.com',
+        status: 'active',
+      },
+    })
+    useAuthStore.getState().setPermissions([
+      'platform.read',
+      'permissions.read',
+      'runtime.read',
+      'applications.read',
+      'roles.read',
+    ])
+
+    render(
+      <PermissionGuard permission="platform.read">
+        <div>Admin console</div>
+      </PermissionGuard>,
+    )
+
+    expect(screen.getByText('Admin console')).toBeInTheDocument()
+  })
+
   it('allows granted permissions', () => {
     useAuthStore.getState().setAuthSession({
       accessToken: 'token',
@@ -153,7 +213,7 @@ describe('WorkspaceGuard', () => {
     expect(screen.getByText('Loading workspace…')).toBeInTheDocument()
   })
 
-  it('redirects when workspace scope is missing', () => {
+  it('shows recovery instead of redirecting to loading trap', () => {
     useAuthStore.getState().setPhase('ready')
 
     render(
@@ -162,7 +222,15 @@ describe('WorkspaceGuard', () => {
       </WorkspaceGuard>,
     )
 
-    expect(screen.getByText('navigate:/loading')).toBeInTheDocument()
+    expect(screen.getByText('Unable to initialize HEOS')).toBeInTheDocument()
+    expect(screen.queryByText('navigate:/loading')).not.toBeInTheDocument()
+  })
+})
+
+describe('redirect sanitization', () => {
+  it('does not create redirect=/login loops', () => {
+    expect(sanitizeRedirectTarget('/login')).toBeUndefined()
+    expect(sanitizeRedirectTarget('/forbidden')).toBeUndefined()
   })
 })
 

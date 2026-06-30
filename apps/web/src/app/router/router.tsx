@@ -6,6 +6,7 @@ import {
   redirect,
 } from '@tanstack/react-router'
 import { AppProviders } from '@/app/providers/AppProviders'
+import { sanitizeRedirectTarget } from '@/features/auth/core/redirect-sanitize'
 import {
   ApplicationLayout,
   AuthLayout,
@@ -74,7 +75,9 @@ const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/login',
   validateSearch: (search: Record<string, unknown>) => ({
-    redirect: typeof search.redirect === 'string' ? search.redirect : undefined,
+    redirect: sanitizeRedirectTarget(
+      typeof search.redirect === 'string' ? search.redirect : undefined,
+    ),
   }),
   component: () => (
     <GuestGuard>

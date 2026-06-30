@@ -3,12 +3,14 @@ import { useForm } from 'react-hook-form'
 import { Link, useNavigate, useSearch } from '@tanstack/react-router'
 import { ApiError } from '@/api/errors'
 import type { LoginRequest } from '@/api/types/auth'
+import { sanitizeRedirectTarget } from '@/features/auth/core/redirect-sanitize'
 import { performLogin } from '@/features/auth/services/session-service'
 import { Spinner } from '@/components/loading/Spinner'
 
 export function AuthLoginPage() {
   const navigate = useNavigate()
   const search = useSearch({ strict: false }) as { redirect?: string }
+  const redirectTarget = sanitizeRedirectTarget(search.redirect)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const {
     register,
@@ -27,7 +29,7 @@ export function AuthLoginPage() {
 
     try {
       await performLogin(values)
-      await navigate({ to: search.redirect ?? '/' })
+      await navigate({ to: redirectTarget ?? '/' })
     } catch (error) {
       setSubmitError(
         error instanceof ApiError

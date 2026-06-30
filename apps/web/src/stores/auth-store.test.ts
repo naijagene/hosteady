@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { useAuthStore } from '@/stores/auth-store'
 
 describe('auth store', () => {
@@ -84,6 +84,47 @@ describe('auth store', () => {
     expect(useAuthStore.getState().accessToken).toBeNull()
     expect(useAuthStore.getState().hydratedRuntime).toBeNull()
     expect(useAuthStore.getState().phase).toBe('idle')
+  })
+
+  it('clears expired sessions before restore', async () => {
+    useAuthStore.getState().setAuthSession({
+      accessToken: 'abc',
+      expiresAt: new Date(Date.now() - 60_000).toISOString(),
+      user: {
+        public_id: 'user-1',
+        display_name: 'Test User',
+        email: 'test@example.com',
+        status: 'active',
+      },
+    })
+
+    await useAuthStore.getState().restore()
+
+    expect(useAuthStore.getState().accessToken).toBeNull()
+    expect(useAuthStore.getState().phase).toBe('idle')
+  })
+
+  it('retryBootstrap resets error state before restoring', async () => {
+    useAuthStore.getState().setAuthSession({
+      accessToken: 'abc',
+      expiresAt: new Date(Date.now() + 60_000).toISOString(),
+      user: {
+        public_id: 'user-1',
+        display_name: 'Test User',
+        email: 'test@example.com',
+        status: 'active',
+      },
+    })
+    useAuthStore.getState().setPhase('error')
+    useAuthStore.getState().setErrorMessage('Failed')
+
+    const restoreSpy = vi.spyOn(useAuthStore.getState(), 'restore').mockResolvedValue()
+
+    await useAuthStore.getState().retryBootstrap()
+
+    expect(useAuthStore.getState().phase).toBe('idle')
+    expect(useAuthStore.getState().errorMessage).toBeNull()
+    expect(restoreSpy).toHaveBeenCalled()
   })
 
   it('persists only approved storage keys', () => {

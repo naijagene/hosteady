@@ -30,10 +30,10 @@ class M7PersonalizationExperienceTest extends TestCase
         $this->assertTrue((bool) config('heos.enterprise.personalization.enabled', true));
     }
 
-    public function test_permission_catalog_count_is_129(): void
+    public function test_permission_catalog_count_is_134(): void
     {
         $this->seedHeosPlatform();
-        $this->assertSame(129, Permission::query()->count());
+        $this->assertSame(134, Permission::query()->count());
     }
 
     public function test_module_doctor_includes_personalization_section(): void

@@ -8,6 +8,7 @@ import type {
   WorkspaceSummary,
 } from '@/api/types/auth'
 import type { HydratedRuntimeBundle } from '@/api/types/runtime'
+import { BootstrapError } from '@/features/auth/core/bootstrap-error'
 
 export type AuthBootstrapPhase =
   | 'idle'
@@ -65,6 +66,7 @@ interface AuthState {
   hasTenantScope: () => boolean
   hasPermission: (permission: string) => boolean
   restore: () => Promise<void>
+  retryBootstrap: () => Promise<void>
   logout: () => Promise<void>
   clearAuth: () => void
 }
@@ -172,13 +174,18 @@ export const useAuthStore = create<AuthState>()(
             )
             await restoreAuthenticatedSession()
           } catch (error) {
-            get().clearAuth()
+            const bootstrapError = BootstrapError.fromUnknown(error)
+
+            if (bootstrapError.kind === 'unauthorized') {
+              get().clearAuth()
+              return
+            }
+
             set({
               phase: 'error',
-              errorMessage:
-                error instanceof Error ? error.message : 'Session restore failed.',
+              loading: false,
+              errorMessage: bootstrapError.message,
             })
-            throw error
           } finally {
             set({ loading: false })
             restorePromise = null
@@ -186,6 +193,24 @@ export const useAuthStore = create<AuthState>()(
         })()
 
         return restorePromise
+      },
+      retryBootstrap: async () => {
+        restorePromise = null
+        const state = get()
+
+        if (!state.accessToken || state.isSessionExpired()) {
+          get().clearAuth()
+          return
+        }
+
+        set({
+          phase: 'idle',
+          loading: false,
+          errorMessage: null,
+          hydratedRuntime: null,
+        })
+
+        await get().restore()
       },
       logout: async () => {
         if (logoutPromise) {
@@ -199,18 +224,19 @@ export const useAuthStore = create<AuthState>()(
             )
             await performLogout()
           } finally {
-            get().clearAuth()
             logoutPromise = null
           }
         })()
 
         return logoutPromise
       },
-      clearAuth: () =>
+      clearAuth: () => {
+        restorePromise = null
         set({
           ...initialState,
           phase: 'idle',
-        }),
+        })
+      },
     }),
     {
       name: 'heos-auth',

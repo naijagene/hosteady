@@ -38,7 +38,7 @@ export function resolveNavigationItemRoute(
 
   const path = asString(route.path ?? route.href ?? metadata.path)
 
-  if (path.startsWith('/app/')) {
+  if (path.startsWith('/')) {
     return { to: path }
   }
 

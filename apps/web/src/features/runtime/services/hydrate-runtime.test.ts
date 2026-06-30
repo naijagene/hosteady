@@ -80,6 +80,7 @@ vi.mock('@/api/endpoints/runtime', () => ({
     runtime_context: { status: 'ok', missing_tables: [] },
   })),
   fetchApplicationNavigation: vi.fn(async () => []),
+  fetchNavigationDesignerRuntime: vi.fn(async () => ({ menus: [], warnings: [], source: 'navigation_designer' })),
 }))
 
 vi.mock('@/api/endpoints/notifications', () => ({
@@ -152,5 +153,36 @@ describe('hydrateRuntimeBundle', () => {
   it('merges warnings from theme and personalization', async () => {
     const runtime = await hydrateRuntimeBundle()
     expect(runtime.warnings).toEqual([])
+  })
+
+  it('propagates unauthorized errors from critical runtime endpoints', async () => {
+    const { fetchTenantContext } = await import('@/api/endpoints/tenant')
+    const { ApiError } = await import('@/api/errors')
+    vi.mocked(fetchTenantContext).mockRejectedValueOnce(
+      new ApiError('Unauthorized', { kind: 'unauthorized', status: 401 }),
+    )
+
+    await expect(hydrateRuntimeBundle()).rejects.toMatchObject({ kind: 'unauthorized' })
+  })
+
+  it('propagates forbidden errors from critical runtime endpoints', async () => {
+    const { fetchWorkspaceRuntime } = await import('@/api/endpoints/runtime')
+    const { ApiError } = await import('@/api/errors')
+    vi.mocked(fetchWorkspaceRuntime).mockRejectedValueOnce(
+      new ApiError('Forbidden', { kind: 'forbidden', status: 403 }),
+    )
+
+    await expect(hydrateRuntimeBundle()).rejects.toMatchObject({ kind: 'forbidden' })
+  })
+
+  it('allows optional runtime endpoints to fail with network errors', async () => {
+    const { fetchThemeRuntime } = await import('@/api/endpoints/runtime')
+    const { ApiError } = await import('@/api/errors')
+    vi.mocked(fetchThemeRuntime).mockRejectedValueOnce(
+      new ApiError('Network error', { kind: 'network', status: null }),
+    )
+
+    const runtime = await hydrateRuntimeBundle()
+    expect(runtime.themeRuntime).toBeNull()
   })
 })

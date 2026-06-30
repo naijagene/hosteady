@@ -1,4 +1,5 @@
 import type { HydratedRuntimeBundle } from '@/api/types/runtime'
+import { countNavigationItems } from '@/features/runtime/core/normalize-navigation'
 import { getApiBaseUrl } from '@/lib/env'
 import { buildTenantHeaders, TENANT_HEADERS } from '@/api/tenant-headers'
 import type {
@@ -29,6 +30,8 @@ export function buildAlphaRuntimeChecks(options: {
   const warnings = runtime?.warnings ?? []
   const missingTables = runtime?.personalizationRuntime?.runtime_context?.missing_tables ?? []
   const runtimeWarning = warnings.length > 0 || missingTables.length > 0
+  const backendNavigationCount = countNavigationItems(runtime?.navigationMenus ?? [])
+  const usingFallbackNavigation = Boolean(runtime) && backendNavigationCount === 0
 
   return [
     check('authenticated', 'Authenticated', authenticated),
@@ -39,8 +42,11 @@ export function buildAlphaRuntimeChecks(options: {
     check(
       'navigation',
       'Navigation loaded',
-      Boolean(runtime?.navigationMenus?.length),
-      `${runtime?.navigationMenus?.length ?? 0} menus`,
+      backendNavigationCount > 0 || usingFallbackNavigation,
+      usingFallbackNavigation
+        ? 'Backend metadata navigation empty; platform fallback routes available'
+        : `${backendNavigationCount} items from backend metadata`,
+      usingFallbackNavigation,
     ),
     check(
       'personalization',

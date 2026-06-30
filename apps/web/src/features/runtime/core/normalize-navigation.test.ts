@@ -10,7 +10,7 @@ import {
 describe('normalizeNavigationMenus', () => {
   it('wraps flat workspace navigation items in a default group', () => {
     const menus = normalizeNavigationMenus([
-      { item_key: 'demo-home', label: 'Demo Home', route: { path: '/demo' } },
+      { module_key: 'demo', label: 'Demo Home', route_name: 'heos.demo.home', path: '/demo' },
       { item_key: 'demo-settings', label: 'Demo Settings' },
     ])
 
@@ -59,6 +59,40 @@ describe('normalizeNavigationMenus', () => {
     expect(group?.group_key).toBe(DEFAULT_NAVIGATION_GROUP_KEY)
     expect(group?.label).toBe(DEFAULT_NAVIGATION_GROUP_LABEL)
     expect(group?.items[0]?.item_key).toBe('home')
+  })
+
+  it('normalizes alpha application navigation payload', () => {
+    const menus = normalizeNavigationMenus([
+      {
+        menu_key: 'alpha-primary',
+        label: 'Alpha Primary Navigation',
+        groups: [
+          {
+            group_key: 'default',
+            label: 'Alpha Primary Navigation',
+            items: [
+              {
+                item_key: 'alpha-home',
+                label: 'Alpha Preview Home',
+                route: { module_key: 'alpha.preview', page_key: 'home', path: '/app/alpha.preview/home' },
+              },
+              {
+                item_key: 'alpha-documents',
+                label: 'Documents',
+                route: { path: '/documents' },
+              },
+            ],
+          },
+        ],
+        metadata: { source: 'navigation_designer' },
+      },
+    ])
+
+    expect(menus[0]?.groups[0]?.items).toHaveLength(2)
+    expect(menus[0]?.groups[0]?.items[0]?.route).toMatchObject({
+      module_key: 'alpha.preview',
+      page_key: 'home',
+    })
   })
 })
 

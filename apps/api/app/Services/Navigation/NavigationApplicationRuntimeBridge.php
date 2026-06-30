@@ -51,10 +51,15 @@ class NavigationApplicationRuntimeBridge
             }
 
             $item = NavigationItem::fromArray($itemData);
-            $itemsByKey[$item->publicId !== '' ? $item->publicId : $item->itemKey] = $item;
+            $itemsByKey[$item->publicId !== '' ? $item->publicId : $item->itemKey] = [
+                'item' => $item,
+                'raw' => $itemData,
+            ];
         }
 
-        foreach ($itemsByKey as $item) {
+        foreach ($itemsByKey as $entry) {
+            $item = $entry['item'];
+            $itemData = $entry['raw'];
             if ($item->parentItemPublicId !== null && $item->parentItemPublicId !== '') {
                 continue;
             }
@@ -65,13 +70,16 @@ class NavigationApplicationRuntimeBridge
                     label: $item->label,
                     sortOrder: $item->sortOrder,
                     items: array_map(
-                        fn (NavigationItem $child) => $this->toApplicationItem($child)->toArray(),
-                        $this->childrenOf($item, $itemsByKey),
+                        fn (array $childEntry) => $this->toApplicationItem($childEntry['item'], $childEntry['raw'])->toArray(),
+                        array_values(array_filter(
+                            $itemsByKey,
+                            fn (array $candidate) => $this->isChildOf($candidate['item'], $item, $itemsByKey),
+                        )),
                     ),
                     metadata: $item->metadata,
                 );
             } else {
-                $rootItems[] = $this->toApplicationItem($item);
+                $rootItems[] = $this->toApplicationItem($item, $itemData);
             }
         }
 
@@ -101,25 +109,18 @@ class NavigationApplicationRuntimeBridge
     }
 
     /**
-     * @param  array<string, NavigationItem>  $itemsByKey
-     * @return list<NavigationItem>
+     * @param  array<string, array{item: NavigationItem, raw: array<string, mixed>}>  $itemsByKey
      */
-    private function childrenOf(NavigationItem $parent, array $itemsByKey): array
+    private function isChildOf(NavigationItem $item, NavigationItem $parent, array $itemsByKey): bool
     {
-        $children = [];
-
-        foreach ($itemsByKey as $item) {
-            if ($item->parentItemPublicId === $parent->publicId || $item->parentItemPublicId === $parent->itemKey) {
-                $children[] = $item;
-            }
-        }
-
-        usort($children, fn (NavigationItem $a, NavigationItem $b) => $a->sortOrder <=> $b->sortOrder);
-
-        return $children;
+        return $item->parentItemPublicId === $parent->publicId
+            || $item->parentItemPublicId === $parent->itemKey;
     }
 
-    private function toApplicationItem(NavigationItem $item): ApplicationNavigationItem
+    /**
+     * @param  array<string, mixed>  $itemData
+     */
+    private function toApplicationItem(NavigationItem $item, array $itemData = []): ApplicationNavigationItem
     {
         $route = [];
 
@@ -130,6 +131,21 @@ class NavigationApplicationRuntimeBridge
                 moduleKey: $item->moduleKey,
                 parameters: [],
             ))->toArray();
+        }
+
+        $resolvedPage = is_array($itemData['resolved_page'] ?? null) ? $itemData['resolved_page'] : null;
+        if ($resolvedPage !== null) {
+            if (isset($resolvedPage['module_key']) && is_string($resolvedPage['module_key'])) {
+                $route['module_key'] = $resolvedPage['module_key'];
+            }
+
+            if (isset($resolvedPage['page_key']) && is_string($resolvedPage['page_key'])) {
+                $route['page_key'] = $resolvedPage['page_key'];
+            }
+
+            if (isset($resolvedPage['route_path']) && is_string($resolvedPage['route_path']) && $resolvedPage['route_path'] !== '') {
+                $route['path'] = $resolvedPage['route_path'];
+            }
         }
 
         $requiredPermission = $item->permissions[0] ?? null;

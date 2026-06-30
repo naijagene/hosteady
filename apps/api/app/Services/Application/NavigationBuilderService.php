@@ -6,6 +6,8 @@ use App\Models\ApplicationRuntime\ApplicationNavigation;
 use App\Models\ApplicationRuntime\ApplicationRuntimeApp;
 use App\Modules\Sdk\Application\Data\NavigationMenu;
 use App\Modules\Sdk\Application\Enums\ApplicationStatus;
+use App\Modules\Sdk\Navigation\Enums\NavigationDefinitionStatus;
+use App\Services\Navigation\NavigationRegistryService;
 use App\Support\Tenant\TenantContext;
 
 class NavigationBuilderService
@@ -14,6 +16,7 @@ class NavigationBuilderService
         private readonly ApplicationPermissionBridge $permissionBridge,
         private readonly ApplicationDiscoveryService $discoveryService,
         private readonly \App\Services\Navigation\NavigationApplicationRuntimeBridge $navigationApplicationRuntimeBridge,
+        private readonly NavigationRegistryService $navigationRegistryService,
     ) {
     }
 
@@ -34,8 +37,33 @@ class NavigationBuilderService
             $menus[] = $menu;
         }
 
-        foreach ($this->navigationApplicationRuntimeBridge->buildMenusForRuntime($context) as $menu) {
-            $menus[] = $menu;
+        $seenNavigationKeys = [];
+
+        foreach ($this->navigationRegistryService->list($context->organization->id, $context->workspace?->id) as $definition) {
+            if ($definition->status !== NavigationDefinitionStatus::Published->value) {
+                continue;
+            }
+
+            $dedupeKey = ($definition->moduleKey ?? '').':'.$definition->navigationKey;
+            if (isset($seenNavigationKeys[$dedupeKey])) {
+                continue;
+            }
+
+            $seenNavigationKeys[$dedupeKey] = true;
+
+            foreach ($this->navigationApplicationRuntimeBridge->buildMenusForRuntime(
+                $context,
+                $definition->navigationKey,
+                $definition->moduleKey !== '' ? $definition->moduleKey : null,
+            ) as $menu) {
+                $menus[] = $menu;
+            }
+        }
+
+        if ($menus === []) {
+            foreach ($this->navigationApplicationRuntimeBridge->buildMenusForRuntime($context) as $menu) {
+                $menus[] = $menu;
+            }
         }
 
         return $this->permissionBridge->filterMenus($context, $menus);

@@ -45,6 +45,26 @@ describe('navigation-route', () => {
     expect(resolveNavigationItemRoute(item)).toEqual({ to: '/app/core/settings' })
   })
 
+  it('supports feature routes outside /app', () => {
+    const item: NavigationItemResponse = {
+      item_key: 'documents',
+      label: 'Documents',
+      route: { path: '/documents' },
+    }
+
+    expect(resolveNavigationItemRoute(item)).toEqual({ to: '/documents' })
+  })
+
+  it('resolves alpha metadata home route', () => {
+    expect(
+      resolveNavigationItemHref({
+        item_key: 'alpha-home',
+        label: 'Alpha Preview Home',
+        route: { module_key: 'alpha.preview', page_key: 'home' },
+      }),
+    ).toBe('/app/alpha.preview/home')
+  })
+
   it('returns null when route metadata missing', () => {
     expect(
       resolveNavigationItemHref({

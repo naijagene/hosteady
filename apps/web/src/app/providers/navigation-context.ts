@@ -4,6 +4,9 @@ import type { NavigationMenuResponse } from '@/api/types/runtime'
 
 export interface NavigationContextValue {
   menus: NavigationMenuResponse[]
+  backendMenus: NavigationMenuResponse[]
+  fallbackMenus: NavigationMenuResponse[]
+  usingFallbackNavigation: boolean
   navigation: NavigationMenuResponse
   overrides: ApiRecord
   shortcuts: ApiRecord[]
@@ -11,6 +14,9 @@ export interface NavigationContextValue {
 
 export const defaultNavigationContext: NavigationContextValue = {
   menus: [],
+  backendMenus: [],
+  fallbackMenus: [],
+  usingFallbackNavigation: false,
   navigation: {
     menu_key: 'main',
     label: 'Main',

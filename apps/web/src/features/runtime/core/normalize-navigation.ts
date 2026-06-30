@@ -27,33 +27,84 @@ function isNavigationItemRecord(record: ApiRecord): boolean {
   return readString(record, 'item_key', 'itemKey') !== null
 }
 
+function slugify(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+function buildItemRoute(record: ApiRecord): NavigationItemResponse['route'] | undefined {
+  if (isRecord(record.route)) {
+    return record.route as NavigationItemResponse['route']
+  }
+
+  if (typeof record.route === 'string' && record.route.trim() !== '') {
+    return { path: record.route }
+  }
+
+  const path = readString(record, 'path', 'href', 'route_path', 'routePath')
+  if (path) {
+    return { path }
+  }
+
+  const moduleKey = readString(record, 'module_key', 'moduleKey')
+  const pageKey = readString(record, 'page_key', 'pageKey')
+  if (moduleKey && pageKey) {
+    return { module_key: moduleKey, page_key: pageKey }
+  }
+
+  const metadata = isRecord(record.metadata) ? record.metadata : null
+  const metadataModuleKey = metadata ? readString(metadata, 'module_key', 'moduleKey') : null
+  const metadataPageKey = metadata ? readString(metadata, 'page_key', 'pageKey') : null
+  if (metadataModuleKey && metadataPageKey) {
+    return { module_key: metadataModuleKey, page_key: metadataPageKey }
+  }
+
+  return undefined
+}
+
 export function normalizeNavigationItem(raw: unknown): NavigationItemResponse | null {
   if (!isRecord(raw)) {
     return null
   }
 
-  const itemKey = readString(raw, 'item_key', 'itemKey')
-  const label = readString(raw, 'label')
+  const itemKey =
+    readString(raw, 'item_key', 'itemKey', 'key', 'route_name', 'routeName') ??
+    (readString(raw, 'label') ? slugify(readString(raw, 'label') as string) : null)
+  const label = readString(raw, 'label', 'name', 'title')
 
   if (!itemKey || !label) {
     return null
+  }
+
+  const metadata = isRecord(raw.metadata) ? { ...raw.metadata } : {}
+  const icon = readString(raw, 'icon')
+  if (icon && metadata.icon === undefined) {
+    metadata.icon = icon
+  }
+
+  const moduleKey = readString(raw, 'module_key', 'moduleKey')
+  if (moduleKey && metadata.module_key === undefined) {
+    metadata.module_key = moduleKey
   }
 
   return {
     item_key: itemKey,
     label,
     item_type: readString(raw, 'item_type', 'itemType') ?? undefined,
-    route: isRecord(raw.route) || typeof raw.route === 'string' ? (raw.route as NavigationItemResponse['route']) : undefined,
+    route: buildItemRoute(raw),
     badge: typeof raw.badge === 'string' ? raw.badge : null,
     sort_order: typeof raw.sort_order === 'number' ? raw.sort_order : undefined,
     required_permission: readString(raw, 'required_permission', 'requiredPermission'),
-    metadata: isRecord(raw.metadata) ? raw.metadata : undefined,
+    metadata: Object.keys(metadata).length > 0 ? metadata : undefined,
   }
 }
 
 export function normalizeNavigationGroup(
   raw: unknown,
-  _index = 0,
+  index = 0,
   fallbackLabel = DEFAULT_NAVIGATION_GROUP_LABEL,
 ): NavigationGroupResponse | null {
   if (!isRecord(raw)) {
@@ -79,7 +130,11 @@ export function normalizeNavigationGroup(
         .filter((item): item is NavigationItemResponse => item !== null)
     : []
 
-  const groupKey = readString(raw, 'group_key', 'groupKey') ?? DEFAULT_NAVIGATION_GROUP_KEY
+  const groupMetadata = isRecord(raw.metadata) ? raw.metadata : null
+  const groupKey =
+    readString(raw, 'group_key', 'groupKey') ??
+    (groupMetadata ? readString(groupMetadata, 'group_key', 'groupKey') : null) ??
+    (index === 0 ? DEFAULT_NAVIGATION_GROUP_KEY : `${DEFAULT_NAVIGATION_GROUP_KEY}-${index}`)
   const label = readString(raw, 'label') ?? fallbackLabel
 
   return {
@@ -230,4 +285,15 @@ export function collectNavigationGroups(
       .map((group, index) => normalizeNavigationGroup(group, index))
       .filter((group): group is NavigationGroupResponse => group !== null),
   )
+}
+
+export function countNavigationItems(menus: NavigationMenuResponse[]): number {
+  return collectNavigationGroups(menus).reduce(
+    (total, group) => total + (group.items?.length ?? 0),
+    0,
+  )
+}
+
+export function hasNavigationItems(menus: NavigationMenuResponse[]): boolean {
+  return countNavigationItems(menus) > 0
 }

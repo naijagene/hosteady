@@ -1,6 +1,6 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios'
 import { getApiBaseUrl } from '@/lib/env'
-import { useAuthStore } from '@/stores/auth-store'
+import { resetSession } from '@/features/auth/core/session-reset'
 import {
   attachRequestInterceptors,
   attachResponseErrorInterceptor,
@@ -53,5 +53,5 @@ export function isRequestCancelled(error: unknown): boolean {
 }
 
 export function resetAuthFromStore(): void {
-  useAuthStore.getState().logout()
+  void resetSession()
 }

@@ -75,7 +75,7 @@ function NavigationGroupSection({
 }
 
 export function AppSidebar() {
-  const { menus, overrides } = useNavigationContext()
+  const { menus, overrides, usingFallbackNavigation } = useNavigationContext()
   const collapsed = overrides.collapsed === true
 
   const groups = useMemo(() => collectNavigationGroups(menus), [menus])
@@ -91,6 +91,9 @@ export function AppSidebar() {
         <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           Navigation
         </p>
+        {usingFallbackNavigation ? (
+          <p className="mt-1 text-[11px] text-muted-foreground">Runtime fallback routes</p>
+        ) : null}
       </div>
       <nav aria-label="Primary navigation" className="flex flex-1 flex-col gap-3 overflow-auto p-2">
         {groups.length === 0 ? (

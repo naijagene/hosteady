@@ -24,15 +24,11 @@ import { AlphaReadinessWidget } from '@/features/alpha'
 import { useHydratedRuntime } from '@/features/runtime/use-hydrated-runtime'
 import { OrganizationSelectPage } from '@/features/auth/pages/OrganizationSelectPage'
 
+import { countNavigationItems } from '@/features/runtime/core/normalize-navigation'
 import type { HydratedRuntimeBundle } from '@/api/types/runtime'
 
-function countNavigationItems(menus: HydratedRuntimeBundle['navigationMenus']): number {
-  return menus.reduce((total, menu) => {
-    return (
-      total +
-      menu.groups.reduce((groupTotal, group) => groupTotal + group.items.length, 0)
-    )
-  }, 0)
+function countNavigationItemsFromRuntime(menus: HydratedRuntimeBundle['navigationMenus']): number {
+  return countNavigationItems(menus)
 }
 
 function mapPersonalizationItems(items: Array<Record<string, unknown>>) {
@@ -73,7 +69,7 @@ export function ShellHomePage() {
   const applicationCount =
     runtime?.workspaceRuntime?.active_applications?.length ?? 0
   const pagesCount = pagesQuery.data?.length ?? 0
-  const navigationCount = countNavigationItems(runtime?.navigationMenus ?? [])
+  const navigationCount = countNavigationItemsFromRuntime(runtime?.navigationMenus ?? [])
   const assignedTasksCount = assignedTasksQuery.data?.length ?? 0
   const pendingApprovalsCount = pendingApprovalsQuery.data?.length ?? 0
   const failedWorkflowCount = failedWorkflowsQuery.data?.length ?? 0

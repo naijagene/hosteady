@@ -2,13 +2,18 @@
 
 namespace Tests\Feature\Seeders;
 
+use App\Models\NavigationDefinition;
+use App\Models\NavigationItem;
 use App\Models\Organization;
+use App\Models\OrganizationMembership;
 use App\Models\PersonalizationPreference;
 use App\Models\PersonalizationProfile;
 use App\Models\ThemeDefinition;
 use App\Models\UiPage;
 use App\Models\User;
 use App\Models\Workspace;
+use App\Services\Authorization\TenantAuthorizationService;
+use App\Support\Tenant\TenantContext;
 use Database\Seeders\AlphaDemoSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
@@ -81,6 +86,69 @@ class AlphaDemoSeederTest extends TestCase
                 0,
                 UiPage::query()->where('module_key', AlphaDemoSeeder::MODULE_KEY)->count(),
             );
+        }
+    }
+
+    public function test_seeds_published_alpha_navigation_and_ui_page_route(): void
+    {
+        $this->seed(AlphaDemoSeeder::class);
+
+        if (! Schema::hasTable('navigation_definitions')) {
+            $this->markTestSkipped('navigation_definitions table missing.');
+        }
+
+        $definition = NavigationDefinition::query()
+            ->where('module_key', AlphaDemoSeeder::MODULE_KEY)
+            ->where('navigation_key', AlphaDemoSeeder::NAVIGATION_KEY)
+            ->first();
+
+        $this->assertNotNull($definition);
+        $this->assertSame('published', $definition->status);
+        $this->assertGreaterThanOrEqual(
+            10,
+            NavigationItem::query()->where('navigation_definition_id', $definition->id)->count(),
+        );
+
+        if (Schema::hasTable('ui_pages')) {
+            $page = UiPage::query()
+                ->where('module_key', AlphaDemoSeeder::MODULE_KEY)
+                ->where('page_key', AlphaDemoSeeder::PAGE_KEY)
+                ->first();
+
+            $this->assertNotNull($page);
+            $this->assertSame(
+                '/app/'.AlphaDemoSeeder::MODULE_KEY.'/'.AlphaDemoSeeder::PAGE_KEY,
+                $page->route_path,
+            );
+        }
+    }
+
+    public function test_administrator_receives_admin_console_permissions(): void
+    {
+        $this->seed(AlphaDemoSeeder::class);
+
+        $user = User::query()->where('email', 'bigjyde@alpha.demo.local')->firstOrFail();
+        $organization = Organization::query()->where('slug', AlphaDemoSeeder::ORGANIZATION_SLUG)->firstOrFail();
+        $membership = OrganizationMembership::query()
+            ->where('organization_id', $organization->id)
+            ->where('user_id', $user->id)
+            ->firstOrFail();
+        $workspace = Workspace::query()
+            ->where('organization_id', $organization->id)
+            ->where('slug', AlphaDemoSeeder::WORKSPACE_SLUG)
+            ->firstOrFail();
+
+        $context = TenantContext::fromModels($user, $organization, $membership, $workspace);
+        $permissions = app(TenantAuthorizationService::class)->permissionsFor($context);
+
+        foreach ([
+            'platform.read',
+            'permissions.read',
+            'runtime.read',
+            'applications.read',
+            'roles.read',
+        ] as $permission) {
+            $this->assertContains($permission, $permissions, "Missing permission [{$permission}] for Alpha administrator.");
         }
     }
 

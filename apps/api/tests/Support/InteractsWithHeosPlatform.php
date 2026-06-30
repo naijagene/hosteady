@@ -21,6 +21,11 @@ trait InteractsWithHeosPlatform
             'organization.read',
             'organization.update',
             'organization.archive',
+            'platform.read',
+            'permissions.read',
+            'runtime.read',
+            'settings.read',
+            'diagnostics.read',
             'members.read',
             'members.invite',
             'members.update',
@@ -168,7 +173,7 @@ trait InteractsWithHeosPlatform
 
     protected function assertPermissionCatalogComplete(): void
     {
-        $this->assertSame(129, Permission::query()->count());
+        $this->assertSame(134, Permission::query()->count());
     }
 
     /**

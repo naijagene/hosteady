@@ -38,3 +38,25 @@ export async function fetchApplicationNavigation(): Promise<NavigationMenuRespon
 
   return unwrapData(response.data)
 }
+
+export interface NavigationDesignerRuntimeResponse {
+  menus: NavigationMenuResponse[]
+  warnings?: string[]
+  source?: string
+}
+
+export async function fetchNavigationDesignerRuntime(options?: {
+  navigationKey?: string
+  moduleKey?: string
+}): Promise<NavigationDesignerRuntimeResponse> {
+  const response = await apiClient.get<
+    NavigationDesignerRuntimeResponse | { data: NavigationDesignerRuntimeResponse }
+  >('tenant/navigation-designer/runtime', {
+    params: {
+      navigation_key: options?.navigationKey,
+      module_key: options?.moduleKey,
+    },
+  })
+
+  return unwrapData(response.data)
+}

@@ -6,6 +6,7 @@ import {
 } from '@/api/endpoints/auth'
 import { fetchTenantContext } from '@/api/endpoints/tenant'
 import type { LoginRequest, OrganizationSummary } from '@/api/types/auth'
+import { resetSession } from '@/features/auth/core/session-reset'
 import { hydrateRuntimeBundle } from '@/features/runtime/services/hydrate-runtime'
 import { useAuthStore } from '@/stores/auth-store'
 
@@ -185,5 +186,7 @@ export async function performLogout(): Promise<void> {
     }
   } catch {
     // Logout should remain idempotent even if the token is already invalid.
+  } finally {
+    await resetSession()
   }
 }

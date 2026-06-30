@@ -108,6 +108,19 @@ describe('alpha health core', () => {
     expect(checks.find((item) => item.key === 'navigation')?.status).toBe('ready')
   })
 
+  it('marks navigation warning when only fallback routes would be used', () => {
+    const checks = buildAlphaRuntimeChecks({
+      authenticated: true,
+      organizationPublicId: 'org-1',
+      workspacePublicId: 'ws-1',
+      runtime: { ...runtime, navigationMenus: [] },
+    })
+
+    const navigation = checks.find((item) => item.key === 'navigation')
+    expect(navigation?.status).toBe('warning')
+    expect(deriveAlphaHealthStatus(checks)).toBe('warning')
+  })
+
   it('marks unavailable when runtime missing', () => {
     const checks = buildAlphaRuntimeChecks({
       authenticated: false,

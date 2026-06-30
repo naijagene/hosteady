@@ -12,6 +12,7 @@ use App\Models\Organization;
 use App\Models\OrganizationApplication;
 use App\Models\OrganizationMemberRole;
 use App\Models\OrganizationMembership;
+use App\Models\Permission;
 use App\Models\Role;
 use App\Models\UiPage;
 use App\Models\User;
@@ -118,6 +119,8 @@ class AlphaDemoSeeder extends Seeder
 
             $this->ensureRoleAssignment($organization, $managerMembership, self::DEMO_USERS['manager']['role_key'], $adminUser->id);
             $this->ensureRoleAssignment($organization, $viewerMembership, self::DEMO_USERS['viewer']['role_key'], $adminUser->id);
+
+            $this->ensureAdminConsolePermissions($organization, $adminUser->id);
 
             $context = TenantContext::fromModels($adminUser, $organization, $adminMembership, $workspace);
             app()->instance(TenantContext::class, $context);
@@ -316,6 +319,66 @@ class AlphaDemoSeeder extends Seeder
         ]);
     }
 
+    /**
+     * @var list<string>
+     */
+    private const ADMIN_CONSOLE_PERMISSIONS = [
+        'platform.read',
+        'permissions.read',
+        'runtime.read',
+        'settings.read',
+        'diagnostics.read',
+    ];
+
+    private function ensureAdminConsolePermissions(Organization $organization, int $actorUserId): void
+    {
+        if (! Schema::hasTable('permissions') || ! Schema::hasTable('role_permissions')) {
+            return;
+        }
+
+        $permissions = Permission::query()
+            ->whereIn('key', self::ADMIN_CONSOLE_PERMISSIONS)
+            ->get()
+            ->keyBy('key');
+
+        if ($permissions->count() !== count(self::ADMIN_CONSOLE_PERMISSIONS)) {
+            $this->warnSection(
+                'admin permissions',
+                'Administration permission catalog is incomplete — run PermissionCatalogSeeder.',
+            );
+
+            return;
+        }
+
+        foreach (['owner', 'administrator', 'manager'] as $roleKey) {
+            $role = Role::query()
+                ->where('organization_id', $organization->id)
+                ->where('key', $roleKey)
+                ->where('is_system', true)
+                ->whereNull('deleted_at')
+                ->first();
+
+            if ($role === null) {
+                continue;
+            }
+
+            foreach (self::ADMIN_CONSOLE_PERMISSIONS as $permissionKey) {
+                $permission = $permissions->get($permissionKey);
+
+                if ($permission === null) {
+                    continue;
+                }
+
+                DB::table('role_permissions')->insertOrIgnore([
+                    'role_id' => $role->id,
+                    'permission_id' => $permission->id,
+                    'created_at' => now(),
+                    'created_by_user_id' => $actorUserId,
+                ]);
+            }
+        }
+    }
+
     private function ensureSampleApplication(TenantContext $context): void
     {
         $application = Application::query()->where('key', self::SAMPLE_APPLICATION_KEY)->firstOrFail();
@@ -445,20 +508,16 @@ class AlphaDemoSeeder extends Seeder
                 ]);
             }
 
-            $items = $service->listItems($context, $definition->publicId);
-            if ($items === []) {
-                $service->createItemForDefinition($context, $definition->publicId, [
-                    'item_key' => 'alpha-home',
-                    'label' => 'Alpha Preview Home',
-                    'item_type' => 'route',
-                    'route_path' => '/pages/alpha-preview-home',
-                ]);
-                $service->createItemForDefinition($context, $definition->publicId, [
-                    'item_key' => 'alpha-dashboard',
-                    'label' => 'Alpha Dashboard',
-                    'item_type' => 'route',
-                    'route_path' => '/dashboards/'.self::MODULE_KEY.'/'.self::DASHBOARD_KEY,
-                ]);
+            $existingKeys = collect($service->listItems($context, $definition->publicId))
+                ->map(fn ($item) => $item->itemKey)
+                ->all();
+
+            foreach ($this->alphaNavigationItems() as $item) {
+                if (in_array($item['item_key'], $existingKeys, true)) {
+                    continue;
+                }
+
+                $service->createItemForDefinition($context, $definition->publicId, $item);
             }
 
             if ($definition->status !== 'published') {
@@ -466,6 +525,118 @@ class AlphaDemoSeeder extends Seeder
                 $service->publishDefinition($context, $definition->publicId);
             }
         });
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private function alphaNavigationItems(): array
+    {
+        $module = self::MODULE_KEY;
+
+        return [
+            [
+                'item_key' => 'alpha-home',
+                'label' => 'Alpha Preview Home',
+                'item_type' => 'route',
+                'module_key' => $module,
+                'route' => '/app/'.$module.'/'.self::PAGE_KEY,
+                'sort_order' => 10,
+                'metadata' => ['page_key' => self::PAGE_KEY, 'icon' => 'home', 'group_key' => 'default'],
+            ],
+            [
+                'item_key' => 'alpha-form',
+                'label' => 'Sample Form',
+                'item_type' => 'route',
+                'module_key' => $module,
+                'route' => '/forms/'.$module.'/'.self::FORM_KEY,
+                'sort_order' => 20,
+                'metadata' => ['icon' => 'form', 'group_key' => 'default'],
+            ],
+            [
+                'item_key' => 'alpha-table',
+                'label' => 'Sample Table',
+                'item_type' => 'route',
+                'module_key' => $module,
+                'route' => '/tables/'.$module.'/'.self::TABLE_KEY,
+                'sort_order' => 30,
+                'metadata' => ['icon' => 'table', 'group_key' => 'default'],
+            ],
+            [
+                'item_key' => 'alpha-dashboard',
+                'label' => 'Sample Dashboard',
+                'item_type' => 'route',
+                'module_key' => $module,
+                'route' => '/dashboards/'.$module.'/'.self::DASHBOARD_KEY,
+                'sort_order' => 40,
+                'metadata' => ['icon' => 'dashboard', 'group_key' => 'default'],
+            ],
+            [
+                'item_key' => 'alpha-report',
+                'label' => 'Sample Report',
+                'item_type' => 'route',
+                'module_key' => $module,
+                'route' => '/reports/'.$module.'/'.self::REPORT_KEY,
+                'sort_order' => 50,
+                'metadata' => ['icon' => 'report', 'group_key' => 'default'],
+            ],
+            [
+                'item_key' => 'alpha-documents',
+                'label' => 'Documents',
+                'item_type' => 'route',
+                'route' => '/documents',
+                'sort_order' => 60,
+                'metadata' => ['icon' => 'document', 'group_key' => 'default'],
+            ],
+            [
+                'item_key' => 'alpha-workflows',
+                'label' => 'Workflows',
+                'item_type' => 'route',
+                'route' => '/workflows',
+                'sort_order' => 70,
+                'metadata' => ['icon' => 'workflow', 'group_key' => 'default'],
+            ],
+            [
+                'item_key' => 'alpha-notifications',
+                'label' => 'Notifications',
+                'item_type' => 'route',
+                'route' => '/notifications',
+                'sort_order' => 80,
+                'metadata' => ['icon' => 'notification', 'group_key' => 'default'],
+            ],
+            [
+                'item_key' => 'alpha-activity',
+                'label' => 'Activity',
+                'item_type' => 'route',
+                'route' => '/activity',
+                'sort_order' => 90,
+                'metadata' => ['icon' => 'activity', 'group_key' => 'default'],
+            ],
+            [
+                'item_key' => 'alpha-admin',
+                'label' => 'Administration',
+                'item_type' => 'route',
+                'route' => '/admin',
+                'sort_order' => 100,
+                'metadata' => ['icon' => 'admin', 'group_key' => 'default'],
+            ],
+            [
+                'item_key' => 'alpha-health',
+                'label' => 'Alpha Health',
+                'item_type' => 'route',
+                'route' => '/alpha/health',
+                'sort_order' => 110,
+                'metadata' => ['icon' => 'health', 'group_key' => 'default'],
+            ],
+            [
+                'item_key' => 'alpha-search',
+                'label' => 'Search',
+                'item_type' => 'route',
+                'route' => '/search',
+                'sort_order' => 120,
+                'metadata' => ['icon' => 'search', 'group_key' => 'default'],
+            ],
+        ];
     }
 
     private function ensureUiMetadata(TenantContext $context): void
@@ -494,7 +665,7 @@ class AlphaDemoSeeder extends Seeder
                 'page_key' => self::PAGE_KEY,
                 'name' => 'Alpha Preview Home',
                 'page_type' => 'module_home',
-                'route_path' => '/pages/alpha-preview-home',
+                'route_path' => '/app/'.self::MODULE_KEY.'/'.self::PAGE_KEY,
                 'layout' => ['layout_type' => 'single_column'],
                 'components' => [[
                     'component_key' => 'platform_overview',

@@ -1,11 +1,26 @@
-import { beforeEach, describe, expect, it } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NavigationProvider } from '@/app/providers/NavigationProvider'
 import { ThemeProvider } from '@/app/providers/ThemeProvider'
 import { useNavigationContext } from '@/app/providers/use-navigation-context'
+import { useMultiTabSessionSync } from '@/app/providers/use-multi-tab-session-sync'
+import { HEOS_AUTH_STORAGE_KEY } from '@/features/auth/core/session-reset'
 import { HydratedRuntimeProvider } from '@/features/runtime/HydratedRuntimeProvider'
 import type { HydratedRuntimeBundle } from '@/api/types/runtime'
 import { useAuthStore } from '@/stores/auth-store'
+
+const navigate = vi.fn()
+
+vi.mock('@tanstack/react-router', async () => {
+  const actual = await vi.importActual<typeof import('@tanstack/react-router')>(
+    '@tanstack/react-router',
+  )
+
+  return {
+    ...actual,
+    useNavigate: () => navigate,
+  }
+})
 
 const runtime: HydratedRuntimeBundle = {
   tenantContext: null,
@@ -82,6 +97,11 @@ function NavigationProbe() {
   return <div>{value.menus[0]?.groups[0]?.label ?? 'empty'}</div>
 }
 
+function MultiTabProbe() {
+  useMultiTabSessionSync()
+  return null
+}
+
 describe('NavigationProvider', () => {
   beforeEach(() => {
     useAuthStore.getState().clearAuth()
@@ -98,6 +118,31 @@ describe('NavigationProvider', () => {
     )
 
     expect(screen.getByText('Platform')).toBeInTheDocument()
+  })
+
+  it('exposes fallback platform routes when backend navigation is empty', () => {
+    useAuthStore.getState().setHydratedRuntime({ ...runtime, navigationMenus: [] })
+
+    function FallbackProbe() {
+      const value = useNavigationContext()
+      return (
+        <div>
+          <span data-testid="fallback-flag">{value.usingFallbackNavigation ? 'yes' : 'no'}</span>
+          <span>{value.menus[0]?.label}</span>
+        </div>
+      )
+    }
+
+    render(
+      <HydratedRuntimeProvider>
+        <NavigationProvider>
+          <FallbackProbe />
+        </NavigationProvider>
+      </HydratedRuntimeProvider>,
+    )
+
+    expect(screen.getByTestId('fallback-flag')).toHaveTextContent('yes')
+    expect(screen.getByText('Platform (runtime fallback)')).toBeInTheDocument()
   })
 })
 
@@ -120,6 +165,37 @@ describe('ThemeProvider', () => {
       expect(
         document.documentElement.style.getPropertyValue('--heos-theme-color-primary'),
       ).toBe('#654321')
+    })
+  })
+})
+
+describe('useMultiTabSessionSync', () => {
+  beforeEach(() => {
+    useAuthStore.getState().clearAuth()
+    navigate.mockReset()
+  })
+
+  it('clears session when auth storage is removed in another tab', () => {
+    useAuthStore.getState().setAuthSession({
+      accessToken: 'token',
+      expiresAt: new Date(Date.now() + 60_000).toISOString(),
+      user: {
+        public_id: 'user-1',
+        display_name: 'User',
+        email: 'user@example.com',
+        status: 'active',
+      },
+    })
+
+    render(<MultiTabProbe />)
+
+    fireEvent(window, new StorageEvent('storage', { key: HEOS_AUTH_STORAGE_KEY, newValue: null }))
+
+    expect(useAuthStore.getState().accessToken).toBeNull()
+    expect(navigate).toHaveBeenCalledWith({
+      to: '/login',
+      replace: true,
+      search: { redirect: undefined },
     })
   })
 })
