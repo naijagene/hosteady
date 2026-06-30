@@ -111,7 +111,7 @@ const loadingRoute = createRoute({
 
 const appRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/',
+  id: 'app',
   component: () => (
     <AuthGuard>
       <WorkspaceGuard>
