@@ -63,6 +63,16 @@ const platformRoutes: SearchResult[] = [
     source: 'local',
     permission: 'activity.read',
   },
+  {
+    id: 'route-admin',
+    title: 'Administration',
+    description: 'Platform settings and diagnostics',
+    type: 'page',
+    icon: 'setting',
+    route: '/admin',
+    source: 'local',
+    permission: 'platform.read',
+  },
 ]
 
 function searchLocalCollection(results: SearchResult[], query: string): SearchResult[] {

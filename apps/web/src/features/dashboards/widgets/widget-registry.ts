@@ -22,6 +22,12 @@ import {
   AuditSummaryDashboardWidget,
   SystemHistoryDashboardWidget,
 } from '@/features/activity/widgets/activity-dashboard-widgets'
+import {
+  PlatformStatusDashboardWidget,
+  RuntimeStatusDashboardWidget,
+  FeatureSummaryDashboardWidget,
+  OrganizationSummaryDashboardWidget,
+} from '@/features/admin/widgets/admin-dashboard-widgets'
 import type { DashboardWidgetComponentProps } from './types'
 
 type WidgetComponent = ComponentType<DashboardWidgetComponentProps>
@@ -54,6 +60,10 @@ register('activity', ActivityWidget)
 register('activity_feed', ActivityFeedDashboardWidget)
 register('audit_summary', AuditSummaryDashboardWidget)
 register('system_history', SystemHistoryDashboardWidget)
+register('platform_status', PlatformStatusDashboardWidget)
+register('runtime_status', RuntimeStatusDashboardWidget)
+register('feature_summary', FeatureSummaryDashboardWidget)
+register('organization_summary', OrganizationSummaryDashboardWidget)
 register('quick_actions', QuickActionsWidget)
 register('recent_items', RecentItemsWidget)
 register('favorites', FavoritesWidget)

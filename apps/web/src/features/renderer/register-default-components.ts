@@ -14,6 +14,7 @@ import { TableBindingRenderer } from './bindings/TableBindingRenderer'
 import { DashboardBindingRenderer } from './bindings/DashboardBindingRenderer'
 import { ReportBindingRenderer } from './bindings/ReportBindingRenderer'
 import { ActivityBindingRenderer } from './bindings/ActivityBindingRenderer'
+import { AdministrationBindingRenderer } from './bindings/AdministrationBindingRenderer'
 
 let initialized = false
 
@@ -34,6 +35,7 @@ export function registerDefaultComponents(): void {
   register('approval_queue', WorkflowQueuePlaceholder)
   register('notification_list', StaticTextComponent)
   register('activity_feed', ActivityBindingRenderer)
+  register('platform_overview', AdministrationBindingRenderer)
   register('navigation_menu', StaticTextComponent)
   register('form', FormBindingRenderer)
   register('table', TableBindingRenderer)

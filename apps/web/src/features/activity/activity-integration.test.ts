@@ -35,10 +35,12 @@ describe('dashboard widget registration', () => {
 })
 
 describe('renderer registration', () => {
-  it('registers activity_feed component binding', async () => {
+  it('registers activity_feed in component registry', async () => {
+    const { clearRegistryForTests, has } = await import('@/features/renderer/core/ComponentRegistry')
+    clearRegistryForTests()
     const { registerDefaultComponents } = await import('@/features/renderer/register-default-components')
-    const { has } = await import('@/features/renderer/core/ComponentRegistry')
     registerDefaultComponents()
     expect(has('activity_feed')).toBe(true)
-  })
+    expect(has('platform_overview')).toBe(true)
+  }, 15000)
 })

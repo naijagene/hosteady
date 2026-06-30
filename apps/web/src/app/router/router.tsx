@@ -44,6 +44,19 @@ import {
   AuditViewerPage,
   EntityHistoryPage,
 } from '@/features/activity'
+import {
+  AdminAboutPage,
+  AdminApplicationsPage,
+  AdminOrganizationPage,
+  AdminOverviewPage,
+  AdminPermissionsPage,
+  AdminPlatformPage,
+  AdminProfilePage,
+  AdminRolesPage,
+  AdminRuntimePage,
+  AdminWorkspacesPage,
+} from '@/features/admin'
+import { AlphaHealthPage } from '@/features/alpha'
 import { MetadataPage } from '@/features/renderer/pages/MetadataPage'
 import { ShellHomePage } from '@/features/shell/pages/ShellHomePage'
 import { SettingsPage } from '@/features/shell/pages/SettingsPage'
@@ -228,6 +241,104 @@ const entityHistoryRoute = createRoute({
   component: EntityHistoryPage,
 })
 
+const adminRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: '/admin',
+  component: () => (
+    <PermissionGuard permission="platform.read">
+      <AdminOverviewPage />
+    </PermissionGuard>
+  ),
+})
+
+const adminProfileRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: '/admin/profile',
+  component: AdminProfilePage,
+})
+
+const adminOrganizationRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: '/admin/organization',
+  component: () => (
+    <PermissionGuard permission="organization.read">
+      <AdminOrganizationPage />
+    </PermissionGuard>
+  ),
+})
+
+const adminWorkspacesRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: '/admin/workspaces',
+  component: () => (
+    <PermissionGuard permission="workspace.read">
+      <AdminWorkspacesPage />
+    </PermissionGuard>
+  ),
+})
+
+const adminApplicationsRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: '/admin/applications',
+  component: () => (
+    <PermissionGuard permission="applications.read">
+      <AdminApplicationsPage />
+    </PermissionGuard>
+  ),
+})
+
+const adminRolesRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: '/admin/roles',
+  component: () => (
+    <PermissionGuard permission="roles.read">
+      <AdminRolesPage />
+    </PermissionGuard>
+  ),
+})
+
+const adminPermissionsRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: '/admin/permissions',
+  component: () => (
+    <PermissionGuard permission="permissions.read">
+      <AdminPermissionsPage />
+    </PermissionGuard>
+  ),
+})
+
+const adminPlatformRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: '/admin/platform',
+  component: () => (
+    <PermissionGuard permission="platform.read">
+      <AdminPlatformPage />
+    </PermissionGuard>
+  ),
+})
+
+const adminRuntimeRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: '/admin/runtime',
+  component: () => (
+    <PermissionGuard permission="runtime.read">
+      <AdminRuntimePage />
+    </PermissionGuard>
+  ),
+})
+
+const adminAboutRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: '/admin/about',
+  component: AdminAboutPage,
+})
+
+const alphaHealthRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: '/alpha/health',
+  component: AlphaHealthPage,
+})
+
 const routeTree = rootRoute.addChildren([
   loginRoute,
   logoutRoute,
@@ -254,6 +365,17 @@ const routeTree = rootRoute.addChildren([
     activityRoute,
     auditRoute,
     entityHistoryRoute,
+    adminRoute,
+    adminProfileRoute,
+    adminOrganizationRoute,
+    adminWorkspacesRoute,
+    adminApplicationsRoute,
+    adminRolesRoute,
+    adminPermissionsRoute,
+    adminPlatformRoute,
+    adminRuntimeRoute,
+    adminAboutRoute,
+    alphaHealthRoute,
   ]),
 ])
 

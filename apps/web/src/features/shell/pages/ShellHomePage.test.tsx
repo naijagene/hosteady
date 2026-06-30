@@ -7,6 +7,14 @@ import { useAuthStore } from '@/stores/auth-store'
 import type { HydratedRuntimeBundle } from '@/api/types/runtime'
 import * as uiApi from '@/api/endpoints/ui'
 
+vi.mock('@tanstack/react-router', async () => {
+  const actual = await vi.importActual<typeof import('@tanstack/react-router')>('@tanstack/react-router')
+  return {
+    ...actual,
+    Link: ({ children, to }: { children: React.ReactNode; to: string }) => <a href={to}>{children}</a>,
+  }
+})
+
 const runtime: HydratedRuntimeBundle = {
   tenantContext: null,
   workspaceRuntime: {
@@ -141,7 +149,7 @@ describe('ShellHomePage', () => {
 
     expect(screen.getByText(/Welcome back, Ada/)).toBeInTheDocument()
     expect(screen.getByText('Acme Org')).toBeInTheDocument()
-    expect(screen.getByText('Main Workspace')).toBeInTheDocument()
+    expect(screen.getByTestId('workspace-status-widget')).toHaveTextContent('Main Workspace')
     expect(screen.getByText('Hydrated runtime loaded')).toBeInTheDocument()
     expect(screen.getByText('personalization-runtime')).toBeInTheDocument()
     expect(screen.getByLabelText('Applications metric')).toHaveTextContent('2')

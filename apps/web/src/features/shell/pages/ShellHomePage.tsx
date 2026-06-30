@@ -14,6 +14,13 @@ import {
   useHomePersonalization,
 } from '@/features/dashboards'
 import { ActivityFeedWidget, AuditSummaryWidget, SystemHistoryWidget } from '@/features/activity'
+import {
+  PlatformStatusWidget,
+  RuntimeStatusWidget,
+  FeatureSummaryWidget,
+  WorkspaceStatusWidget,
+} from '@/features/admin'
+import { AlphaReadinessWidget } from '@/features/alpha'
 import { useHydratedRuntime } from '@/features/runtime/use-hydrated-runtime'
 import { OrganizationSelectPage } from '@/features/auth/pages/OrganizationSelectPage'
 
@@ -108,6 +115,15 @@ export function ShellHomePage() {
         />
         <DashboardMetricCard title="Permissions" value={String(runtime?.permissions.length ?? 0)} />
       </div>
+
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <PlatformStatusWidget />
+        <WorkspaceStatusWidget />
+        <RuntimeStatusWidget />
+        <FeatureSummaryWidget />
+      </div>
+
+      <AlphaReadinessWidget />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         <section className="rounded-lg border border-border bg-card p-4">

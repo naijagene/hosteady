@@ -14,6 +14,7 @@ import { DocumentBindingRenderer } from '../bindings/DocumentBindingRenderer'
 import { WorkflowBindingRenderer } from '../bindings/WorkflowBindingRenderer'
 import { NotificationBindingRenderer } from '../bindings/NotificationBindingRenderer'
 import { ActivityBindingRenderer } from '../bindings/ActivityBindingRenderer'
+import { AdministrationBindingRenderer } from '../bindings/AdministrationBindingRenderer'
 
 interface ComponentRendererProps {
   component: UiComponent | null | undefined
@@ -69,6 +70,13 @@ function BindingRenderer({ component }: { component: UiComponent }) {
     return <ActivityBindingRenderer component={component} />
   }
 
+  if (
+    isBindingType(binding, 'platform_overview', 'runtime_summary', 'organization_summary', 'permission_browser', 'role_browser') ||
+    component.component_type === 'platform_overview'
+  ) {
+    return <AdministrationBindingRenderer component={component} />
+  }
+
   return <UnknownComponent component={component} />
 }
 
@@ -114,6 +122,11 @@ export function ComponentRenderer({ component }: ComponentRendererProps) {
     'activity',
     'audit',
     'history',
+    'platform_overview',
+    'runtime_summary',
+    'organization_summary',
+    'permission_browser',
+    'role_browser',
   ])
 
   const usesBinding =
