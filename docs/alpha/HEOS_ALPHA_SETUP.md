@@ -66,7 +66,30 @@ These warnings are informational for local dev. Review output; do not ignore cra
 | Email | `test@example.com` |
 | Name | `Test User` |
 
-**Note:** Seeders do **not** create a full demo organization/workspace graph. You may need to provision org/workspace via API or internal tooling before runtime hydration succeeds. See [Demo seed data review](./HEOS_ALPHA_OVERVIEW.md) and smoke test section 5.
+### Alpha demo tenant (operational validation)
+
+After platform bootstrap, seed the validation tenant:
+
+```powershell
+# Set in apps/api/.env (never commit real passwords):
+# ALPHA_DEMO_PASSWORD=your-local-placeholder
+
+php artisan db:seed --class=AlphaDemoSeeder
+```
+
+Creates **Moondew Group** / **Production** workspace with users:
+
+| Role | Email placeholder |
+|------|-------------------|
+| Administrator (BIGJYDE) | `bigjyde@alpha.demo.local` |
+| Manager | `manager@alpha.demo.local` |
+| Viewer | `viewer@alpha.demo.local` |
+
+Password = value of `ALPHA_DEMO_PASSWORD` in your local `.env`.
+
+See [HEOS_ALPHA_PROVISIONING_PLAN.md](./HEOS_ALPHA_PROVISIONING_PLAN.md) for metadata gaps.
+
+**Note:** Default `DatabaseSeeder` still creates catalog + test user only. Use `AlphaDemoSeeder` for full Alpha validation tenant.
 
 ---
 

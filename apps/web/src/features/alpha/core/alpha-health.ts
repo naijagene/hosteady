@@ -52,24 +52,36 @@ export function buildAlphaRuntimeChecks(options: {
     check(
       'permissions',
       'Permissions loaded',
-      Boolean(runtime?.permissions?.length),
+      Array.isArray(runtime?.permissions),
       `${runtime?.permissions?.length ?? 0} permissions`,
     ),
   ]
 }
 
-export function buildAlphaFeatureChecks(): AlphaFeatureCheck[] {
+export function buildAlphaFeatureChecks(
+  runtime: HydratedRuntimeBundle | null | undefined,
+  permissions: string[],
+): AlphaFeatureCheck[] {
+  const hasRuntime = Boolean(runtime)
+  const allow = (required?: string | string[]) => {
+    if (!hasRuntime) return false
+    if (permissions.length === 0) return true
+    const keys = Array.isArray(required) ? required : required ? [required] : []
+    if (keys.length === 0) return true
+    return keys.some((key) => permissions.includes(key))
+  }
+
   return [
-    { key: 'admin', label: 'Administration console', available: true },
-    { key: 'forms', label: 'Dynamic forms', available: true },
-    { key: 'tables', label: 'Dynamic tables', available: true },
-    { key: 'dashboards', label: 'Dashboards', available: true },
-    { key: 'reports', label: 'Reports', available: true },
-    { key: 'documents', label: 'Document manager', available: true },
-    { key: 'workflows', label: 'Workflows', available: true },
-    { key: 'notifications', label: 'Notifications', available: true },
-    { key: 'search', label: 'Global search', available: true },
-    { key: 'activity', label: 'Activity & audit', available: true },
+    { key: 'admin', label: 'Administration console', available: allow(['platform.read', 'settings.read']) },
+    { key: 'forms', label: 'Dynamic forms', available: allow(['forms.read', 'ui.render']) },
+    { key: 'tables', label: 'Dynamic tables', available: allow(['tables.read', 'ui.render']) },
+    { key: 'dashboards', label: 'Dashboards', available: allow(['dashboards.read', 'ui.render']) },
+    { key: 'reports', label: 'Reports', available: allow(['reports.read', 'ui.render']) },
+    { key: 'documents', label: 'Document manager', available: allow(['documents.read']) },
+    { key: 'workflows', label: 'Workflows', available: allow(['workflow.read', 'task.read']) },
+    { key: 'notifications', label: 'Notifications', available: allow(['notifications.read']) },
+    { key: 'search', label: 'Global search', available: allow(['search.read']) },
+    { key: 'activity', label: 'Activity & audit', available: allow(['audit.read']) },
   ]
 }
 
@@ -112,13 +124,22 @@ export function buildAlphaHealthSnapshot(options: {
   runtime: HydratedRuntimeBundle | null | undefined
   runtimeEndpointStatus?: string | null
 }): AlphaHealthSnapshot {
-  const runtime = buildAlphaRuntimeChecks(options)
-  const features = buildAlphaFeatureChecks()
+  const runtimeChecks = buildAlphaRuntimeChecks(options)
+  const permissions = options.runtime?.permissions ?? []
+  const features = buildAlphaFeatureChecks(options.runtime, permissions)
   const api = buildAlphaApiCheck(options)
 
+  const featureUnavailable = features.some((feature) => !feature.available)
+  const status = deriveAlphaHealthStatus([
+    ...runtimeChecks,
+    ...(featureUnavailable
+      ? [{ key: 'features', label: 'Feature availability', status: 'warning' as const, detail: 'Some features unavailable for current permissions' }]
+      : []),
+  ])
+
   return {
-    status: deriveAlphaHealthStatus(runtime),
-    runtime,
+    status,
+    runtime: runtimeChecks,
     features,
     api,
   }

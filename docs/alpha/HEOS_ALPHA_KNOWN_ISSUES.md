@@ -15,13 +15,14 @@ Tracked placeholders and deviations from P1 milestones. Use during smoke test an
 | ALPHA-009 | Export | Some export flows are placeholders | Export may not produce files | Manual export via API if needed | P1-Beta |
 | ALPHA-010 | Activity | Some activity/history endpoints use fallbacks | Sparse timeline on fresh DB | Seed audit events or perform actions | Alpha demo seed |
 | ALPHA-011 | Notifications | Some notification endpoints fallback to unified feed | Reduced channel granularity | Use notification center list | Alpha stabilization |
-| ALPHA-012 | Demo data | Seeders create catalog + test user only; no full org graph | Runtime may be empty after seed | Manual org/workspace provisioning | Alpha demo seeder (planned) |
+| ALPHA-012 | Demo data | `AlphaDemoSeeder` provisions org/users/app; metadata/workflow/document gaps remain | Partial demo coverage | Run seeder + manual steps in provisioning plan | Alpha stabilization |
 | ALPHA-013 | Admin health | API latency on admin/alpha pages is placeholder | No live ping metrics | Manual network tab check | P1-Beta |
 | ALPHA-014 | Roles | Role member counts in admin are placeholders | Counts not authoritative | Treat as browse-only | P1-Beta |
 | ALPHA-015 | Search | Search index depends on backend data | Empty results on fresh DB | Create records/workflows first | Alpha demo seed |
 | ALPHA-016 | Personalization | Optional personalization tables may be missing locally | Doctor warnings; degraded personalization | Run migrations; review doctor | Alpha setup |
-| ALPHA-017 | P1-013 | Administration console pending commit | Git tree dirty before Alpha tag | Commit before tag (see release checklist) | Pre-Alpha tag |
+| ALPHA-017 | Seeder gaps | Document/workflow/notification not fully auto-seeded | Manual demo setup required | Follow HEOS_ALPHA_PROVISIONING_PLAN.md | ALPHA-001 sprint |
 | ALPHA-018 | Bundle size | Frontend production bundle >500 kB | Slower first load | Accept for Alpha; split later | P1-Beta |
+| ALPHA-019 | Alpha health | Feature flags derived from permissions; may show warning for viewer | Accurate, not faked | Expected for read-only roles | Alpha validation |
 
 ---
 

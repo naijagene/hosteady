@@ -388,3 +388,70 @@ Manual validation checklist for Platform Alpha. Record **Pass / Fail** and notes
 2. ___
 
 **Sign-off:** _______________
+
+---
+
+## Alpha operational checklist (ALPHA-001)
+
+Use after `AlphaDemoSeeder` provisioning with **Moondew Group / Production / BIGJYDE**.
+
+### A. Backend
+
+| Step | Command / action | Pass / Fail | Notes |
+|------|------------------|-------------|-------|
+| Fresh migrate | `php artisan migrate:fresh --seed` | ☐ | |
+| Alpha demo seed | `php artisan db:seed --class=AlphaDemoSeeder` | ☐ | Requires `ALPHA_DEMO_PASSWORD` |
+| Doctor | `php artisan heos:doctor` | ☐ | Warnings documented |
+| Tests | `php artisan test` | ☐ | |
+
+### B. Frontend
+
+| Step | Command / action | Pass / Fail | Notes |
+|------|------------------|-------------|-------|
+| Validate | `npm run validate` | ☐ | |
+| Dev server | `npm run dev` | ☐ | |
+| Login | `bigjyde@alpha.demo.local` + local password | ☐ | |
+| Runtime shell | Home loads after org/workspace select | ☐ | |
+| Alpha health | `/alpha/health` reflects real status | ☐ | |
+
+### C. Runtime
+
+| Check | Expected | Pass / Fail | Notes |
+|-------|----------|-------------|-------|
+| Organization loaded | Moondew Group | ☐ | |
+| Workspace loaded | Production | ☐ | |
+| Application loaded | Hosteady Platform Preview | ☐ | |
+| Navigation loaded | Menus or documented empty | ☐ | |
+| Theme loaded | Source reported | ☐ | |
+| Personalization loaded | Home sections or empty state | ☐ | |
+| Permissions loaded | Administrator scope | ☐ | |
+
+### D. Metadata rendering
+
+| Surface | Pass / Fail | Notes |
+|---------|-------------|-------|
+| Metadata page renders | ☐ | |
+| Form renders | ☐ | |
+| Table renders | ☐ | |
+| Dashboard renders | ☐ | |
+| Report renders | ☐ | |
+| Document manager opens | ☐ | |
+| Workflow inbox opens | ☐ | |
+| Notification center opens | ☐ | |
+| Search opens | ☐ | |
+| Activity center opens | ☐ | |
+| Admin console opens | ☐ | |
+
+### E. Permissions
+
+| User | Expected | Pass / Fail | Notes |
+|------|----------|-------------|-------|
+| BIGJYDE (admin) | Full platform access | ☐ | |
+| Alpha Manager | Allowed features only | ☐ | |
+| Alpha Viewer | Read-only features | ☐ | |
+
+### F. Stabilization notes
+
+| Issue | Severity | Owner | Decision |
+|-------|----------|-------|------------|
+| | | | |

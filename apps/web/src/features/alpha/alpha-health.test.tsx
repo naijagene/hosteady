@@ -101,7 +101,14 @@ describe('alpha health core', () => {
   })
 
   it('builds feature checks for all platform modules', () => {
-    expect(buildAlphaFeatureChecks()).toHaveLength(10)
+    const features = buildAlphaFeatureChecks({ ...runtime, permissions: [] }, [])
+    expect(features).toHaveLength(10)
+    expect(features.every((feature) => feature.available)).toBe(true)
+  })
+
+  it('marks features unavailable without runtime', () => {
+    const features = buildAlphaFeatureChecks(null, [])
+    expect(features.every((feature) => !feature.available)).toBe(true)
   })
 
   it('builds api diagnostics snapshot', () => {
@@ -121,12 +128,13 @@ describe('alpha health core', () => {
       authenticated: true,
       organizationPublicId: 'org-1',
       workspacePublicId: 'ws-1',
-      runtime,
+      runtime: { ...runtime, permissions: [] },
       runtimeEndpointStatus: 'hydrated',
     })
     expect(snapshot.status).toBe('ready')
     expect(snapshot.runtime).toHaveLength(8)
     expect(snapshot.features).toHaveLength(10)
+    expect(snapshot.features.every((feature) => feature.available)).toBe(true)
   })
 })
 
