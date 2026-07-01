@@ -207,7 +207,7 @@ class M7NavigationMenuDesignerTest extends TestCase
     public function test_permission_catalog_has_navigation_permissions(): void
     {
         $this->seedHeosPlatform();
-        $this->assertSame(134, Permission::query()->count());
+        $this->assertSame(139, Permission::query()->count());
         foreach (['navigation.read', 'navigation.manage', 'navigation.publish', 'navigation.personalize'] as $key) {
             $this->assertNotNull(Permission::query()->where('key', $key)->first());
         }

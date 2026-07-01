@@ -16,7 +16,7 @@ class HeosSyncModulesCommandTest extends TestCase
         $exitCode = Artisan::call('heos:sync-modules');
 
         $this->assertSame(0, $exitCode);
-        $this->assertSame(3, Application::query()->count());
+        $this->assertSame(4, Application::query()->count());
     }
 
     public function test_dry_run_writes_nothing(): void

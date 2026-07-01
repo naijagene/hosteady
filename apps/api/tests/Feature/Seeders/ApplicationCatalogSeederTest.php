@@ -13,11 +13,11 @@ class ApplicationCatalogSeederTest extends TestCase
     use InteractsWithHeosPlatform;
     use RefreshDatabase;
 
-    public function test_seeds_three_catalog_applications(): void
+    public function test_seeds_four_catalog_applications(): void
     {
         $this->seedApplicationCatalog();
 
-        $this->assertSame(3, Application::query()->count());
+        $this->assertSame(4, Application::query()->count());
     }
 
     public function test_seeds_expected_application_keys(): void
@@ -26,7 +26,7 @@ class ApplicationCatalogSeederTest extends TestCase
 
         $keys = Application::query()->pluck('key')->all();
 
-        $this->assertEqualsCanonicalizing(['core', 'demo', 'workspace'], $keys);
+        $this->assertEqualsCanonicalizing(['core', 'demo', 'hosteady-admin', 'workspace'], $keys);
     }
 
     public function test_marks_core_and_non_core_applications_correctly(): void
@@ -55,7 +55,7 @@ class ApplicationCatalogSeederTest extends TestCase
         $this->seed(ApplicationCatalogSeeder::class);
         $this->seed(ApplicationCatalogSeeder::class);
 
-        $this->assertSame(3, Application::query()->count());
+        $this->assertSame(4, Application::query()->count());
 
         $core = Application::query()->where('key', 'core')->firstOrFail();
 

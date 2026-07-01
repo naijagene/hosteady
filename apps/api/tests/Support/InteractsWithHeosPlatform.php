@@ -152,6 +152,11 @@ trait InteractsWithHeosPlatform
             'ui.manage',
             'ui.render',
             'ui.personalize',
+            'hosteady.admin.read',
+            'hosteady.admin.manage',
+            'hosteady.admin.configure',
+            'hosteady.admin.reports.read',
+            'hosteady.admin.audit.read',
         ];
     }
 
@@ -173,7 +178,7 @@ trait InteractsWithHeosPlatform
 
     protected function assertPermissionCatalogComplete(): void
     {
-        $this->assertSame(134, Permission::query()->count());
+        $this->assertSame(139, Permission::query()->count());
     }
 
     /**

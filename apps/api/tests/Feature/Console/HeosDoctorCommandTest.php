@@ -44,7 +44,7 @@ class HeosDoctorCommandTest extends TestCase
         $this->assertArrayHasKey('validation', $payload);
         $this->assertArrayHasKey('dependency_graph', $payload);
         $this->assertArrayHasKey('health', $payload);
-        $this->assertSame(3, $payload['platform_summary']['module_count']);
+        $this->assertSame(4, $payload['platform_summary']['module_count']);
     }
 
     public function test_doctor_returns_error_exit_code_when_validation_fails(): void
@@ -70,7 +70,7 @@ class HeosDoctorCommandTest extends TestCase
 
         $this->assertFileExists($outputDirectory.'/index.md');
         $this->assertFileExists($outputDirectory.'/demo.md');
-        $this->assertSame(4, count($result->generatedFiles));
+        $this->assertSame(5, count($result->generatedFiles));
     }
 
     public function test_doctor_records_audit_event(): void

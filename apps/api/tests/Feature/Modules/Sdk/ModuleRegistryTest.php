@@ -139,7 +139,8 @@ class ModuleRegistryTest extends TestCase
         $this->assertNotNull($registry->findByKey('core'));
         $this->assertNotNull($registry->findByKey('workspace'));
         $this->assertNotNull($registry->findByKey('demo'));
-        $this->assertCount(3, $registry->all());
+        $this->assertNotNull($registry->findByKey('hosteady-admin'));
+        $this->assertCount(4, $registry->all());
     }
 }
 

@@ -22,9 +22,9 @@ class ModuleSyncSeederCompatibilityTest extends TestCase
     {
         $this->seedApplicationCatalog();
 
-        $this->assertSame(3, Application::query()->count());
+        $this->assertSame(4, Application::query()->count());
         $this->assertEqualsCanonicalizing(
-            ['core', 'demo', 'workspace'],
+            ['core', 'demo', 'hosteady-admin', 'workspace'],
             Application::query()->pluck('key')->all(),
         );
     }
@@ -69,7 +69,7 @@ class ModuleSyncSeederCompatibilityTest extends TestCase
     {
         $this->seed(PlatformBootstrapSeeder::class);
 
-        $this->assertSame(3, Application::query()->count());
+        $this->assertSame(4, Application::query()->count());
         $this->assertPermissionCatalogComplete();
 
         $demo = Application::query()->where('key', 'demo')->firstOrFail();

@@ -26,7 +26,7 @@ class ApplicationCatalogTest extends TestCase
             ->getJson('/api/v1/tenant/applications/catalog');
 
         $response->assertOk()
-            ->assertJsonCount(3, 'data');
+            ->assertJsonCount(4, 'data');
 
         $this->assertResponseUsesPublicIdsOnly($response->json());
     }

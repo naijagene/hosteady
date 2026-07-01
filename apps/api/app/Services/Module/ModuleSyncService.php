@@ -228,7 +228,8 @@ class ModuleSyncService implements ModuleSyncPort
     ): ?Application {
         $manifest = $module->manifest();
         $payload = $this->applicationPayload($module);
-        $existing = Application::query()->where('key', $manifest->key)->first();
+        $existing = Application::query()->where('key', $manifest->key)->first()
+            ?? Application::query()->where('module_uuid', $manifest->moduleUuid)->first();
 
         if ($existing === null) {
             $changes[] = new ModuleSyncChange('application', 'created', $manifest->key, $manifest->key);
@@ -246,12 +247,32 @@ class ModuleSyncService implements ModuleSyncPort
             ]);
         }
 
+        $keyChanged = $existing->key !== $manifest->key;
+
+        if ($keyChanged) {
+            $changes[] = new ModuleSyncChange(
+                'application',
+                'updated',
+                $existing->key,
+                $manifest->key,
+            );
+            $updated++;
+
+            if (! $dryRun) {
+                $existing->key = $manifest->key;
+            }
+        }
+
         if ($this->applicationNeedsUpdate($existing, $payload)) {
             $changes[] = new ModuleSyncChange('application', 'updated', $manifest->key, $manifest->key);
             $updated++;
 
             if (! $dryRun) {
                 $existing->update($payload);
+            }
+        } elseif ($keyChanged) {
+            if (! $dryRun) {
+                $existing->save();
             }
         } else {
             $changes[] = new ModuleSyncChange('application', 'unchanged', $manifest->key, $manifest->key);

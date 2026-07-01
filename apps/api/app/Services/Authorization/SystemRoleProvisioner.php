@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class SystemRoleProvisioner
 {
-    private const EXPECTED_PERMISSION_COUNT = 134;
+    private const EXPECTED_PERMISSION_COUNT = 139;
 
     /**
      * @var array<string, string>
@@ -124,6 +124,7 @@ class SystemRoleProvisioner
         'personalization.read',
         'ui.read',
         'ui.render',
+        'hosteady.admin.read',
     ];
 
     /**
@@ -140,6 +141,8 @@ class SystemRoleProvisioner
         'business.modules.develop',
         'rules.admin',
         'integrations.admin',
+        'hosteady.admin.manage',
+        'hosteady.admin.configure',
     ];
 
     /**

@@ -16,6 +16,7 @@ class HeosModulesCommandTest extends TestCase
         $this->assertStringContainsString('core', $output);
         $this->assertStringContainsString('workspace', $output);
         $this->assertStringContainsString('demo', $output);
+        $this->assertStringContainsString('hosteady-admin', $output);
     }
 
     public function test_modules_json_output_contains_module_keys(): void
@@ -24,11 +25,11 @@ class HeosModulesCommandTest extends TestCase
 
         $payload = json_decode(Artisan::output(), true);
 
-        $this->assertSame(3, $payload['module_count']);
-        $this->assertCount(3, $payload['modules']);
+        $this->assertSame(4, $payload['module_count']);
+        $this->assertCount(4, $payload['modules']);
 
         $keys = array_column($payload['modules'], 'module_key');
-        $this->assertEqualsCanonicalizing(['core', 'demo', 'workspace'], $keys);
+        $this->assertEqualsCanonicalizing(['core', 'demo', 'hosteady-admin', 'workspace'], $keys);
     }
 
     public function test_modules_json_with_details_includes_support_flags(): void
@@ -50,7 +51,7 @@ class HeosModulesCommandTest extends TestCase
         $payload = json_decode(Artisan::output(), true);
 
         $this->assertArrayHasKey('statistics', $payload);
-        $this->assertSame(3, $payload['statistics']['module_count']);
+        $this->assertSame(4, $payload['statistics']['module_count']);
     }
 
     public function test_modules_details_option_prints_statistics(): void
@@ -60,7 +61,7 @@ class HeosModulesCommandTest extends TestCase
         $output = Artisan::output();
 
         $this->assertStringContainsString('Statistics', $output);
-        $this->assertStringContainsString('Modules: 3', $output);
+        $this->assertStringContainsString('Modules: 4', $output);
     }
 
     public function test_modules_displays_uuid_version_and_dependencies(): void

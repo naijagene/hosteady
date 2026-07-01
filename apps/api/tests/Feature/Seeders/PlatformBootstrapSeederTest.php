@@ -20,14 +20,14 @@ class PlatformBootstrapSeederTest extends TestCase
     {
         $this->seed(PlatformBootstrapSeeder::class);
 
-        $this->assertSame(134, Permission::query()->count());
+        $this->assertSame(139, Permission::query()->count());
     }
 
     public function test_seeds_application_catalog(): void
     {
         $this->seed(PlatformBootstrapSeeder::class);
 
-        $this->assertSame(3, Application::query()->count());
+        $this->assertSame(4, Application::query()->count());
     }
 
     public function test_does_not_create_organizations(): void

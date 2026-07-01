@@ -29,9 +29,9 @@ class ApplicationRegistryServiceTest extends TestCase
 
         $catalog = $this->service->listPlatformCatalog();
 
-        $this->assertCount(3, $catalog);
+        $this->assertCount(4, $catalog);
         $this->assertSame(
-            ['Demo Application', 'HEOS Core', 'Workspace Module'],
+            ['Demo Application', 'HEOS Core', 'Hosteady Admin', 'Workspace Module'],
             $catalog->pluck('name')->all(),
         );
     }
@@ -42,9 +42,9 @@ class ApplicationRegistryServiceTest extends TestCase
 
         $available = $this->service->listAvailableForInstall();
 
-        $this->assertCount(3, $available);
+        $this->assertCount(4, $available);
         $this->assertEqualsCanonicalizing(
-            ['core', 'demo', 'workspace'],
+            ['core', 'demo', 'hosteady-admin', 'workspace'],
             $available->pluck('key')->all(),
         );
     }

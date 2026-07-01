@@ -5,6 +5,7 @@ return [
         App\Modules\Core\CoreModuleServiceProvider::class,
         App\Modules\Workspace\WorkspaceModuleServiceProvider::class,
         App\Modules\Demo\DemoModuleServiceProvider::class,
+        App\Modules\HosteadyAdmin\HosteadyAdminModuleServiceProvider::class,
     ],
 
     'sync' => [

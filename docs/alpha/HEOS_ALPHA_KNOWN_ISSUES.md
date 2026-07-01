@@ -23,6 +23,9 @@ Tracked placeholders and deviations from P1 milestones. Use during smoke test an
 | ALPHA-017 | Workflow | Workflow/task/approval samples not auto-seeded | Manual inbox demo setup | Follow provisioning plan §16–18 | Alpha A1 |
 | ALPHA-018 | Bundle size | Frontend production bundle >500 kB | Slower first load | Accept for Alpha; split later | P1-Beta |
 | ALPHA-019 | Alpha health | Feature flags derived from permissions; may show warning for viewer | Accurate, not faked | Expected for read-only roles | Alpha validation |
+| ALPHA-020 | RC validation | Full logged-in browser walkthrough requires human QA sign-off | Automated gates pass; interactive demo rehearsal not run by CI/agent | Run [HEOS_ALPHA_SMOKE_TEST.md](./HEOS_ALPHA_SMOKE_TEST.md) before external demo | Alpha RC |
+| ALPHA-021 | Application context | Runtime Diagnostics “Active application” is unavailable without `X-HEOS-Application-Id` | Expected request-scoped behavior; installed apps still listed separately | Select workspace app via header/switcher when testing app-scoped runtime | APPLICATION-001 |
+| ALPHA-022 | Hosteady Admin | Tables/forms/reports use placeholder metadata bindings | Empty states or static widgets on some pages | Use admin bindings and `/admin` for live platform data | APPLICATION-001 |
 
 ---
 

@@ -146,6 +146,11 @@ class PermissionCatalogSeeder extends Seeder
         ['key' => 'ui.manage', 'name' => 'Manage UI Metadata', 'description' => null, 'domain' => 'ui'],
         ['key' => 'ui.render', 'name' => 'Render UI Metadata', 'description' => null, 'domain' => 'ui'],
         ['key' => 'ui.personalize', 'name' => 'Personalize UI Metadata', 'description' => null, 'domain' => 'ui'],
+        ['key' => 'hosteady.admin.read', 'name' => 'Read Hosteady Admin', 'description' => 'Read Hosteady Admin reference application.', 'domain' => 'application'],
+        ['key' => 'hosteady.admin.manage', 'name' => 'Manage Hosteady Admin', 'description' => 'Manage Hosteady Admin operations.', 'domain' => 'application'],
+        ['key' => 'hosteady.admin.configure', 'name' => 'Configure Hosteady Admin', 'description' => 'Configure Hosteady Admin settings.', 'domain' => 'application'],
+        ['key' => 'hosteady.admin.reports.read', 'name' => 'Read Hosteady Admin Reports', 'description' => 'Read Hosteady Admin reports.', 'domain' => 'application'],
+        ['key' => 'hosteady.admin.audit.read', 'name' => 'Read Hosteady Admin Audit', 'description' => 'Read Hosteady Admin audit events.', 'domain' => 'application'],
     ];
 
     public function run(): void

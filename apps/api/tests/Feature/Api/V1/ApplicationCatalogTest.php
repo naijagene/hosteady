@@ -33,7 +33,7 @@ class ApplicationCatalogTest extends TestCase
             ->getJson('/api/v1/applications/catalog');
 
         $response->assertOk()
-            ->assertJsonCount(3, 'data')
+            ->assertJsonCount(4, 'data')
             ->assertJsonStructure([
                 'data' => [
                     '*' => [
@@ -51,7 +51,7 @@ class ApplicationCatalogTest extends TestCase
             ]);
 
         $keys = collect($response->json('data'))->pluck('key')->all();
-        $this->assertEqualsCanonicalizing(['core', 'demo', 'workspace'], $keys);
+        $this->assertEqualsCanonicalizing(['core', 'demo', 'hosteady-admin', 'workspace'], $keys);
 
         $demo = Application::query()->where('key', 'demo')->firstOrFail();
         $response->assertJsonFragment([

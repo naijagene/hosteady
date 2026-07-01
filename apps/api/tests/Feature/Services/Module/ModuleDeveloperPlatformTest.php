@@ -140,14 +140,14 @@ class ModuleDeveloperPlatformTest extends TestCase
 
         $this->assertSame('warning', $report->overallStatus);
         $this->assertSame('healthy', $report->moduleHealth['demo']['status']);
-        $this->assertSame(1, $report->runtimeHealth['contributors']);
+        $this->assertSame(2, $report->runtimeHealth['contributors']);
     }
 
     public function test_health_aggregator_reports_sync_missing_before_catalog_sync(): void
     {
         $report = app(ModuleHealthAggregator::class)->aggregate();
 
-        $this->assertSame(3, $report->syncHealth['missing']);
+        $this->assertSame(4, $report->syncHealth['missing']);
         $this->assertSame(0, $report->syncHealth['synced']);
     }
 
@@ -169,16 +169,16 @@ class ModuleDeveloperPlatformTest extends TestCase
     {
         $summary = app(ModuleInspectionService::class)->summary();
 
-        $this->assertSame(3, $summary->moduleCount);
-        $this->assertSame(3, $summary->healthyCount);
-        $this->assertSame(1, $summary->runtimeContributorCount);
+        $this->assertSame(4, $summary->moduleCount);
+        $this->assertSame(4, $summary->healthyCount);
+        $this->assertSame(2, $summary->runtimeContributorCount);
     }
 
     public function test_inspection_statistics_include_catalog_counts(): void
     {
         $statistics = app(ModuleInspectionService::class)->statistics();
 
-        $this->assertSame(3, $statistics['module_count']);
+        $this->assertSame(4, $statistics['module_count']);
         $this->assertGreaterThan(0, $statistics['setting_count']);
         $this->assertSame(0, $statistics['permission_count']);
     }
@@ -191,7 +191,7 @@ class ModuleDeveloperPlatformTest extends TestCase
         $this->assertFileExists($directory.'/core.md');
         $this->assertFileExists($directory.'/demo.md');
         $this->assertFileExists($directory.'/index.md');
-        $this->assertSame(3, $result->moduleCount);
+        $this->assertSame(4, $result->moduleCount);
     }
 
     public function test_documentation_markdown_contains_module_metadata(): void
@@ -223,7 +223,7 @@ class ModuleDeveloperPlatformTest extends TestCase
         $modules = app(ModuleInspectionService::class)->inspectAll();
         $keys = array_map(fn ($module) => $module->moduleKey, $modules);
 
-        $this->assertSame(['core', 'demo', 'workspace'], $keys);
+        $this->assertSame(['core', 'demo', 'hosteady-admin', 'workspace'], $keys);
     }
 }
 
